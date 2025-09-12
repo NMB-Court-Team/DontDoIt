@@ -1,0 +1,4 @@
+name: DoNotDoIt
+version: '1.0-SNAPSHOT'
+main: net.astrorbits.doNotDoIt.DoNotDoIt
+api-version: '1.21'
