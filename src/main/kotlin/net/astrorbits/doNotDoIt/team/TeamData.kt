@@ -1,39 +1,91 @@
 package net.astrorbits.doNotDoIt.team
 
-import net.astrorbits.doNotDoIt.criteria.CriteriaData
-import net.astrorbits.doNotDoIt.criteria.CriteriaType
-import org.bukkit.plugin.java.JavaPlugin
-import java.util.UUID
+import net.astrorbits.doNotDoIt.Configs
+import net.astrorbits.doNotDoIt.GlobalSettings
+import net.astrorbits.doNotDoIt.criteria.Criteria
+import net.astrorbits.lib.StringHelper.isUuid
+import net.astrorbits.lib.scoreboard.SidebarDisplay
+import net.astrorbits.lib.text.TextHelper
+import net.astrorbits.lib.text.TextHelper.format
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.Bukkit
+import org.bukkit.GameMode
+import org.bukkit.entity.Player
+import org.bukkit.scoreboard.Team
 
-data class TeamData(
-    val name: String,
-    val color: TeamColor,
-    val members: MutableSet<UUID> = mutableSetOf(),
-    var life: Int = 10,
-    var criteriaData: CriteriaData? = null,
-    var criteriaCompleted: Boolean = false,
-    var dead: Boolean = false
-) {
-    fun setCriteria(plugin: JavaPlugin, criteriaData: CriteriaData) {
-        this.criteriaData = criteriaData
-        TeamManager.updateScoreboard(plugin)
-    }
-    fun loseLife(plugin: JavaPlugin, amount: Int = 1) {
-        life -= amount
-        if (life <= 0) {
-            death(plugin)
+class TeamData(val color: NamedTextColor, val team: Team) {
+    val teamName: Component
+        get() = team.displayName()
+    val members: List<Player>
+        get() = team.entries.mapNotNull { name -> if (name.isUuid()) null else Bukkit.getPlayer(name) }
+    val hasMember: Boolean
+        get() = members.isNotEmpty()
+
+    var lifeCount: Int = GlobalSettings.lifeCount
+        private set
+    var isDead: Boolean = false
+        private set
+    var criteria: Criteria? = null
+        set(value) {
+            TeamManager.updateSidebars()
+            field = value
         }
-        TeamManager.updateScoreboard(plugin)
+
+    val sidebarDisplay: SidebarDisplay = SidebarDisplay()
+
+
+    init {
+        sidebarDisplay.title = Configs.SIDEBAR_TITLE.get()
     }
 
-    fun death(plugin: JavaPlugin){
-        this.dead = true
-        members.forEach { uuid ->
-            val player = plugin.server.getPlayer(uuid)?:return
+    fun updateSidebar(otherTeamsData: List<TeamData>) {
+        sidebarDisplay.content = otherTeamsData
+            .filter { it.criteria != null }
+            .map { teamData ->
+                val criteria = teamData.criteria!!
+                val nameFormatConfig = if (teamData.isDead) Configs.SIDEBAR_ENTRY_DEAD_NAME else Configs.SIDEBAR_ENTRY_NAME
+                val name = nameFormatConfig.get().format(mapOf(
+                    TEAM_NAME_PLACEHOLDER to teamData.teamName,
+                    LIFE_COUNT_PLACEHOLDER to teamData.lifeCount,
+                    CRITERIA_DISPLAY_NAME_PLACEHOLDER to criteria.displayName
+                ))
+                val numberFormatConfig = if (teamData.isDead) Configs.SIDEBAR_ENTRY_DEAD_NUMBER else Configs.SIDEBAR_ENTRY_NUMBER
+                val number = numberFormatConfig.get().format(mapOf(
+                    TEAM_NAME_PLACEHOLDER to teamData.teamName,
+                    LIFE_COUNT_PLACEHOLDER to teamData.lifeCount,
+                    CRITERIA_DISPLAY_NAME_PLACEHOLDER to criteria.displayName
+                ))
+                return@map SidebarDisplay.ScoreEntry(name, number)
+            }
+    }
+
+    fun loseLife(amount: Int = 1) {
+        lifeCount -= amount
+        if (lifeCount <= 0) {
+            death()
+            lifeCount = 0
+        }
+        TeamManager.updateSidebars()
+    }
+
+    fun death() {
+        isDead = true
+        members.forEach { player ->
             player.isInvulnerable = true
             player.sendMessage("§c你的队伍已失败，进入旁观模式")
+            player.gameMode = GameMode.SPECTATOR
         }
     }
 
-    fun isDead(): Boolean{ return this.dead }
+    operator fun contains(player: Player): Boolean {
+        val name = player.name
+        return name in team.entries
+    }
+
+    companion object {
+        const val TEAM_NAME_PLACEHOLDER = "{team_name}"
+        const val LIFE_COUNT_PLACEHOLDER = "{life}"
+        const val CRITERIA_DISPLAY_NAME_PLACEHOLDER = "{criteria}"
+    }
 }

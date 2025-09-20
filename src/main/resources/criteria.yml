@@ -1,0 +1,36 @@
+criteria:
+  consumed_item:
+    - name: 吃腐肉
+      item: flesh
+  walk:
+    - name: 行走40米
+      distance: 40
+  kill_entity:
+    - name: 杀死生物
+      entity: *
+    - name: 杀死玩家
+      entity: player
+  break_block:
+    - name: 挖掘石头
+      block: stone
+  fall:
+    - name: 坠落5格
+      distance: 5
+  craft:
+    - name: 合成石镐
+      item: stone_pickaxe
+    - name: 合成铁镐
+      item: iron_pickaxe
+    # TODO
+  apply_damage:
+    - name: 造成伤害
+      damage_type: *
+      amount: *
+  receive_damage:
+    - name: 受到伤害
+  jump:
+    - name: 跳跃
+  interact_with_block:
+    - name: 打开工作台
+      with_item: *
+    - name:

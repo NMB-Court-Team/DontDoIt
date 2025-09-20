@@ -6,12 +6,12 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
 
-class PickUpCriteria : CriteriaListener(), Listener {
+class PickUpCriteria : Criteria(), Listener {
     lateinit var material: Material
 
-    override fun readFromJson(json: JsonObject) {
+    override fun readData(json: JsonObject) {
         material = Material.valueOf(json.get("item").asString)
-        super.readFromJson(json)
+        super.readData(json)
     }
 
     override fun formatName(rawName: String): String {

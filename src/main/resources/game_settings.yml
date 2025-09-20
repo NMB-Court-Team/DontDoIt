@@ -1,0 +1,26 @@
+team_name:
+  black: 黑色
+  dark_blue: 深蓝色
+  dark_green: 深绿色
+  dark_aqua: 青色
+  dark_red: 深红色
+  dark_purple: 紫色
+  gold: 橙色
+  dark_gray: 深灰色
+  blue: 蓝色
+  green: 绿色
+  aqua: 浅蓝
+  red: 红色
+  light_purple: 品红色
+  yellow: 黄色
+  white: 白色
+
+sidebar_title: <gradient:#ff0000:#EF903E>※ <bold>禁止事项</bold> ※
+sidebar_entry:
+  name: <bold>{team_name}</bold><red>[❤{life:%02d}]
+  number: <white>{criteria}
+sidebar_entry_dead:
+  name: <strikethrough><bold>{team_name}</bold><gray>[💔00]</strikethrough>
+  number: <gray>已淘汰
+
+default_life_count: 10
