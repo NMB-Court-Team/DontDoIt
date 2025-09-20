@@ -1,0 +1,198 @@
+{
+  "criteria": [
+    {
+      "name": "吃{}",
+      "type": "used_item",
+      "params": ["flesh"]
+    },
+    {
+      "name": "行走{}",
+      "type": "walk",
+      "params": [">40m"]
+    },
+    {
+      "name": "击杀{}",
+      "type": "kill",
+      "params": ["*", "player"]
+    },
+    {
+      "name": "破坏{}",
+      "type": "break_block",
+      "params": [
+        "andesite",
+        "diamond_ore",
+        "polished_andesite",
+        "coal_ore",
+        "iron_ore",
+        "#log",
+        "dirt"
+      ]
+    },
+    {
+      "name": "坠落{}",
+      "type": "fall",
+      "params": ["5m"]
+    },
+    {
+      "name": "合成物品",
+      "type": "craft",
+      "params": [
+        "stone_pickaxe",
+        "iron_pickaxe",
+        "furnace",
+        "wooden_pickaxe",
+        "shield"
+      ]
+    },
+    {
+      "name": "造成伤害",
+      "type": "damage",
+      "params": ["*"]
+    },
+    {
+      "name": "死亡",
+      "type": "death",
+      "params": ["*"]
+    },
+    {
+      "name": "受到伤害",
+      "type": "receive_damage",
+      "params": ["*"]
+    },
+    {
+      "name": "跳跃",
+      "type": "jump",
+      "params": ["*"]
+    },
+    {
+      "name": "与方块交互（手持物品）",
+      "type": "interact_block_with_item",
+      "params": [
+        ["crafting_table", "stone_pickaxe"],
+        ["crafting_table", "air"],
+        ["furnace", "*"]
+      ]
+    },
+    {
+      "name": "丢出物品",
+      "type": "drop_item",
+      "params": ["*"]
+    },
+    {
+      "name": "拾取物品",
+      "type": "pick_up",
+      "params": [
+        "flesh",
+        "andesite",
+        "cobblestone",
+        "raw_iron",
+        "coal",
+        "diamond"
+      ]
+    },
+    {
+      "name": "放置方块",
+      "type": "place_block",
+      "params": ["*"]
+    },
+    {
+      "name": "站在方块上",
+      "type": "step_on",
+      "params": [
+        "andesite",
+        "grass_block",
+        "bedrock",
+        "stone",
+        "air",
+        "!andesite",
+        "polished_andesite",
+        "#leaves"
+      ]
+    },
+    {
+      "name": "附近实体",
+      "type": "entity_distance",
+      "params": [
+        ["player", "<1"],
+        ["player", ">15"]
+      ]
+    },
+    {
+      "name": "俯仰角[大于/小于]{}度",
+      "type": "angle_pitch",
+      "params": [">-45", "<45"]
+    },
+    {
+      "name": "主手持有物品{}",
+      "type": "mainhand",
+      "params": [
+        "craft_table",
+        "andesite",
+        "polished_andesite",
+        "iron_pickaxe",
+        "wooden_axe",
+        "stone_pickaxe"
+      ]
+    },
+    {
+      "name": "副手持有{}",
+      "type": "offhand",
+      "params": ["shield"]
+    },
+    {
+      "name": "血量{}",
+      "type": "health",
+      "params": [">10", "<10"]
+    },
+    {
+      "name": "饥饿值{}",
+      "type": "hunger",
+      "params": [">18", "<18"]
+    },
+    {
+      "name": "被{}包围",
+      "type": "surround_by",
+      "params": ["!air", "air"]
+    },
+    {
+      "name": "背包含有{}",
+      "type": "inventory_item",
+      "params": ["iron_ingot", "diamond", "coal", "dirt", "!flesh"]
+    },
+    {
+      "name": "地形位置检测",
+      "type": "positioned_on",
+      "params": ["world_surface", "!world_surface"]
+    },
+    {
+      "name": "长时间不移动",
+      "type": "move_time_out",
+      "params": ["15"]
+    },
+    {
+      "name": "冲刺超时",
+      "type": "sprint_time_out",
+      "params": ["20"]
+    },
+    {
+      "name": "潜行持续",
+      "type": "sneak_time_in",
+      "params": ["3"]
+    },
+    {
+      "name": "复活超时",
+      "type": "revive_time_out",
+      "params": ["3"]
+    },
+    {
+      "name": "跳跃超时",
+      "type": "jump_time_out",
+      "params": ["30"]
+    },
+    {
+      "name": "角度变化超时",
+      "type": "angle_change_time_out",
+      "params": ["5"]
+    }
+  ]
+}
