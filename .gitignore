@@ -1,6 +1,6 @@
-/run/
-/build/
-/.gradle/
-/.idea/
-/.kotlin/
-/gradle/
+run/
+build/
+.gradle/
+.idea/
+.kotlin/
+
