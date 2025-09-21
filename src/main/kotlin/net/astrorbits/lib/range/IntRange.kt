@@ -72,10 +72,10 @@ class IntRange(override val min: Int, override val max: Int) : Range<Int> {
         private val random = Random()
 
         fun parse(str: String): IntRange {
-            val range = str.split("..")
+            val range = str.split("..").map { it.trim() }
             if (range.size != 2) throw IllegalArgumentException("Invalid range format")
-            val min = range[0].toInt()
-            val max = range[1].toInt()
+            val min = if (range[0].isEmpty()) Int.MIN_VALUE else range[0].toInt()
+            val max = if (range[1].isEmpty()) Int.MAX_VALUE else range[1].toInt()
             return IntRange(min, max)
         }
     }

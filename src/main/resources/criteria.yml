@@ -1,15 +1,17 @@
 criteria:
-  eat_item:
-    # item格式：item_1, item_2, #item_tag_1, ...
+  eat_item: # 玩家吃下item中包含的物品时触发
     - name: 吃腐肉
+      # item格式：item_1, item_2, #item_tag_1, ...
+      # 如果写一个"*"，或者没有item字段，则认为是吃任意东西都算触发
+      # 如果item前面带一个"!"，则代表排除这个物品
       item: flesh
-
-  walk:
+  walk: # 玩家行走距离超过distance时触发
     - name: 行走40米
-      distance: 40..
-
-  kill_entity:
+      distance: 40
+  kill_entity: # 杀死entity中包含的实体时触发
     - name: 杀死生物
+      # entity格式：entity_1, entity_2, #entity_tag_1, ...
+      # 如果写一个*，或者没有entity字段，则认为是杀死任意生物都算触发
       entity: *
     - name: 杀死玩家
       entity: player
@@ -31,6 +33,9 @@ criteria:
       block: "#log"
     - name: 挖掘泥土
       block: dirt
+  pick_up:
+    - name: 拾起煤炭
+      item: coal
 
   fall:
     - name: 坠落5格

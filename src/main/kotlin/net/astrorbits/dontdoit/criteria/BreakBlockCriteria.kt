@@ -10,29 +10,38 @@ import org.bukkit.event.block.BlockBreakEvent
 
 class BreakBlockCriteria : Criteria(), Listener {
     override val type = CriteriaType.BREAK_BLOCK
-    lateinit var blockTypes: List<Material>
+    lateinit var blockTypes: Set<Material>
     var isWildcard: Boolean = false
 
     override fun readData(data: Map<String, String>) {
         super.readData(data)
-        val blockContent = data[BLOCK_TYPES_KEY] ?: throw InvalidCriteriaException(this, "Missing key '$BLOCK_TYPES_KEY'")
-        val blocks = blockContent.replace("\n", "").split(",").map { it.trim() }
-        val result = ArrayList<Material>()
-        for (block in blocks) {
-            if (block.startsWith("#")) {
-                val tagKey = Identifier.of(block.removePrefix("#")).toKey()
+        val entries = data.getCsvEntries(BLOCK_TYPES_KEY, AbsentBehavior.WILDCARD)
+
+        val result = HashSet<Material>()
+        for ((block, isTag, isReversed) in entries) {
+            if (isReversed && result.isEmpty()) {
+                result.addAll(Material.entries.filter { it.isBlock })
+            }
+            val blocks = HashSet<Material>()
+            if (isTag) {
+                val tagKey = Identifier.of(block).toKey()
                 val tag = RegistryAccess.registryAccess().getRegistry(RegistryKey.BLOCK).tags.firstOrNull { it.tagKey().key() == tagKey }
                     ?: throw InvalidCriteriaException(this, "Invalid block tag: $block")
-                result.addAll(tag.values().map { Material.matchMaterial(it.asString())!! })
-            } else if (block == "*") {
-                isWildcard = true
+                blocks.addAll(tag.values().map { Material.matchMaterial(it.asString())!! })
             } else {
                 val material = Material.matchMaterial(block)
                 if (material == null || !material.isBlock) throw InvalidCriteriaException(this, "Invalid block: $block")
-                result.add(material)
+                blocks.add(material)
+            }
+            if (isReversed) {
+                result.removeAll(blocks)
+            } else {
+                result.addAll(blocks)
             }
         }
         blockTypes = result
+
+        isWildcard = entries.isWildcard
     }
 
     @EventHandler

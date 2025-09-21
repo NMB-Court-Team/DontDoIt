@@ -69,10 +69,10 @@ class DoubleRange(override val min: Double, override val max: Double) : Range<Do
         private val random = Random()
 
         fun parse(str: String): DoubleRange {
-            val range = str.split("..")
+            val range = str.split("..").map { it.trim() }
             if (range.size != 2) throw IllegalArgumentException("Invalid range format")
-            val min = range[0].toDouble()
-            val max = range[1].toDouble()
+            val min = if (range[0].isEmpty()) Double.NEGATIVE_INFINITY else range[0].toDouble()
+            val max = if (range[1].isEmpty()) Double.POSITIVE_INFINITY else range[1].toDouble()
             return DoubleRange(min, max)
         }
     }

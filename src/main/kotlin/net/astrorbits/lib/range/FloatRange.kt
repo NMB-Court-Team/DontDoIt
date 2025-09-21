@@ -71,10 +71,10 @@ class FloatRange(override val min: Float, override val max: Float) : Range<Float
         private val random = Random()
 
         fun parse(str: String): FloatRange {
-            val range = str.split("..")
+            val range = str.split("..").map { it.trim() }
             if (range.size != 2) throw IllegalArgumentException("Invalid range format")
-            val min = range[0].toFloat()
-            val max = range[1].toFloat()
+            val min = if (range[0].isEmpty()) Float.NEGATIVE_INFINITY else range[0].toFloat()
+            val max = if (range[1].isEmpty()) Float.POSITIVE_INFINITY else range[1].toFloat()
             return FloatRange(min, max)
         }
     }
