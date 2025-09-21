@@ -8,7 +8,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerItemConsumeEvent
 
-class EatenItemCriteria : Criteria(), Listener {
+class EatItemCriteria : Criteria(), Listener {
     override val type: CriteriaType = CriteriaType.EATEN_ITEM
     lateinit var itemTypes: List<Material>
     var isWildcard: Boolean = false

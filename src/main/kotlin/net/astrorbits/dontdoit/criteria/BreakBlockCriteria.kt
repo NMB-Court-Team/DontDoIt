@@ -11,6 +11,7 @@ import org.bukkit.event.block.BlockBreakEvent
 class BreakBlockCriteria : Criteria(), Listener {
     override val type = CriteriaType.BREAK_BLOCK
     lateinit var blockTypes: List<Material>
+    var isWildcard: Boolean = false
 
     override fun readData(data: Map<String, String>) {
         super.readData(data)
@@ -23,6 +24,8 @@ class BreakBlockCriteria : Criteria(), Listener {
                 val tag = RegistryAccess.registryAccess().getRegistry(RegistryKey.BLOCK).tags.firstOrNull { it.tagKey().key() == tagKey }
                     ?: throw InvalidCriteriaException(this, "Invalid block tag: $block")
                 result.addAll(tag.values().map { Material.matchMaterial(it.asString())!! })
+            } else if (block == "*") {
+                isWildcard = true
             } else {
                 val material = Material.matchMaterial(block)
                 if (material == null || !material.isBlock) throw InvalidCriteriaException(this, "Invalid block: $block")
@@ -35,7 +38,7 @@ class BreakBlockCriteria : Criteria(), Listener {
     @EventHandler
     fun onBreakBlock(event: BlockBreakEvent) {
         val block = event.block
-        if (block.type in blockTypes) {
+        if (isWildcard || block.type in blockTypes) {
             trigger(event.player)
         }
     }

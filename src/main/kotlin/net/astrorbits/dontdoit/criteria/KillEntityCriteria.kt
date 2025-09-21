@@ -3,18 +3,16 @@ package net.astrorbits.dontdoit.criteria
 import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
 import net.astrorbits.lib.Identifier
-import org.bukkit.Material
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.entity.EntityDamageEvent
-import org.bukkit.event.entity.EntityDeathEvent
 
-class KillMobCriteria : Criteria(), Listener {
+class KillEntityCriteria : Criteria(), Listener {
     override val type = CriteriaType.KILL_ENTITY
     lateinit var entityTypes: List<EntityType>
+    var isWildcard: Boolean = false
 
     override fun readData(data: Map<String, String>) {
         super.readData(data)
@@ -27,9 +25,10 @@ class KillMobCriteria : Criteria(), Listener {
                 val tag = RegistryAccess.registryAccess().getRegistry(RegistryKey.ENTITY_TYPE).tags.firstOrNull { it.tagKey().key() == tagKey }
                     ?: throw InvalidCriteriaException(this, "Invalid entity tag: $entity")
                 result.addAll(tag.values().map { EntityType.fromName(entity)!! })
+            } else if (entity == "*") {
+                isWildcard = true
             } else {
-                val entityType = EntityType.fromName(entity)
-                if (entityType == null) throw InvalidCriteriaException(this, "Invalid entity: $entity")
+                val entityType = EntityType.fromName(entity) ?: throw InvalidCriteriaException(this, "Invalid entity: $entity")
                 result.add(entityType)
             }
         }
@@ -37,12 +36,11 @@ class KillMobCriteria : Criteria(), Listener {
     }
 
     @EventHandler
-    fun onPlayerKillMob(event: EntityDamageEvent) {
-        val player = event.damageSource.causingEntity?:return
-        if( player.type != EntityType.PLAYER) return
-        if( ! event.entity.isDead ) return
-        val block = event.entity
-        if (block.type in entityTypes) {
+    fun onEntityBeingDamaged(event: EntityDamageEvent) {
+        val player = event.damageSource.causingEntity ?: return
+        if (player.type != EntityType.PLAYER || !event.entity.isDead) return
+        val entity = event.entity
+        if (isWildcard || entity.type in entityTypes) {
             trigger(player as Player)
         }
     }

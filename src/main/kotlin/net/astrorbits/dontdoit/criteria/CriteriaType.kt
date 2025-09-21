@@ -5,6 +5,7 @@ enum class CriteriaType {
     WALK,
     KILL_ENTITY,
     BREAK_BLOCK,
+    PICK_UP,
     FALL,
     CRAFT,
     APPLY_DAMAGE,

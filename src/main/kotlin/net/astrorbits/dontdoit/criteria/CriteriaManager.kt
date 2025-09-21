@@ -54,7 +54,12 @@ object CriteriaManager {
     }
 
     fun registerAll() {
-        register("consumed_item", ::EatenItemCriteria)
+        register("eat_item", ::EatItemCriteria)
+        register("walk", ::WalkCriteria)
+        register("break_block", ::BreakBlockCriteria)
+        register("kill_entity", ::KillEntityCriteria)
+        register("pick_up", ::PickUpCriteria)
+
 
 //        register("break_block", ::BreakBlockCriteria)
 //        register("place_block", ::EmptyCriteria)
