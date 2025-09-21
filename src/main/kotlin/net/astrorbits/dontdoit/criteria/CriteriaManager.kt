@@ -59,6 +59,7 @@ object CriteriaManager {
         register("break_block", ::BreakBlockCriteria)
         register("kill_entity", ::KillEntityCriteria)
         register("pick_up", ::PickUpCriteria)
+        register("stand_on", ::StandOnCriteria)
 
 
 //        register("break_block", ::BreakBlockCriteria)

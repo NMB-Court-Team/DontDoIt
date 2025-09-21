@@ -53,6 +53,7 @@ class WalkCriteria : Criteria() {
 
             if (totalWalkDistance >= walkDistance) {
                 trigger(player)
+                break
             }
         }
     }

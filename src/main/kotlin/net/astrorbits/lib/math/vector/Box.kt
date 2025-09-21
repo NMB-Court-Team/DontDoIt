@@ -6,6 +6,7 @@ import net.astrorbits.lib.codec.ObjectDecoder
 import net.astrorbits.lib.codec.ObjectEncoder
 import net.astrorbits.lib.codec.SizedCodec
 import org.bukkit.Location
+import org.bukkit.util.BoundingBox
 import org.bukkit.util.Vector
 import org.joml.Vector3L
 import org.joml.Vector3d
@@ -58,6 +59,10 @@ class Box(val min: Vec3d, val max: Vec3d) {
 
     fun offset(offset: Vec3d): Box {
         return Box(min.offset(offset), max.offset(offset))
+    }
+
+    fun offset(offset: Vec3i): Box {
+        return offset(offset.toVec3d())
     }
 
     /**
@@ -274,6 +279,10 @@ class Box(val min: Vec3d, val max: Vec3d) {
             }
 
             return closestIndex
+        }
+
+        fun fromBoundingBox(box: BoundingBox): Box {
+            return Box(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ)
         }
     }
 }
