@@ -6,7 +6,7 @@ criteria:
 
   walk:
     - name: 行走40米
-      distance: 40
+      distance: 40..
 
   kill_entity:
     - name: 杀死生物
@@ -15,12 +15,26 @@ criteria:
       entity: player
 
   break_block:
+    - name: 挖掘安山岩
+      block: andesite
     - name: 挖掘石头
       block: stone
+    - name: 挖掘钻石矿
+      block: diamond_ore
+    - name: 挖掘磨制安山岩
+      block: polished_andesite
+    - name: 挖掘煤矿
+      block: coal_ore
+    - name: 挖掘铁矿
+      block: iron_ore
+    - name: 挖掘原木
+      block: "#log"
+    - name: 挖掘泥土
+      block: dirt
 
   fall:
     - name: 坠落5格
-      distance: 5
+      distance: 5..
 
   craft:
     - name: 合成石镐
@@ -74,23 +88,24 @@ criteria:
     - name: 放置方块
       block: *
 
-  step_on:
+  stand_on:
     - name: 站在地上
       block: *
-    - name: 站在
+    - name: 站在安山岩上
       block: andesite
-    - name: 站在
+    - name: 站在草方块上
       block: grass_block
-    - name: 站在
+    - name: 站在基岩上
       block: bedrock
-    - name: 站在
+    - name: 站在石头上
       block: stone
-    - name: 站在
-      block: air
-    - name: 站在
+    - name: 站在磨制安山岩上
       block: polished_andesite
-    - name: 站在
+    - name: 站在树叶上
       block: "#leaves"
+    - name: 滞空
+      block: *
+      reverse: true
 
   distance_to_entity:
     # entity: 留空或*为任意实体
