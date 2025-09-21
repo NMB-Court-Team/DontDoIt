@@ -1,9 +1,7 @@
 package net.astrorbits.dontdoit.criteria
 
-import it.unimi.dsi.fastutil.objects.Object2ReferenceMap
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList
-import it.unimi.dsi.fastutil.objects.ReferenceList
 import net.astrorbits.dontdoit.DontDoIt
 import net.astrorbits.dontdoit.team.TeamData
 import net.astrorbits.dontdoit.team.TeamManager
@@ -56,7 +54,7 @@ object CriteriaManager {
     }
 
     fun registerAll() {
-        register("consumed_item", ::ConsumedItemCriteria)
+        register("consumed_item", ::EatenItemCriteria)
 
 //        register("break_block", ::BreakBlockCriteria)
 //        register("place_block", ::EmptyCriteria)

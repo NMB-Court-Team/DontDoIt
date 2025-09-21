@@ -1,7 +1,7 @@
 package net.astrorbits.dontdoit.criteria
 
 enum class CriteriaType {
-    CONSUMED_ITEM,
+    EATEN_ITEM,
     WALK,
     KILL_ENTITY,
     BREAK_BLOCK,

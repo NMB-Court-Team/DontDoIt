@@ -1,5 +1,5 @@
 criteria:
-  consumed_item:
+  eaten_item:
     - name: 吃腐肉
       # item格式：item_1, item_2, #item_tag_1, ...
       item: flesh

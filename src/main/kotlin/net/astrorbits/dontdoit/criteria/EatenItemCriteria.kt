@@ -8,9 +8,10 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerItemConsumeEvent
 
-class ConsumedItemCriteria : Criteria(), Listener {
-    override val type: CriteriaType = CriteriaType.CONSUMED_ITEM
+class EatenItemCriteria : Criteria(), Listener {
+    override val type: CriteriaType = CriteriaType.EATEN_ITEM
     lateinit var itemTypes: List<Material>
+    var isWildcard: Boolean = false
 
     override fun readData(data: Map<String, String>) {
         super.readData(data)
@@ -23,6 +24,8 @@ class ConsumedItemCriteria : Criteria(), Listener {
                 val tag = RegistryAccess.registryAccess().getRegistry(RegistryKey.ITEM).tags.firstOrNull { it.tagKey().key() == tagKey }
                     ?: throw InvalidCriteriaException(this, "Invalid item tag: $item")
                 result.addAll(tag.values().map { Material.matchMaterial(it.asString())!! })
+            } else if (item == "*") {
+                isWildcard = true
             } else {
                 val material = Material.matchMaterial(item)
                 if (material == null || !material.isItem) throw InvalidCriteriaException(this, "Invalid item: $item")
@@ -35,7 +38,7 @@ class ConsumedItemCriteria : Criteria(), Listener {
     @EventHandler
     fun onPlayerConsumedItem(event: PlayerItemConsumeEvent) {
         val item = event.item
-        if (item.type in itemTypes) {
+        if (isWildcard || (item.type in itemTypes && item.type.isEdible)) {
             trigger(event.player)
         }
     }
