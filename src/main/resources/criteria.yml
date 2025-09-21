@@ -1,37 +1,162 @@
 criteria:
   eat_item:
+    # item格式：item_1, item_2, #item_tag_1, ...
     - name: 吃腐肉
-      # item格式：item_1, item_2, #item_tag_1, ...
       item: flesh
+
   walk:
     - name: 行走40米
       distance: 40
+
   kill_entity:
     - name: 杀死生物
       entity: *
     - name: 杀死玩家
       entity: player
+
   break_block:
     - name: 挖掘石头
       block: stone
+
   fall:
     - name: 坠落5格
       distance: 5
+
   craft:
     - name: 合成石镐
       item: stone_pickaxe
     - name: 合成铁镐
       item: iron_pickaxe
-    # TODO
+    - name: 合成熔炉
+      item: furnace
+    - name: 合成木镐
+      item: wooden_pickaxe
+    - name: 合成盾牌
+      item: shield
+
   apply_damage:
     - name: 造成伤害
       damage_type: *
       amount: *
+
   receive_damage:
     - name: 受到伤害
+
+  death:
+    - name: 死亡
+      reason: *
+
   jump:
-    - name: 跳跃
+    - name: 蹦跶
+
   interact_with_block:
     - name: 打开工作台
       with_item: *
     - name:
+
+  drop_item:
+    - name: 丢弃物品
+      item: *
+
+  pick_up_item:
+    - name: 捡起腐肉
+      item: flesh
+    - name: 捡起安山岩
+      item: andesite
+    - name: 捡起圆石
+      item: cobblestone
+    - name: 捡起煤炭
+      item: coal
+    - name: 捡起钻石
+      item: diamond
+
+  place_block:
+    - name: 放置方块
+      block: *
+
+  step_on:
+    - name: 站在地上
+      block: *
+    - name: 站在
+      block: andesite
+    - name: 站在
+      block: grass_block
+    - name: 站在
+      block: bedrock
+    - name: 站在
+      block: stone
+    - name: 站在
+      block: air
+    - name: 站在
+      block: polished_andesite
+    - name: 站在
+      block: "#leaves"
+
+  distance_to_entity:
+    # entity: 留空或*为任意实体
+    - name: 贴贴
+      entity: player
+      distance: ..1
+    - name: 离所有玩家15格以上
+      entity: player
+      distance: 15..
+
+  rotation:
+    - name: 抬头
+      pitch: ..-45
+    - name: 低头
+      pitch: 45..
+
+  hold_item:
+    - name: 主手拿着工作台
+      mainhand: crafting_table
+    - name: 主手拿着安山岩
+      mainhand: andesite
+    - name: 主手拿着磨制安山岩
+      mainhand: polished_andesite
+    - name: 主手拿着铁镐
+      mainhand: iron_pickaxe
+    - name: 主手拿着木斧
+      mainhand: wooden_axe
+    - name: 主手拿着石镐
+      mainhand: stone_pickaxe
+    - name: 副手拿着盾牌
+      offhand: shield
+
+  health:
+    - name: 血量少于10点
+      health: ..10
+    - name: 血量多于10点
+      health: 10..
+
+  hunger:
+    - name: 饥饿值少于18点
+      health: ..18
+    - name: 饥饿值多于18点
+      health: 18..
+
+  surround_by:
+    - name: 完全暴露于空气中
+      block: "#air"
+    - name: 自闭
+      block: "!#air"
+
+  inventory_item:
+    - name: 包里有铁锭
+      item: iron_ingot
+    - name: 包里有钻石
+      item: diamond
+    - name: 包里有煤炭
+      item: coal
+    - name: 包里有泥土
+      item: dirt
+    - name: 包里没有腐肉
+      item: flesh
+      reverse: true
+
+  positioned_on:
+    - name: 头顶有方块遮挡
+      criteria: world_surface
+    - name: 头顶有方块遮挡
+      criteria: world_surface
+      reverse: true
