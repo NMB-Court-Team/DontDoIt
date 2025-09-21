@@ -162,9 +162,24 @@ abstract class Criteria {
     }
 
     protected enum class AbsentBehavior {
-        EMPTY, WILDCARD, EXCEPTION
+        /**
+         * 指定键的项不存在时，返回空的[CsvEntryList]
+         */
+        EMPTY,
+        /**
+         * 指定键的项不存在时，返回空的[CsvEntryList]，且[CsvEntryList.isWildcard]为`true`
+         */
+        WILDCARD,
+        /**
+         * 指定键的项不存在时，抛出异常
+         */
+        EXCEPTION
     }
 
+    /**
+     * 获取逗号分隔的项
+     * @param absentBehavior 当指定键的项不存在时的行为
+     */
     protected fun Map<String, String>.getCsvEntries(key: String, absentBehavior: AbsentBehavior = AbsentBehavior.EXCEPTION): CsvEntryList {
         val content = this[key] ?: if (absentBehavior == AbsentBehavior.EXCEPTION) {
             throw InvalidCriteriaException(this@Criteria, "Missing key '$key")

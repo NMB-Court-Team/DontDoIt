@@ -40,6 +40,8 @@ data class Identifier private constructor(val namespace: String, val path: Strin
         return Key.key(namespace, path)
     }
 
+    fun isVanilla() = namespace == VANILLA_NAMESPACE
+
     companion object {
         const val VANILLA_NAMESPACE = "minecraft"
 
