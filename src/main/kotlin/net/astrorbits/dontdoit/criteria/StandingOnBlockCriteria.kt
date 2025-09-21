@@ -1,16 +1,21 @@
 package net.astrorbits.dontdoit.criteria
 
+import net.astrorbits.dontdoit.criteria.type.BlockCriteria
 import net.astrorbits.dontdoit.team.TeamData
 import net.astrorbits.lib.math.vector.Box
 import net.astrorbits.lib.math.vector.Vec3d
 import org.bukkit.Material
 import org.bukkit.event.Listener
 
-class StandingOnBlockCriteria : Criteria(), Listener {
+class StandingOnBlockCriteria : Criteria(), Listener, BlockCriteria {
     override val type: CriteriaType = CriteriaType.STANDING_ON_BLOCK
     lateinit var blockTypes: Set<Material>
     var isWildcard: Boolean = false
     var reversed: Boolean = false
+
+    override fun getCandidateBlockTypes(): Set<Material> {
+        return blockTypes
+    }
 
     override fun readData(data: Map<String, String>) {
         super.readData(data)

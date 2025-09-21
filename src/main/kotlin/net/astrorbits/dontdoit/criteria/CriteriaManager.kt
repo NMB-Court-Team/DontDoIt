@@ -59,6 +59,9 @@ object CriteriaManager {
         register("pick_up_item", ::PickUpItemCriteria)
         register("standing_on_block", ::StandingOnBlockCriteria)
         register("heightmap_matching_pos", ::HeightmapMatchingPosCriteria)
+        register("holding_item", ::HoldingItemCriteria)
+        register("fall", ::FallCriteria)
+        register("hurt_entity", ::HurtEntityCriteria)
 
 //        register("break_block", ::BreakBlockCriteria)
 //        register("place_block", ::EmptyCriteria)

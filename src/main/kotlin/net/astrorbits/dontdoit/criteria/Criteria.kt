@@ -19,7 +19,7 @@ import java.util.*
 
 abstract class Criteria {
     abstract val type: CriteriaType
-    var easyToTrigger: Boolean = false
+    lateinit var triggerDifficulty: TriggerDifficulty
     lateinit var displayName: Component
     val holders: ReferenceArrayList<TeamData> = ReferenceArrayList()
 
@@ -75,7 +75,7 @@ abstract class Criteria {
      * 读取数据，用于初始化词条
      */
     open fun readData(data: Map<String, String>) {
-        data.setBoolField(EASY_TO_TRIGGER, true) { easyToTrigger = it }
+        data.setField(TRIGGER_DIFFICULTY_KEY, true) { triggerDifficulty = TriggerDifficulty.valueOf(it.uppercase()) }
         data.setField(NAME_KEY) { displayName = TextHelper.parseMiniMessage(it) }
     }
 
@@ -326,7 +326,7 @@ abstract class Criteria {
     protected fun Map<String, String>.setDamageTypes(
         key: String,
         absentBehavior: AbsentBehavior = AbsentBehavior.WILDCARD,
-        fieldSetter: (entityTypes: Set<DamageType>, isWildcard: Boolean) -> Unit
+        fieldSetter: (damageTypes: Set<DamageType>, isWildcard: Boolean) -> Unit
     ) {
         val entries = getCsvEntries(key, absentBehavior)
 
@@ -360,7 +360,7 @@ abstract class Criteria {
 
     companion object {
         const val NAME_KEY = "name"
-        const val EASY_TO_TRIGGER = "easy_to_trigger"
+        const val TRIGGER_DIFFICULTY_KEY = "difficulty"
 
         val ALL_DAMAGE_TYPES: Set<DamageType> = setOf(
             DamageType.ARROW, DamageType.BAD_RESPAWN_POINT, DamageType.CACTUS, DamageType.CAMPFIRE, DamageType.CRAMMING, DamageType.DRAGON_BREATH,

@@ -1,14 +1,19 @@
 package net.astrorbits.dontdoit.criteria
 
+import net.astrorbits.dontdoit.criteria.type.BlockCriteria
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
 
-class BreakBlockCriteria : Criteria(), Listener {
+class BreakBlockCriteria : Criteria(), Listener, BlockCriteria {
     override val type = CriteriaType.BREAK_BLOCK
     lateinit var blockTypes: Set<Material>
     var isWildcard: Boolean = false
+
+    override fun getCandidateBlockTypes(): Set<Material> {
+        return blockTypes
+    }
 
     override fun readData(data: Map<String, String>) {
         super.readData(data)

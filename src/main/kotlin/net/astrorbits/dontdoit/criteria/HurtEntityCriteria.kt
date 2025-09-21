@@ -2,6 +2,7 @@ package net.astrorbits.dontdoit.criteria
 
 import net.astrorbits.dontdoit.criteria.type.DamageTypeCriteria
 import net.astrorbits.dontdoit.criteria.type.EntityCriteria
+import net.astrorbits.lib.range.DoubleRange
 import org.bukkit.damage.DamageType
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
@@ -9,12 +10,13 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageEvent
 
-class KillEntityCriteria : Criteria(), Listener, EntityCriteria, DamageTypeCriteria {
-    override val type = CriteriaType.KILL_ENTITY
+class HurtEntityCriteria : Criteria(), Listener, EntityCriteria, DamageTypeCriteria {
+    override val type: CriteriaType = CriteriaType.HURT_ENTITY
     lateinit var entityTypes: Set<EntityType>
     var isEntityTypeWildcard: Boolean = false
     lateinit var damageTypes: Set<DamageType>
     var isDamageTypeWildcard: Boolean = false
+    var damageAmountRange: DoubleRange = DoubleRange.INFINITY
 
     override fun getCandidateEntityTypes(): Set<EntityType> {
         return entityTypes
@@ -34,16 +36,17 @@ class KillEntityCriteria : Criteria(), Listener, EntityCriteria, DamageTypeCrite
             this.damageTypes = damageTypes
             this.isDamageTypeWildcard = isWildcard
         }
+        data.setDoubleRangeField(DAMAGE_AMOUNT_RANGE_KEY, true) { damageAmountRange = it }
     }
 
     @EventHandler
     fun onEntityDamage(event: EntityDamageEvent) {
         val player = event.damageSource.causingEntity as? Player ?: return
         val entity = event.entity
-        if (!entity.isDead) return
         val damageType = event.damageSource.damageType
         if ((isEntityTypeWildcard || entity.type in entityTypes) &&
-            (isDamageTypeWildcard || damageType in damageTypes)
+            (isDamageTypeWildcard || damageType in damageTypes) &&
+            event.damage in damageAmountRange
         ) {
             trigger(player)
         }
@@ -52,5 +55,6 @@ class KillEntityCriteria : Criteria(), Listener, EntityCriteria, DamageTypeCrite
     companion object {
         const val ENTITY_TYPES_KEY = "entity"
         const val DAMAGE_TYPES_KEY = "damage_type"
+        const val DAMAGE_AMOUNT_RANGE_KEY = "amount"
     }
 }
