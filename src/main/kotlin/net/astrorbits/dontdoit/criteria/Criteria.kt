@@ -1,6 +1,5 @@
-package net.astrorbits.doNotDoIt.criteria
+package net.astrorbits.dontdoit.criteria
 
-import com.google.gson.JsonObject
 import net.astrorbits.lib.text.TextHelper
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
@@ -21,7 +20,7 @@ abstract class Criteria {
     }
 
     open fun readData(data: Map<String, String>) {
-        val name = data["name"]
-        displayName = if (name == null) Component.text(type.name.lowercase()) else TextHelper.parseMiniMessage(name)
+        val name = data["name"] ?: throw InvalidCriteriaException(this, "Missing key 'name'")
+        displayName = TextHelper.parseMiniMessage(name)
     }
 }

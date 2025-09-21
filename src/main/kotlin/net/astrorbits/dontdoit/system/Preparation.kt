@@ -1,6 +1,6 @@
-package net.astrorbits.doNotDoIt.system
+package net.astrorbits.dontdoit.system
 
-import net.astrorbits.doNotDoIt.DoNotDoIt
+import net.astrorbits.dontdoit.DontDoIt
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
@@ -10,7 +10,6 @@ import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerJoinEvent
-import org.bukkit.event.server.ServerLoadEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scoreboard.Scoreboard
@@ -23,20 +22,20 @@ object Preparation : Listener {
 
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
-        if (!DoNotDoIt.stateManager.isWaiting()) return
+        if (!DontDoIt.stateManager.isWaiting()) return
         event.player.sendMessage("Hello, ${event.player.name}")
         event.player.inventory.setItem(TEAM_ITEM_SLOT, ItemStack(TeamColor.LIGHT_GRAY.material))
     }
 
     @EventHandler
     fun onInventory(event: InventoryClickEvent){
-        if (!DoNotDoIt.stateManager.isWaiting()) return
+        if (!DontDoIt.stateManager.isWaiting()) return
         event.isCancelled = true
     }
 
     @EventHandler
     fun onTeamSelect(event: PlayerDropItemEvent){
-        if (!DoNotDoIt.stateManager.isWaiting()) return
+        if (!DontDoIt.stateManager.isWaiting()) return
         val type = event.itemDrop.itemStack.type
         val teamColor = TeamColor.entries.find { it.material == type } ?: return
         if(TeamColor.contains(type)){

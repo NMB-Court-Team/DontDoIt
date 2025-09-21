@@ -1,16 +1,17 @@
-package net.astrorbits.doNotDoIt.criteria
+package net.astrorbits.dontdoit.criteria
 
 import it.unimi.dsi.fastutil.objects.Object2ReferenceMap
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap
 import it.unimi.dsi.fastutil.objects.ReferenceList
-import net.astrorbits.doNotDoIt.DoNotDoIt
-import net.astrorbits.doNotDoIt.team.TeamManager
+import net.astrorbits.dontdoit.DontDoIt
+import net.astrorbits.dontdoit.team.TeamManager
 import net.astrorbits.lib.config.Config
 import org.bukkit.entity.Player
-import java.util.UUID
 import java.util.function.Supplier
 
 object CriteriaManager {
+    private val LOGGER = DontDoIt.LOGGER
+
     const val CRITERIA_FILE_NAME = "criteria.yml"
 
     lateinit var criteriaConfig: Config
@@ -37,14 +38,15 @@ object CriteriaManager {
 
         criteriaConfig = Config(
             "criteria",
-            DoNotDoIt.instance.dataPath.resolve(CRITERIA_FILE_NAME),
+            DontDoIt.instance.dataPath.resolve(CRITERIA_FILE_NAME),
             CRITERIA_FILE_NAME,
-            DoNotDoIt.LOGGER
+            DontDoIt.LOGGER
         )
         allCriteriaConfigData = criteriaConfig.defineConfig(CriteriaConfigData(
             "criteria",
             _allCriteriaTypes.keys.associateWith { emptyList() }
         ))
+        loadFromConfig()
     }
 
     fun registerAll() {
@@ -87,20 +89,26 @@ object CriteriaManager {
     }
 
     private fun loadFromConfig() {
-        val data = allCriteriaConfigData.get()
-
+        val allCriteriaTypes = this.allCriteriaTypes
+        val configData = allCriteriaConfigData.get()
+        for ((id, allData) in configData) {
+            val initializer = allCriteriaTypes[id] ?: continue
+            for (data in allData) {
+                val criteria = initializer.get()
+                try {
+                    criteria.readData(data)
+                } catch (e: InvalidCriteriaException) {
+                    LOGGER.error("Error when loading criteria '$id': ", e)
+                    continue
+                }
+                _allCriteria.add(criteria)
+            }
+        }
     }
 
-    fun formatName(rawName: String, index: Int): String {
-        return rawName.replace(BLOCK_NAME_PATTERN, "<lang:${types[index].translationKey()}>")
-    }
-
-    fun removePlayer() {
-
-    }
-
-    fun getRandomCriteria(): Pair<Criteria, Criteria.SubCriteria> {
-        return _allCriteria.random() // 等概率抽取
+    fun getRandomCriteria(): Criteria {
+        //TODO 要加上仓检机制
+        return allCriteria.random() // 等概率抽取
     }
 }
 

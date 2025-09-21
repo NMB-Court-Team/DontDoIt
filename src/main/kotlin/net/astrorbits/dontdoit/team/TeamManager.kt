@@ -1,9 +1,7 @@
-package net.astrorbits.doNotDoIt.team
+package net.astrorbits.dontdoit.team
 
 import com.google.common.collect.BiMap
-import it.unimi.dsi.fastutil.objects.Object2ReferenceMap
-import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap
-import net.astrorbits.doNotDoIt.Configs
+import net.astrorbits.dontdoit.Configs
 import net.astrorbits.lib.collection.CollectionHelper.toBiMap
 import net.astrorbits.lib.text.TextHelper.append
 import net.kyori.adventure.text.Component

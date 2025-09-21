@@ -1,11 +1,10 @@
-package net.astrorbits.doNotDoIt.team
+package net.astrorbits.dontdoit.team
 
-import net.astrorbits.doNotDoIt.Configs
-import net.astrorbits.doNotDoIt.GlobalSettings
-import net.astrorbits.doNotDoIt.criteria.Criteria
+import net.astrorbits.dontdoit.Configs
+import net.astrorbits.dontdoit.GlobalSettings
+import net.astrorbits.dontdoit.criteria.Criteria
 import net.astrorbits.lib.StringHelper.isUuid
 import net.astrorbits.lib.scoreboard.SidebarDisplay
-import net.astrorbits.lib.text.TextHelper
 import net.astrorbits.lib.text.TextHelper.format
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor

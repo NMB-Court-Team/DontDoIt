@@ -1,4 +1,4 @@
-package net.astrorbits.doNotDoIt.criteria
+package net.astrorbits.dontdoit.criteria
 
 import net.astrorbits.lib.config.Config
 import net.astrorbits.lib.config.ConfigData

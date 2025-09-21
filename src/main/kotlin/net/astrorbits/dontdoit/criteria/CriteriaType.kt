@@ -1,4 +1,4 @@
-package net.astrorbits.doNotDoIt.criteria
+package net.astrorbits.dontdoit.criteria
 
 enum class CriteriaType {
     CONSUMED_ITEM,

@@ -1,4 +1,4 @@
-package net.astrorbits.doNotDoIt.system
+package net.astrorbits.dontdoit.system
 
 import net.kyori.adventure.text.Component
 

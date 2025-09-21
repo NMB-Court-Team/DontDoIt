@@ -1,6 +1,6 @@
-package net.astrorbits.doNotDoIt
+package net.astrorbits.dontdoit
 
-import net.astrorbits.doNotDoIt.team.TeamManager.TEAM_COLORS
+import net.astrorbits.dontdoit.team.TeamManager.TEAM_COLORS
 import net.astrorbits.lib.config.*
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -10,9 +10,9 @@ object Configs {
 
     val CONFIG: Config = Config(
         "game_settings",
-        DoNotDoIt.instance.dataPath.resolve(CONFIG_FILE_NAME),
+        DontDoIt.instance.dataPath.resolve(CONFIG_FILE_NAME),
         CONFIG_FILE_NAME,
-        DoNotDoIt.LOGGER
+        DontDoIt.LOGGER
     )
 
     val TEAM_NAME: ParserMapConfigData<NamedTextColor, String> = CONFIG.defineConfig(ParserMapConfigData(

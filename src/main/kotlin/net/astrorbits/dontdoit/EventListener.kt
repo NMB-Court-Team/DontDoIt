@@ -1,7 +1,7 @@
-package net.astrorbits.doNotDoIt
+package net.astrorbits.dontdoit
 
-import net.astrorbits.doNotDoIt.system.GameStateManager
-import net.astrorbits.doNotDoIt.team.TeamManager
+import net.astrorbits.dontdoit.system.GameStateManager
+import net.astrorbits.dontdoit.team.TeamManager
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.server.ServerLoadEvent
@@ -11,7 +11,7 @@ object EventListener : Listener {
     fun onServerLoad(event: ServerLoadEvent) {
         if (event.type == ServerLoadEvent.LoadType.STARTUP) {
             GameStateManager.init()
-            TeamManager.init(DoNotDoIt.server)
+            TeamManager.init(DontDoIt.server)
         }
     }
 }

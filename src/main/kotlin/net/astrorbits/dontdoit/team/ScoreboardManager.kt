@@ -1,11 +1,11 @@
-package net.astrorbits.doNotDoIt.team
+package net.astrorbits.dontdoit.team
 
-import net.astrorbits.doNotDoIt.DoNotDoIt
+import net.astrorbits.dontdoit.DontDoIt
 import net.kyori.adventure.text.Component
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scoreboard.DisplaySlot
 
-class ScoreboardManager(val plugin: DoNotDoIt) {
+class ScoreboardManager(val plugin: DontDoIt) {
     val tick = plugin.server.scheduler.scheduleSyncRepeatingTask(
         plugin,
         Runnable {

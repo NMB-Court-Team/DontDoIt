@@ -1,4 +1,4 @@
-package net.astrorbits.doNotDoIt.criteria
+package net.astrorbits.dontdoit.criteria
 
 import com.google.gson.JsonObject
 import org.bukkit.Material

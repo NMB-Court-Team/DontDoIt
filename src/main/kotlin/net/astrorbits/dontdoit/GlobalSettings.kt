@@ -1,10 +1,10 @@
-package net.astrorbits.doNotDoIt
+package net.astrorbits.dontdoit
 
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.dialog.Dialog
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
-import net.astrorbits.doNotDoIt.system.DiamondBehavior
+import net.astrorbits.dontdoit.system.DiamondBehavior
 import net.astrorbits.lib.text.TextHelper.toMessage
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
