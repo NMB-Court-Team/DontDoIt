@@ -1,0 +1,35 @@
+package net.astrorbits.dontdoit.criteria
+
+import org.bukkit.Material
+import org.bukkit.entity.EntityType
+import org.bukkit.entity.Player
+import org.bukkit.event.EventHandler
+import org.bukkit.event.Listener
+import org.bukkit.event.entity.EntityPickupItemEvent
+
+class PickUpItemCriteria : Criteria(), Listener {
+    override val type: CriteriaType = CriteriaType.PICK_UP_ITEM
+    lateinit var itemTypes: Set<Material>
+    var isWildcard: Boolean = false
+
+    override fun readData(data: Map<String, String>) {
+        super.readData(data)
+        data.setItemTypes(ITEM_TYPES_KEY) { itemTypes, isWildcard ->
+            this.itemTypes = itemTypes
+            this.isWildcard = isWildcard
+        }
+    }
+
+    @EventHandler
+    fun onPlayerPickUpItem(event: EntityPickupItemEvent) {
+        if (event.entity.type != EntityType.PLAYER) return
+        val item = event.item.itemStack
+        if (isWildcard || item.type in itemTypes) {
+            trigger(event.entity as Player)
+        }
+    }
+
+    companion object {
+        const val ITEM_TYPES_KEY = "item"
+    }
+}

@@ -32,9 +32,7 @@ object CriteriaManager {
 
     fun trigger(criteria: Criteria, teamData: TeamData) {
         val teamCriteria = teamData.criteria ?: return
-        if (teamCriteria === criteria) {
-            criteria.onUnbind(teamData)
-        }
+        //TODO
     }
 
     fun init() {
@@ -58,9 +56,9 @@ object CriteriaManager {
         register("walk", ::WalkCriteria)
         register("break_block", ::BreakBlockCriteria)
         register("kill_entity", ::KillEntityCriteria)
-        register("pick_up", ::PickUpCriteria)
-        register("stand_on", ::StandOnCriteria)
-
+        register("pick_up_item", ::PickUpItemCriteria)
+        register("standing_on_block", ::StandingOnBlockCriteria)
+        register("heightmap_matching_pos", ::HeightmapMatchingPosCriteria)
 
 //        register("break_block", ::BreakBlockCriteria)
 //        register("place_block", ::EmptyCriteria)

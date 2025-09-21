@@ -15,6 +15,7 @@ class WalkCriteria : Criteria() {
     private val playerOnBindWalkUnderWaterDistance: MutableMap<UUID, Int> = mutableMapOf()
 
     override fun onBind(teamData: TeamData) {
+        super.onBind(teamData)
         for (player in teamData.members) {
             val uuid = player.uniqueId
             playerOnBindWalkDistance[uuid] = player.getStatistic(Statistic.WALK_ONE_CM)
@@ -24,6 +25,7 @@ class WalkCriteria : Criteria() {
     }
 
     override fun onUnbind(teamData: TeamData) {
+        super.onUnbind(teamData)
         for (player in teamData.members) {
             val uuid = player.uniqueId
             playerOnBindWalkDistance.remove(uuid)

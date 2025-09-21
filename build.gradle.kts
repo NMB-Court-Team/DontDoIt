@@ -16,6 +16,7 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
+    compileOnly(files("libs/paper-1.21.8.jar"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 }
 

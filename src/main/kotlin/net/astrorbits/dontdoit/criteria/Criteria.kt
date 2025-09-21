@@ -1,16 +1,21 @@
 package net.astrorbits.dontdoit.criteria
 
+import io.papermc.paper.registry.RegistryAccess
+import io.papermc.paper.registry.RegistryKey
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList
 import net.astrorbits.dontdoit.team.TeamData
+import net.astrorbits.lib.Identifier
 import net.astrorbits.lib.range.DoubleRange
 import net.astrorbits.lib.range.FloatRange
 import net.astrorbits.lib.range.IntRange
 import net.astrorbits.lib.text.TextHelper
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
+import org.bukkit.Material
+import org.bukkit.damage.DamageType
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
-import java.util.ArrayList
-import java.util.UUID
+import java.util.*
 
 abstract class Criteria {
     abstract val type: CriteriaType
@@ -221,8 +226,152 @@ abstract class Criteria {
 
     protected data class CsvEntry(val content: String, val isTag: Boolean, val isReversed: Boolean)
 
+    protected fun Map<String, String>.setBlockTypes(
+        key: String,
+        absentBehavior: AbsentBehavior = AbsentBehavior.WILDCARD,
+        fieldSetter: (blockTypes: Set<Material>, isWildcard: Boolean) -> Unit
+    ) {
+        val entries = getCsvEntries(key, absentBehavior)
+
+        val result = HashSet<Material>()
+        for ((block, isTag, isReversed) in entries) {
+            if (isReversed && result.isEmpty()) {
+                result.addAll(Material.entries.filter { it.isBlock })
+            }
+            val blocks = HashSet<Material>()
+            if (isTag) {
+                val tagKey = Identifier.of(block).toKey()
+                val tag = RegistryAccess.registryAccess().getRegistry(RegistryKey.BLOCK).tags.firstOrNull { it.tagKey().key() == tagKey }
+                    ?: throw InvalidCriteriaException(this@Criteria, "Invalid block tag: $block")
+                blocks.addAll(tag.values().map { Material.matchMaterial(it.asString())!! })
+            } else {
+                val material = Material.matchMaterial(block)
+                if (material == null || !material.isBlock) throw InvalidCriteriaException(this@Criteria, "Invalid block: $block")
+                blocks.add(material)
+            }
+            if (isReversed) {
+                result.removeAll(blocks)
+            } else {
+                result.addAll(blocks)
+            }
+        }
+        fieldSetter(result, entries.isWildcard)
+    }
+
+    protected fun Map<String, String>.setItemTypes(
+        key: String,
+        absentBehavior: AbsentBehavior = AbsentBehavior.WILDCARD,
+        fieldSetter: (itemTypes: Set<Material>, isWildcard: Boolean) -> Unit
+    ) {
+        val entries = getCsvEntries(key, absentBehavior)
+
+        val result = HashSet<Material>()
+        for ((item, isTag, isReversed) in entries) {
+            if (isReversed && result.isEmpty()) {
+                result.addAll(Material.entries.filter { it.isBlock })
+            }
+            val items = HashSet<Material>()
+            if (isTag) {
+                val tagKey = Identifier.of(item).toKey()
+                val tag = RegistryAccess.registryAccess().getRegistry(RegistryKey.ITEM).tags.firstOrNull { it.tagKey().key() == tagKey }
+                    ?: throw InvalidCriteriaException(this@Criteria, "Invalid item tag: $item")
+                items.addAll(tag.values().map { Material.matchMaterial(it.asString())!! })
+            } else {
+                val material = Material.matchMaterial(item)
+                if (material == null || !material.isItem) throw InvalidCriteriaException(this@Criteria, "Invalid item: $item")
+                items.add(material)
+            }
+            if (isReversed) {
+                result.removeAll(items)
+            } else {
+                result.addAll(items)
+            }
+        }
+        fieldSetter(result, entries.isWildcard)
+    }
+
+    protected fun Map<String, String>.setEntityTypes(
+        key: String,
+        absentBehavior: AbsentBehavior = AbsentBehavior.WILDCARD,
+        fieldSetter: (entityTypes: Set<EntityType>, isWildcard: Boolean) -> Unit
+    ) {
+        val entries = getCsvEntries(key, absentBehavior)
+
+        val result = HashSet<EntityType>()
+        for ((entity, isTag, isReversed) in entries) {
+            if (isReversed && result.isEmpty()) {
+                result.addAll(EntityType.entries)
+            }
+            val entityId = Identifier.of(entity)
+            if (!entityId.isVanilla()) throw InvalidCriteriaException(this@Criteria, "Non-vanilla entities are not supported")
+            val entities = HashSet<EntityType>()
+            if (isTag) {
+                val tagKey = entityId.toKey()
+                val tag = RegistryAccess.registryAccess().getRegistry(RegistryKey.ENTITY_TYPE).tags.firstOrNull { it.tagKey().key() == tagKey }
+                    ?: throw InvalidCriteriaException(this@Criteria, "Invalid entity tag: $entity")
+                entities.addAll(tag.values().map { EntityType.fromName(it.value())!! })
+            } else {
+                val entityType = EntityType.fromName(entityId.path) ?: throw InvalidCriteriaException(this@Criteria, "Invalid entity: $entity")
+                entities.add(entityType)
+            }
+            if (isReversed) {
+                result.removeAll(entities)
+            } else {
+                result.addAll(entities)
+            }
+        }
+        fieldSetter(result, entries.isWildcard)
+    }
+
+    protected fun Map<String, String>.setDamageTypes(
+        key: String,
+        absentBehavior: AbsentBehavior = AbsentBehavior.WILDCARD,
+        fieldSetter: (entityTypes: Set<DamageType>, isWildcard: Boolean) -> Unit
+    ) {
+        val entries = getCsvEntries(key, absentBehavior)
+
+        val result = HashSet<DamageType>()
+        for ((damageType, isTag, isReversed) in entries) {
+            if (isReversed && result.isEmpty()) {
+                result.addAll(ALL_DAMAGE_TYPES)
+            }
+            val damageTypeId = Identifier.of(damageType)
+            if (!damageTypeId.isVanilla()) throw InvalidCriteriaException(this@Criteria, "Non-vanilla damage types are not supported")
+            val damageTypes = HashSet<DamageType>()
+            val damageTypeRegistry = RegistryAccess.registryAccess().getRegistry(RegistryKey.DAMAGE_TYPE)
+            if (isTag) {
+                val tagKey = damageTypeId.toKey()
+                val tag = damageTypeRegistry.tags.firstOrNull { it.tagKey().key() == tagKey }
+                    ?: throw InvalidCriteriaException(this@Criteria, "Invalid damage type tag: $damageType")
+                damageTypes.addAll(tag.values().map { RegistryAccess.registryAccess().getRegistry(RegistryKey.DAMAGE_TYPE).getOrThrow(it) })
+            } else {
+                val loadedDamageType = damageTypeRegistry.get(damageTypeId.toKey())
+                    ?: throw InvalidCriteriaException(this@Criteria, "Invalid damage type: $damageType")
+                damageTypes.add(loadedDamageType)
+            }
+            if (isReversed) {
+                result.removeAll(damageTypes)
+            } else {
+                result.addAll(damageTypes)
+            }
+        }
+        fieldSetter(result, entries.isWildcard)
+    }
+
     companion object {
         const val NAME_KEY = "name"
         const val EASY_TO_TRIGGER = "easy_to_trigger"
+
+        val ALL_DAMAGE_TYPES: Set<DamageType> = setOf(
+            DamageType.ARROW, DamageType.BAD_RESPAWN_POINT, DamageType.CACTUS, DamageType.CAMPFIRE, DamageType.CRAMMING, DamageType.DRAGON_BREATH,
+            DamageType.DROWN, DamageType.DRY_OUT, DamageType.ENDER_PEARL, DamageType.EXPLOSION, DamageType.FALL, DamageType.FALLING_ANVIL,
+            DamageType.FALLING_BLOCK, DamageType.FALLING_STALACTITE, DamageType.FIREBALL, DamageType.FIREWORKS, DamageType.FLY_INTO_WALL, DamageType.FREEZE,
+            DamageType.GENERIC, DamageType.GENERIC_KILL, DamageType.HOT_FLOOR, DamageType.IN_FIRE, DamageType.IN_WALL, DamageType.INDIRECT_MAGIC,
+            DamageType.LAVA, DamageType.LIGHTNING_BOLT, DamageType.MACE_SMASH, DamageType.MAGIC, DamageType.MOB_ATTACK, DamageType.MOB_ATTACK_NO_AGGRO,
+            DamageType.MOB_PROJECTILE, DamageType.ON_FIRE, DamageType.OUT_OF_WORLD, DamageType.OUTSIDE_BORDER, DamageType.PLAYER_ATTACK,
+            DamageType.PLAYER_EXPLOSION, DamageType.SONIC_BOOM, DamageType.SPIT, DamageType.STALAGMITE, DamageType.STARVE, DamageType.STING,
+            DamageType.SWEET_BERRY_BUSH, DamageType.THORNS, DamageType.THROWN, DamageType.TRIDENT, DamageType.UNATTRIBUTED_FIREBALL, DamageType.WIND_CHARGE,
+            DamageType.WITHER, DamageType.WITHER_SKULL
+        )
     }
 }

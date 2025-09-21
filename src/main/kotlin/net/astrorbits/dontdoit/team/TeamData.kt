@@ -28,7 +28,9 @@ class TeamData(val color: NamedTextColor, val team: Team) {
     var criteria: Criteria? = null
         set(value) {
             TeamManager.updateSidebars()
+            field?.onUnbind(this)
             field = value
+            field?.onBind(this)
         }
 
     val sidebarDisplay: SidebarDisplay = SidebarDisplay()

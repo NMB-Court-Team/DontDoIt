@@ -6,8 +6,18 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageEvent
 
-class KillEntityCriteria : EntityCriteria(), Listener {
+class KillEntityCriteria : Criteria(), Listener {
     override val type = CriteriaType.KILL_ENTITY
+    lateinit var entityTypes: Set<EntityType>
+    var isWildcard: Boolean = false
+
+    override fun readData(data: Map<String, String>) {
+        super.readData(data)
+        data.setEntityTypes(ENTITY_TYPES_KEY) { entityTypes, isWildcard ->
+            this.entityTypes = entityTypes
+            this.isWildcard = isWildcard
+        }
+    }
 
     @EventHandler
     fun onEntityBeingDamaged(event: EntityDamageEvent) {
@@ -17,5 +27,9 @@ class KillEntityCriteria : EntityCriteria(), Listener {
         if (isWildcard || entity.type in entityTypes) {
             trigger(player as Player)
         }
+    }
+
+    companion object {
+        const val ENTITY_TYPES_KEY = "entity"
     }
 }
