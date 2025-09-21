@@ -2,6 +2,7 @@ package net.astrorbits.dontdoit.criteria
 
 import it.unimi.dsi.fastutil.objects.Object2ReferenceMap
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap
+import it.unimi.dsi.fastutil.objects.ReferenceArrayList
 import it.unimi.dsi.fastutil.objects.ReferenceList
 import net.astrorbits.dontdoit.DontDoIt
 import net.astrorbits.dontdoit.team.TeamData
@@ -18,8 +19,8 @@ object CriteriaManager {
     lateinit var criteriaConfig: Config
     lateinit var allCriteriaConfigData: CriteriaConfigData
 
-    private val _allCriteriaTypes: Object2ReferenceMap<String, Supplier<Criteria>> = Object2ReferenceOpenHashMap()
-    private val _allCriteria: ReferenceList<Criteria> = ReferenceList.of()
+    private val _allCriteriaTypes: Object2ReferenceOpenHashMap<String, Supplier<Criteria>> = Object2ReferenceOpenHashMap()
+    private val _allCriteria: ReferenceArrayList<Criteria> = ReferenceArrayList()
 
     val allCriteriaTypes: Map<String, Supplier<Criteria>>
         get() = _allCriteriaTypes

@@ -1,7 +1,7 @@
 package net.astrorbits.dontdoit.criteria
 
+import it.unimi.dsi.fastutil.objects.ReferenceArrayList
 import net.astrorbits.dontdoit.team.TeamData
-import net.astrorbits.dontdoit.team.TeamManager
 import net.astrorbits.lib.text.TextHelper
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
@@ -11,7 +11,7 @@ import java.util.UUID
 abstract class Criteria {
     abstract val type: CriteriaType
     lateinit var displayName: Component
-    val holders: MutableList<TeamData> = mutableListOf()
+    val holders: ReferenceArrayList<TeamData> = ReferenceArrayList()
 
     /**
      * 当队伍绑定了该词条时调用
@@ -45,7 +45,9 @@ abstract class Criteria {
     open fun tick(teamData: TeamData) { }
 
     fun trigger(player: Player) {
-        CriteriaManager.trigger(this, player)
+        if (holders.any { player in it }) {
+            CriteriaManager.trigger(this, player)
+        }
     }
 
     fun trigger(playerUuid: UUID) {
@@ -54,7 +56,9 @@ abstract class Criteria {
     }
 
     fun trigger(teamData: TeamData) {
-        CriteriaManager.trigger(this, teamData)
+        if (teamData in holders) {
+            CriteriaManager.trigger(this, teamData)
+        }
     }
 
     /**
