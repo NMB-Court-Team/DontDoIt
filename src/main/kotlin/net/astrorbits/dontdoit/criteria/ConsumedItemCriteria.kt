@@ -14,7 +14,7 @@ class ConsumedItemCriteria : Criteria(), Listener {
 
     override fun readData(data: Map<String, String>) {
         super.readData(data)
-        val itemContent = data["item"] ?: throw InvalidCriteriaException(this, "Missing item key")
+        val itemContent = data[ITEM_TYPES_KEY] ?: throw InvalidCriteriaException(this, "Missing key '$ITEM_TYPES_KEY'")
         val items = itemContent.replace("\n", "").split(",").map { it.trim() }
         val result = ArrayList<Material>()
         for (item in items) {
@@ -38,5 +38,9 @@ class ConsumedItemCriteria : Criteria(), Listener {
         if (item.type in itemTypes) {
             trigger(event.player)
         }
+    }
+
+    companion object {
+        const val ITEM_TYPES_KEY = "item"
     }
 }

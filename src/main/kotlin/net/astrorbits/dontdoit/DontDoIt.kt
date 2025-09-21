@@ -23,7 +23,7 @@ class DontDoIt : JavaPlugin() {
     }
 
     override fun onDisable() {
-        stateManager.pause()
+        stateManager.onDisable()
     }
 
     companion object {

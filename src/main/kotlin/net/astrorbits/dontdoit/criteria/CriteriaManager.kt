@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.objects.Object2ReferenceMap
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap
 import it.unimi.dsi.fastutil.objects.ReferenceList
 import net.astrorbits.dontdoit.DontDoIt
+import net.astrorbits.dontdoit.team.TeamData
 import net.astrorbits.dontdoit.team.TeamManager
 import net.astrorbits.lib.config.Config
 import org.bukkit.entity.Player
@@ -26,10 +27,14 @@ object CriteriaManager {
         get() = _allCriteria
 
     fun trigger(criteria: Criteria, player: Player) {
-        val team = TeamManager.getTeamOf(player) ?: return
-        val teamCriteria = team.criteria ?: return
+        val teamData = TeamManager.getTeamOf(player) ?: return
+        trigger(criteria, teamData)
+    }
+
+    fun trigger(criteria: Criteria, teamData: TeamData) {
+        val teamCriteria = teamData.criteria ?: return
         if (teamCriteria === criteria) {
-            //TODO
+            criteria.onUnbind(teamData)
         }
     }
 

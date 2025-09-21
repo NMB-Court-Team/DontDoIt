@@ -2,6 +2,7 @@ package net.astrorbits.dontdoit.team
 
 import com.google.common.collect.BiMap
 import net.astrorbits.dontdoit.Configs
+import net.astrorbits.dontdoit.system.GameState
 import net.astrorbits.lib.collection.CollectionHelper.toBiMap
 import net.astrorbits.lib.text.TextHelper.append
 import net.kyori.adventure.text.Component
@@ -11,7 +12,12 @@ import org.bukkit.entity.Player
 import org.bukkit.scoreboard.Scoreboard
 
 object TeamManager {
-    val TEAM_COLORS: BiMap<String, NamedTextColor> = NamedTextColor.NAMES.keyToValue().filterValues { it != NamedTextColor.GRAY }.toBiMap()
+    val TEAM_COLORS: BiMap<String, NamedTextColor> = NamedTextColor.NAMES.keyToValue().filterValues {
+        when (it) {
+            NamedTextColor.WHITE, NamedTextColor.GRAY, NamedTextColor.DARK_GRAY, NamedTextColor.BLACK -> false
+            else -> true
+        }
+    }.toBiMap()
 
     lateinit var scoreboard: Scoreboard
     private val _teams: MutableList<TeamData> = mutableListOf()
@@ -36,12 +42,20 @@ object TeamManager {
     fun updateSidebars() {
         val teams = this.teams
         for (teamData in teams) {
-            val otherTeams = teams.filter { it != teamData }
+            val otherTeams = teams.filter { it !== teamData }
             teamData.updateSidebar(otherTeams)
         }
     }
 
     fun getTeamOf(player: Player): TeamData? {
         return _teams.firstOrNull { player in it }
+    }
+
+    fun tick(currentState: GameState) {
+        if (currentState == GameState.RUNNING) {
+            for (team in teams) {
+                team.criteria?.tick(team)
+            }
+        }
     }
 }

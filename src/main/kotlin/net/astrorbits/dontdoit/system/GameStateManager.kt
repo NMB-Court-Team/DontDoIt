@@ -1,6 +1,7 @@
 package net.astrorbits.dontdoit.system
 
 import net.astrorbits.dontdoit.DontDoIt
+import net.astrorbits.dontdoit.team.TeamManager
 import net.astrorbits.dontdoit.team.TeamManager.teams
 import net.astrorbits.lib.task.TaskBuilder
 import net.astrorbits.lib.task.TaskType
@@ -12,7 +13,8 @@ object GameStateManager {
     private val LOGGER = DontDoIt.LOGGER
 
     var state: GameState = GameState.PAUSED
-    private lateinit var tickTask: BukkitTask
+        private set
+    private var tickTask: BukkitTask? = null
 
     fun init() {
         tickTask = TaskBuilder(DontDoIt.instance, TaskType.Tick)
@@ -43,7 +45,12 @@ object GameStateManager {
     }
 
     fun tick() {
+        TeamManager.tick(state)
+    }
 
+    fun onDisable() {
+        tickTask?.cancel()
+        tickTask = null
     }
 
     fun isRunning(): Boolean = state == GameState.RUNNING

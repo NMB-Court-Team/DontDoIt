@@ -2,6 +2,9 @@ package net.astrorbits.dontdoit
 
 import net.astrorbits.dontdoit.team.TeamManager.TEAM_COLORS
 import net.astrorbits.lib.config.*
+import net.astrorbits.lib.text.TextHelper
+import net.astrorbits.lib.text.TextHelper.bold
+import net.astrorbits.lib.text.TextHelper.shadowColor
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 
@@ -15,31 +18,31 @@ object Configs {
         DontDoIt.LOGGER
     )
 
-    val TEAM_NAME: ParserMapConfigData<NamedTextColor, String> = CONFIG.defineConfig(ParserMapConfigData(
+    val TEAM_NAME: ParserMapConfigData<NamedTextColor, Component> = CONFIG.defineConfig(ParserMapConfigData(
         "team_name",
-        TEAM_COLORS.inverse(),
+        TEAM_COLORS.inverse().mapValues { (color, name) -> Component.empty().append(Component.text(name).color(color).bold().shadowColor(0xa0000000.toInt())) },
         { TEAM_COLORS[it]!! },
-        { it }
+        { TextHelper.parseMiniMessage(it) }
     ))
     val SIDEBAR_TITLE: TextConfigData = CONFIG.defineConfig(TextConfigData(
         "sidebar_title",
-        "<gradient:#ff0000:#EF903E>※ <bold>禁止事项</bold> ※"
+        "<shadow:#a0000000><gradient:#ff0000:#EF903E>※ <bold>禁止事项</bold> ※"
     ))
     val SIDEBAR_ENTRY_NAME: TextConfigData = CONFIG.defineConfig(TextConfigData(
         "sidebar_entry.name",
-        "<bold>{team_name}</bold><red>[❤{life}]"
+        "{team_name}<white><shadow:#a0aa0000>[<red>❤</red><white>{life:%02d}]"
     ))
     val SIDEBAR_ENTRY_NUMBER: TextConfigData = CONFIG.defineConfig(TextConfigData(
         "sidebar_entry.number",
-        "<white>{criteria}"
+        "<white><shadow:#a0000000>{criteria}"
     ))
     val SIDEBAR_ENTRY_DEAD_NAME: TextConfigData = CONFIG.defineConfig(TextConfigData(
         "sidebar_entry_dead.name",
-        "<strikethrough><bold>{team_name}</bold><gray>[\uD83D\uDC9400]</strikethrough>"
+        "<strikethrough>{team_name}<gray><shadow:#a0000000>[\uD83D\uDC9400]"
     ))
     val SIDEBAR_ENTRY_DEAD_NUMBER: TextConfigData = CONFIG.defineConfig(TextConfigData(
         "sidebar_entry_dead.number",
-        "<gray>已淘汰"
+        "<gray><shadow:#a0000000>已淘汰"
     ))
 
     val DEFAULT_LIFE_COUNT: IntConfigData = CONFIG.defineConfig(IntConfigData(
@@ -48,8 +51,7 @@ object Configs {
     ))
 
     fun getTeamName(color: NamedTextColor): Component? {
-        val teamNameString = TEAM_NAME.get()[color] ?: return null
-        return Component.text(teamNameString).color(color)
+        return TEAM_NAME.get()[color]
     }
 
     fun init() {
