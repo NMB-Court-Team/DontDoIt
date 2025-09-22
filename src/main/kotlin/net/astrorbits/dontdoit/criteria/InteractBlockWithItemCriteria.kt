@@ -38,10 +38,10 @@ class InteractBlockWithItemCriteria : Criteria(), Listener, BlockCriteria, ItemC
     fun onPlaceBlock(event: BlockPlaceEvent) {
         val block = event.block
         val item = event.itemInHand
-        if (isBlockWildcard || block.type in blockTypes) {
-            if (isItemWildcard || (item.type in itemTypes)){
-                trigger(event.player)
-            }
+        if ((isBlockWildcard || block.type in blockTypes) &&
+            (isItemWildcard || (item.type in itemTypes))
+        ) {
+            trigger(event.player)
         }
     }
 

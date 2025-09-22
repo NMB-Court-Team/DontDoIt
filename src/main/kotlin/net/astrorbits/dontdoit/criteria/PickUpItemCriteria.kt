@@ -27,10 +27,10 @@ class PickUpItemCriteria : Criteria(), Listener, ItemCriteria {
 
     @EventHandler
     fun onPlayerPickUpItem(event: EntityPickupItemEvent) {
-        if (event.entity.type != EntityType.PLAYER) return
+        val entity = event.entity as? Player ?: return
         val item = event.item.itemStack
         if (isWildcard || item.type in itemTypes) {
-            trigger(event.entity as Player)
+            trigger(entity)
         }
     }
 

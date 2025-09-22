@@ -9,9 +9,9 @@ import org.bukkit.event.Listener
 class DistanceToEntityCriteria : Criteria(), Listener, EntityCriteria {
     override val type: CriteriaType = CriteriaType.DISTANCE_TO_ENTITY
     lateinit var entityTypes: Set<EntityType>
-    var isEntityTypeWildcard: Boolean = false
-    var distanceRange: DoubleRange = DoubleRange.INFINITY
-    lateinit var squaredRange: DoubleRange
+    var isWildcard: Boolean = false
+    var distanceRangeSquared: DoubleRange = DoubleRange.INFINITY
+    var rangeReversed: Boolean = false
 
 
     override fun getCandidateEntityTypes(): Set<EntityType> {
@@ -22,17 +22,17 @@ class DistanceToEntityCriteria : Criteria(), Listener, EntityCriteria {
         super.readData(data)
         data.setEntityTypes(ENTITY_TYPES_KEY) { entityTypes, isWildcard ->
             this.entityTypes = entityTypes
-            this.isEntityTypeWildcard = isWildcard
+            this.isWildcard = isWildcard
         }
-        data.setDoubleRangeField(DISTANCE_KEY, true) { distanceRange = it }
-        squaredRange = DoubleRange.of(distanceRange.min * distanceRange.min, distanceRange.max * distanceRange.max)
+        data.setDoubleRangeField(DISTANCE_RANGE_KEY, true) { distanceRangeSquared = DoubleRange(it.min * it.min, it.max * it.max) }
+        data.setBoolField(RANGE_REVERSED_KEY, true) { rangeReversed = it }
     }
 
     override fun tick(teamData: TeamData) {
         for (player in teamData.members) {
-            if(player.world.entities.any { it != player
-            && (isEntityTypeWildcard || it.type in entityTypes)
-            && player.location.distanceSquared(it.location) in squaredRange }){//TODO 有点抽象
+            val world = player.world
+            val entities = world.entities.filter { it.uniqueId != player.uniqueId && (isWildcard || it.type in entityTypes) }
+            if (entities.any { (player.location.distanceSquared(it.location) in distanceRangeSquared) xor rangeReversed }) {
                 trigger(player)
                 break
             }
@@ -41,6 +41,7 @@ class DistanceToEntityCriteria : Criteria(), Listener, EntityCriteria {
 
     companion object {
         const val ENTITY_TYPES_KEY = "entity"
-        const val DISTANCE_KEY = "distance"
+        const val DISTANCE_RANGE_KEY = "distance"
+        const val RANGE_REVERSED_KEY = "reversed"
     }
 }

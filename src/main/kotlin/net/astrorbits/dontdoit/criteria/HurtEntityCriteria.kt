@@ -17,6 +17,7 @@ class HurtEntityCriteria : Criteria(), Listener, EntityCriteria, DamageTypeCrite
     lateinit var damageTypes: Set<DamageType>
     var isDamageTypeWildcard: Boolean = false
     var damageAmountRange: DoubleRange = DoubleRange.INFINITY
+    var rangeReversed: Boolean = false
 
     override fun getCandidateEntityTypes(): Set<EntityType> {
         return entityTypes
@@ -37,6 +38,7 @@ class HurtEntityCriteria : Criteria(), Listener, EntityCriteria, DamageTypeCrite
             this.isDamageTypeWildcard = isWildcard
         }
         data.setDoubleRangeField(DAMAGE_AMOUNT_RANGE_KEY, true) { damageAmountRange = it }
+        data.setBoolField(RANGE_REVERSED_KEY, true) { rangeReversed = it }
     }
 
     @EventHandler
@@ -46,7 +48,7 @@ class HurtEntityCriteria : Criteria(), Listener, EntityCriteria, DamageTypeCrite
         val damageType = event.damageSource.damageType
         if ((isEntityTypeWildcard || entity.type in entityTypes) &&
             (isDamageTypeWildcard || damageType in damageTypes) &&
-            event.damage in damageAmountRange
+            ((event.damage in damageAmountRange) xor rangeReversed)
         ) {
             trigger(player)
         }
@@ -56,5 +58,6 @@ class HurtEntityCriteria : Criteria(), Listener, EntityCriteria, DamageTypeCrite
         const val ENTITY_TYPES_KEY = "entity"
         const val DAMAGE_TYPES_KEY = "damage_type"
         const val DAMAGE_AMOUNT_RANGE_KEY = "amount"
+        const val RANGE_REVERSED_KEY = "reversed"
     }
 }

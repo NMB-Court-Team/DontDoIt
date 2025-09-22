@@ -19,7 +19,7 @@ import java.util.*
 
 abstract class Criteria {
     abstract val type: CriteriaType
-    lateinit var triggerDifficulty: TriggerDifficulty
+    var triggerDifficulty: TriggerDifficulty = TriggerDifficulty.NORMAL
     lateinit var displayName: Component
     val holders: ReferenceArrayList<TeamData> = ReferenceArrayList()
 

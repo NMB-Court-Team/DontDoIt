@@ -11,7 +11,7 @@ criteria:
       # trigger_definitely  几乎一定会触发的自爆词条，比如：滞空，蹦跶
       # very_easy           被其他玩家干扰而自爆的词条，比如：受到伤害，死亡
       # easy                比较容易触发的词条，比如：头顶无方块遮挡，复活
-      # normal        <默认> 常规词条，比如：脚下是安山岩，吃腐肉
+      # normal      <默认值> 常规词条，比如：脚下是安山岩，吃腐肉
       # hard                比较难触发的词条，比如：被僵尸杀死
       # very_hard           非常难触发的词条，比如：淹死
       # impossible          几乎不可能触发的词条，比如：哈哈我想不出来，能写出不可能触发的词条的也是神人了
@@ -82,12 +82,14 @@ criteria:
       # <max>为空时代表大于等于<min>
       # 若都为空，则代表可以为任意值
       amount: ..
+      reversed: false
   # 一次性收到来自entity的amount点damage_type类型的伤害时触发
   hurt_by_entity:
     - name: 受到伤害
       entity: *
       damage_type: *
       amount: ..
+      reversed: false
   # 以damage_type类型的伤害杀死entity中包含的实体时触发
   kill_entity:
     - name: 杀死生物
@@ -148,6 +150,8 @@ criteria:
       entity: player
       # 距离范围，可以是浮点数
       distance: ..1
+      # 若为true则反转范围，例如 a..b 代表 a <= var && var <= b ，而反转了之后代表 a < var || var > b
+      reversed: false
     - name: 离所有玩家15格以上
       entity: player
       distance: 15..
@@ -156,8 +160,10 @@ criteria:
     - name: 抬头
       # 偏航角范围，使用角度制，可以是浮点数，留空时使用".."，即任意值
       yaw: ..
+      yaw_reversed: false
       # 俯仰角范围，使用角度制，可以是浮点数
       pitch: ..-60
+      pitch_reversed: false
     - name: 低头
       pitch: 60..
   # 主手拿着mainhand物品，且副手拿着offhand物品时触发
@@ -201,7 +207,9 @@ criteria:
     - name: 完全暴露于空气中
       block: "#air"
     - name: 自闭
-      block: "!#air"
+      block: "#air"
+      # 注：此处的反转行为代表周围的所有方块都不是block
+      reversed: true
   # 物品栏内有至少1个item物品或没有item物品时触发，具体取决于reversed
   inventory_containing_item:
     - name: 包里有铁锭
@@ -220,10 +228,26 @@ criteria:
   # 玩家所在位置的heightmap高度图对应的最高位置与玩家所在位置相同或不同时触发，具体取决于reversed
   heightmap_matching_pos:
     - name: 头顶无方块遮挡
-      # 高度图，只能指定单个，具体可用参数参考命令/execute的positioned over <heightmap>子命令的<heightmap>参数
+      # 高度图，只能指定单个，具体可用参数参考命令/execute 的 positioned over <heightmap> 子命令的<heightmap>参数
       heightmap: world_surface
     - name: 头顶有方块遮挡
       heightmap: world_surface
       # 若为false，则位置相同时触发
       # 若为true，则位置不同时触发
       reversed: true
+  # 在time时间范围内复活时触发
+  respawn_time:
+    - name: 死亡后三秒内复活
+      # 检查模式，可以是respawn_delay或stay_death_time，不可以留空
+      # 若为respawn_delay，则在玩家点击复活时检查距离死亡的时间，若时间在time给定的范围内则触发
+      # 若为stay_death_time，则当玩家在死亡界面停留的时间在time给定的范围内时触发
+      mode: respawn_delay
+      # 时间单位为游戏刻(ticks)，是一个整数范围，留空时使用".."
+      time: 3..
+      # 反转时间范围
+      reversed: true
+    - name: 死亡后三秒内不复活
+      mode: stay_death_time
+      time: 3..
+    - name: 复活
+      mode: respawn_delay

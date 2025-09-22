@@ -8,8 +8,8 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
 
-class KillByEntityCriteria : Criteria(), Listener, EntityCriteria, DamageTypeCriteria {
-    override val type = CriteriaType.KILL_BY_ENTITY
+class KilledByEntityCriteria : Criteria(), Listener, EntityCriteria, DamageTypeCriteria {
+    override val type = CriteriaType.KILLED_BY_ENTITY
     lateinit var entityTypes: Set<EntityType>
     var isEntityTypeWildcard: Boolean = false
     lateinit var damageTypes: Set<DamageType>
@@ -38,9 +38,9 @@ class KillByEntityCriteria : Criteria(), Listener, EntityCriteria, DamageTypeCri
     @EventHandler
     fun onPlayerDeath(event: PlayerDeathEvent) {
         val player = event.player
-        val entity = event.damageSource.causingEntity
+        val entity = event.damageSource.causingEntity ?: return
         val damageType = event.damageSource.damageType
-        if ((isEntityTypeWildcard || entity?.type in entityTypes) &&
+        if ((isEntityTypeWildcard || entity.type in entityTypes) &&
             (isDamageTypeWildcard || damageType in damageTypes)
         ) {
             trigger(player)

@@ -12,14 +12,6 @@ class InventoryContainingItemCriteria : Criteria(), ItemCriteria {
     override fun getCandidateItemTypes(): Set<Material> {
         return itemTypes
     }
-//
-//    override fun onBind(teamData: TeamData) {
-//        super.onBind(teamData)
-//    }
-//
-//    override fun onUnbind(teamData: TeamData) {
-//        super.onUnbind(teamData)
-//    }
 
     override fun tick(teamData: TeamData) {
         for (player in teamData.members) {

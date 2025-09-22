@@ -26,7 +26,7 @@ class DropItemCriteria : Criteria(), Listener, ItemCriteria {
     @EventHandler
     fun onCraftItem(event: PlayerDropItemEvent) {
         val item = event.itemDrop.itemStack
-        if (isWildcard || (item.type in itemTypes)) {
+        if (isWildcard || item.type in itemTypes) {
             trigger(event.player)
         }
     }

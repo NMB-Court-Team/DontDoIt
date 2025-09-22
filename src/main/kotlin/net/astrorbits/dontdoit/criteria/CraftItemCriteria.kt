@@ -27,8 +27,9 @@ class CraftItemCriteria : Criteria(), Listener, ItemCriteria {
     @EventHandler
     fun onCraftItem(event: CraftItemEvent) {
         val item = event.recipe.result
-        if (isWildcard || (item.type in itemTypes)) {
-            trigger(event.whoClicked as Player)
+        val clicker = event.whoClicked
+        if (clicker is Player && (isWildcard || item.type in itemTypes)) {
+            trigger(clicker)
         }
     }
 
