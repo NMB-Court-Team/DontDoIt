@@ -1,11 +1,11 @@
 package net.astrorbits.dontdoit.criteria
 
-import net.astrorbits.dontdoit.criteria.system.CriteriaType
-import net.astrorbits.dontdoit.criteria.type.ItemCriteria
+import net.astrorbits.dontdoit.criteria.helper.CriteriaType
+import net.astrorbits.dontdoit.criteria.inspect.ItemInspectCandidate
 import net.astrorbits.dontdoit.team.TeamData
 import org.bukkit.Material
 
-class InventoryContainingItemCriteria : Criteria(), ItemCriteria {
+class InventoryContainingItemCriteria : Criteria(), ItemInspectCandidate {
     override val type: CriteriaType = CriteriaType.INVENTORY_CONTAINING_ITEM
     lateinit var itemTypes: Set<Material>
     var isWildcard: Boolean = false

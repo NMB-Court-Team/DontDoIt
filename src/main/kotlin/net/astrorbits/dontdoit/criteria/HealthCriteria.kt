@@ -1,6 +1,6 @@
 package net.astrorbits.dontdoit.criteria
 
-import net.astrorbits.dontdoit.criteria.system.CriteriaType
+import net.astrorbits.dontdoit.criteria.helper.CriteriaType
 import net.astrorbits.dontdoit.team.TeamData
 import net.astrorbits.lib.range.DoubleRange
 

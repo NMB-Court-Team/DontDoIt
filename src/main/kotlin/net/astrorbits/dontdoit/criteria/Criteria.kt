@@ -3,9 +3,10 @@ package net.astrorbits.dontdoit.criteria
 import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList
-import net.astrorbits.dontdoit.criteria.enums.TriggerDifficulty
+import net.astrorbits.dontdoit.criteria.helper.TriggerDifficulty
 import net.astrorbits.dontdoit.criteria.system.CriteriaManager
-import net.astrorbits.dontdoit.criteria.system.CriteriaType
+import net.astrorbits.dontdoit.criteria.helper.CriteriaType
+import net.astrorbits.dontdoit.system.CriteriaChangeReason
 import net.astrorbits.dontdoit.team.TeamData
 import net.astrorbits.lib.Identifier
 import net.astrorbits.lib.range.DoubleRange
@@ -27,27 +28,29 @@ abstract class Criteria {
     val holders: ReferenceArrayList<TeamData> = ReferenceArrayList()
 
     /**
-     * 当队伍绑定了该词条时调用
+     * 当队伍绑定了该词条时调用，此时词条已经绑定
      *
      * 绑定操作包括：
      * 1. 游戏开始时获得此词条
      * 2. 词条自动更换或触发后，替换到此词条
      * @param teamData 绑定了此词条的队伍
+     * @param reason 切换词条的原因
      */
-    open fun onBind(teamData: TeamData) {
+    open fun onBind(teamData: TeamData, reason: CriteriaChangeReason) {  //TODO 调用
         holders.add(teamData)
     }
 
     /**
-     * 当队伍解除绑定该词条时调用
+     * 当队伍即将解除绑定该词条时调用，此时词条还没解除绑定
      *
      * 解除绑定操作包括：
      * 1. 此词条自动更换成了另一个词条
      * 2. 此词条被触发
      * 3. 游戏结束时取消所有玩家的词条，包括此词条
      * @param teamData 解除绑定了此词条的队伍
+     * @param reason 切换词条的原因
      */
-    open fun onUnbind(teamData: TeamData) {
+    open fun onUnbind(teamData: TeamData, reason: CriteriaChangeReason) {  //TODO 调用
         holders.remove(teamData)
     }
 
@@ -89,7 +92,11 @@ abstract class Criteria {
         } else if (content == null) { // && ignoreIfAbsent
             return
         }
-        fieldSetter(content)
+        try {
+            fieldSetter(content)
+        } catch (e: Exception) {
+            throw InvalidCriteriaException(this@Criteria, "Invalid value: '$content'")
+        }
     }
 
     protected fun Map<String, String>.setBoolField(key: String, ignoreIfAbsent: Boolean = false, fieldSetter: (Boolean) -> Unit) {

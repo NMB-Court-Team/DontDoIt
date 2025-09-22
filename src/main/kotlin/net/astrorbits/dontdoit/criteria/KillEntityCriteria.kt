@@ -1,8 +1,8 @@
 package net.astrorbits.dontdoit.criteria
 
-import net.astrorbits.dontdoit.criteria.system.CriteriaType
-import net.astrorbits.dontdoit.criteria.type.DamageTypeCriteria
-import net.astrorbits.dontdoit.criteria.type.EntityCriteria
+import net.astrorbits.dontdoit.criteria.helper.CriteriaType
+import net.astrorbits.dontdoit.criteria.inspect.DamageTypeInspectCandidate
+import net.astrorbits.dontdoit.criteria.inspect.EntityInspectCandidate
 import org.bukkit.damage.DamageType
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
@@ -10,7 +10,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageEvent
 
-class KillEntityCriteria : Criteria(), Listener, EntityCriteria, DamageTypeCriteria {
+class KillEntityCriteria : Criteria(), Listener, EntityInspectCandidate, DamageTypeInspectCandidate {
     override val type = CriteriaType.KILL_ENTITY
     lateinit var entityTypes: Set<EntityType>
     var isEntityTypeWildcard: Boolean = false

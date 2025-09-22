@@ -1,6 +1,8 @@
 package net.astrorbits.dontdoit
 
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import net.astrorbits.dontdoit.criteria.system.CriteriaManager
+import net.astrorbits.dontdoit.system.CriteriaCommand
 import net.astrorbits.dontdoit.system.Preparation
 import net.astrorbits.dontdoit.system.GameStateManager
 import net.astrorbits.dontdoit.system.TitleManager
@@ -15,13 +17,17 @@ class DontDoIt : JavaPlugin() {
         stateManager = GameStateManager //是这样吗
 
         Configs.init()
-        CriteriaManager.init()
+        CriteriaManager.init(this)
         GlobalSettings.init(this)
         TitleManager.init(this)
         stateManager.reset()
 
         Preparation.register(this)
         server.pluginManager.registerEvents(EventListener, this)
+        lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
+            val registrar = event.registrar()
+            CriteriaCommand.register(registrar)
+        }
     }
 
     override fun onDisable() {

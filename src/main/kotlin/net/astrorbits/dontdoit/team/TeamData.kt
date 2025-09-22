@@ -16,13 +16,16 @@ import org.bukkit.entity.Player
 import org.bukkit.scoreboard.Team
 
 class TeamData(val color: NamedTextColor, val team: Team, val teamItem: Material) {
+    val teamId: String
+        get() = team.name
     val teamName: Component
         get() = team.displayName()
-    val members: List<Player>
+    val members: List<Player>  //TODO 有待优化，最好能优化成缓存Player对象的形式
         get() = team.entries.mapNotNull { name -> if (name.isUuid()) null else Bukkit.getPlayer(name) }
     val hasMember: Boolean
         get() = members.isNotEmpty()
 
+    var isInUse: Boolean = false
     var lifeCount: Int = GlobalSettings.lifeCount
         private set
     var isDead: Boolean = false
@@ -30,9 +33,7 @@ class TeamData(val color: NamedTextColor, val team: Team, val teamItem: Material
     var criteria: Criteria? = null
         set(value) {
             TeamManager.updateSidebars()
-            field?.onUnbind(this)
             field = value
-            field?.onBind(this)
         }
 
     val sidebarDisplay: SidebarDisplay = SidebarDisplay()

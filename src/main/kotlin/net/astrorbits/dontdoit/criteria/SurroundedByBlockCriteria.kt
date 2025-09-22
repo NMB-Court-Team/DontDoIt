@@ -1,7 +1,7 @@
 package net.astrorbits.dontdoit.criteria
 
-import net.astrorbits.dontdoit.criteria.system.CriteriaType
-import net.astrorbits.dontdoit.criteria.type.BlockCriteria
+import net.astrorbits.dontdoit.criteria.helper.CriteriaType
+import net.astrorbits.dontdoit.criteria.inspect.BlockInspectCandidate
 import net.astrorbits.dontdoit.team.TeamData
 import net.astrorbits.lib.math.vector.Vec3d
 import net.astrorbits.lib.math.vector.Vec3i.Companion.getBlock
@@ -10,7 +10,7 @@ import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 
-class SurroundedByBlockCriteria : Criteria(), Listener, BlockCriteria {
+class SurroundedByBlockCriteria : Criteria(), Listener, BlockInspectCandidate {
     override val type: CriteriaType = CriteriaType.SURROUNDED_BY_BLOCK
     lateinit var blockTypes: Set<Material>
     var isWildcard: Boolean = false

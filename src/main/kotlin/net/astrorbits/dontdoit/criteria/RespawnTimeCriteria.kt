@@ -1,7 +1,7 @@
 package net.astrorbits.dontdoit.criteria
 
-import net.astrorbits.dontdoit.criteria.enums.WaitTimeMode
-import net.astrorbits.dontdoit.criteria.system.CriteriaType
+import net.astrorbits.dontdoit.criteria.helper.WaitTimeMode
+import net.astrorbits.dontdoit.criteria.helper.CriteriaType
 import net.astrorbits.dontdoit.team.TeamData
 import net.astrorbits.lib.range.IntRange
 import org.bukkit.Bukkit
@@ -17,7 +17,7 @@ class RespawnTimeCriteria : Criteria(), Listener {
     var reviveTimeTicksRange: IntRange = IntRange.INFINITY
     var rangeReversed: Boolean = false
 
-    val playerDeathServerTick: MutableMap<UUID, Int> = mutableMapOf()
+    val playerDeathTick: MutableMap<UUID, Int> = mutableMapOf()
 
     override fun readData(data: Map<String, String>) {
         super.readData(data)
@@ -30,7 +30,7 @@ class RespawnTimeCriteria : Criteria(), Listener {
         if (waitTimeMode != WaitTimeMode.STAY) return
         for (player in teamData.members) {
             val uuid = player.uniqueId
-            val deathTick = playerDeathServerTick[uuid] ?: continue
+            val deathTick = playerDeathTick[uuid] ?: continue
             val currentTick = Bukkit.getCurrentTick()
             if (((currentTick - deathTick) in reviveTimeTicksRange) xor rangeReversed) {
                 trigger(player)
@@ -41,14 +41,14 @@ class RespawnTimeCriteria : Criteria(), Listener {
 
     @EventHandler
     fun onPlayerDeath(event: PlayerDeathEvent) {
-        playerDeathServerTick[event.player.uniqueId] = Bukkit.getCurrentTick()
+        playerDeathTick[event.player.uniqueId] = Bukkit.getCurrentTick()
     }
 
     @EventHandler
     fun onPlayerRevive(event: PlayerRespawnEvent) {
         if (waitTimeMode != WaitTimeMode.DELAY) return
         val uuid = event.player.uniqueId
-        val deathTick = playerDeathServerTick[uuid] ?: return
+        val deathTick = playerDeathTick[uuid] ?: return
         val currentTick = Bukkit.getCurrentTick()
         if (((currentTick - deathTick) in reviveTimeTicksRange) xor rangeReversed) {
             trigger(event.player)
@@ -58,6 +58,6 @@ class RespawnTimeCriteria : Criteria(), Listener {
     companion object {
         const val WAIT_TIME_MODE_KEY = "mode"
         const val REVIVE_TIME_TICKS_RANGE_KEY = "time"
-        const val RANGE_REVERSED_KEY = "time_reversed"
+        const val RANGE_REVERSED_KEY = "reversed"
     }
 }

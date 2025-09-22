@@ -1,14 +1,14 @@
 package net.astrorbits.dontdoit.criteria
 
-import net.astrorbits.dontdoit.criteria.system.CriteriaType
-import net.astrorbits.dontdoit.criteria.type.BlockCriteria
-import net.astrorbits.dontdoit.criteria.type.ItemCriteria
+import net.astrorbits.dontdoit.criteria.helper.CriteriaType
+import net.astrorbits.dontdoit.criteria.inspect.BlockInspectCandidate
+import net.astrorbits.dontdoit.criteria.inspect.ItemInspectCandidate
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockPlaceEvent
 
-class InteractBlockWithItemCriteria : Criteria(), Listener, BlockCriteria, ItemCriteria {
+class InteractBlockWithItemCriteria : Criteria(), Listener, BlockInspectCandidate, ItemInspectCandidate {
     override val type = CriteriaType.INTERACT_BLOCK_WITH_ITEM
     lateinit var blockTypes: Set<Material>
     lateinit var itemTypes: Set<Material>

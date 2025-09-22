@@ -1,14 +1,14 @@
 package net.astrorbits.dontdoit.criteria
 
-import net.astrorbits.dontdoit.criteria.system.CriteriaType
-import net.astrorbits.dontdoit.criteria.type.BlockCriteria
+import net.astrorbits.dontdoit.criteria.helper.CriteriaType
+import net.astrorbits.dontdoit.criteria.inspect.BlockInspectCandidate
 import net.astrorbits.dontdoit.team.TeamData
 import net.astrorbits.lib.math.vector.Box
 import net.astrorbits.lib.math.vector.Vec3d
 import org.bukkit.Material
 import org.bukkit.event.Listener
 
-class StandingOnBlockCriteria : Criteria(), Listener, BlockCriteria {
+class StandingOnBlockCriteria : Criteria(), Listener, BlockInspectCandidate {
     override val type: CriteriaType = CriteriaType.STANDING_ON_BLOCK
     lateinit var blockTypes: Set<Material>
     var isWildcard: Boolean = false

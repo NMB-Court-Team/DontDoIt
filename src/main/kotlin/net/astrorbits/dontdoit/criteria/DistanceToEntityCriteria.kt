@@ -1,13 +1,13 @@
 package net.astrorbits.dontdoit.criteria
 
-import net.astrorbits.dontdoit.criteria.system.CriteriaType
-import net.astrorbits.dontdoit.criteria.type.EntityCriteria
+import net.astrorbits.dontdoit.criteria.helper.CriteriaType
+import net.astrorbits.dontdoit.criteria.inspect.EntityInspectCandidate
 import net.astrorbits.dontdoit.team.TeamData
 import net.astrorbits.lib.range.DoubleRange
 import org.bukkit.entity.EntityType
 import org.bukkit.event.Listener
 
-class DistanceToEntityCriteria : Criteria(), Listener, EntityCriteria {
+class DistanceToEntityCriteria : Criteria(), Listener, EntityInspectCandidate {
     override val type: CriteriaType = CriteriaType.DISTANCE_TO_ENTITY
     lateinit var entityTypes: Set<EntityType>
     var isWildcard: Boolean = false

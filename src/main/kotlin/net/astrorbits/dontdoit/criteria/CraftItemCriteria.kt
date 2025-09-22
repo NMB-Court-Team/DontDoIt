@@ -1,14 +1,14 @@
 package net.astrorbits.dontdoit.criteria
 
-import net.astrorbits.dontdoit.criteria.system.CriteriaType
-import net.astrorbits.dontdoit.criteria.type.ItemCriteria
+import net.astrorbits.dontdoit.criteria.helper.CriteriaType
+import net.astrorbits.dontdoit.criteria.inspect.ItemInspectCandidate
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.CraftItemEvent
 
-class CraftItemCriteria : Criteria(), Listener, ItemCriteria {
+class CraftItemCriteria : Criteria(), Listener, ItemInspectCandidate {
     override val type: CriteriaType = CriteriaType.CRAFT_ITEM
     lateinit var itemTypes: Set<Material>
     var isWildcard: Boolean = false

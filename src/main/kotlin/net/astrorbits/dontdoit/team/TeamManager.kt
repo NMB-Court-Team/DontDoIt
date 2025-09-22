@@ -3,6 +3,7 @@ package net.astrorbits.dontdoit.team
 import com.google.common.collect.BiMap
 import net.astrorbits.dontdoit.Configs
 import net.astrorbits.dontdoit.system.GameState
+import net.astrorbits.dontdoit.system.GameStateManager
 import net.astrorbits.lib.collection.CollectionHelper.toBiMap
 import net.astrorbits.lib.text.TextHelper.append
 import net.kyori.adventure.text.Component
@@ -39,6 +40,14 @@ object TeamManager {
         }
     }
 
+    fun getInUseTeams(): Map<String, TeamData> {
+        return  if (GameStateManager.isRunning()) {
+            teams.filter { it.isInUse }.associateBy { it.teamId }
+        } else {
+            teams.associateBy { it.teamId }
+        }
+    }
+
     /** 更新计分板显示 */
     fun updateSidebars() {
         val teams = this.teams
@@ -48,8 +57,12 @@ object TeamManager {
         }
     }
 
-    fun getTeamOf(player: Player): TeamData? {
+    fun getTeam(player: Player): TeamData? {
         return _teams.firstOrNull { player in it }
+    }
+
+    fun getTeam(color: NamedTextColor): TeamData {
+        return _teams.first { it.color == color }
     }
 
     fun getWinner(): TeamData? {

@@ -3,10 +3,6 @@ criteria:
   eat_item:
       # 词条名称
     - name: 吃腐肉
-      # 可以用逗号分隔多种物品，支持物品标签，物品标签需要用"#"开头
-      # 在物品或物品标签前加上"!"代表排除该物品
-      # 填入"*"或没有item字段，则代表任意物品
-      item: rotten_flesh
       # 词条触发难度，从简单到困难分为：
       # trigger_definitely  几乎一定会触发的自爆词条，比如：滞空，蹦跶
       # very_easy           被其他玩家干扰而自爆的词条，比如：受到伤害，死亡
@@ -16,6 +12,10 @@ criteria:
       # very_hard           非常难触发的词条，比如：淹死
       # impossible          几乎不可能触发的词条，比如：哈哈我想不出来，能写出不可能触发的词条的也是神人了
       difficulty: normal
+      # 可以用逗号分隔多种物品，支持物品标签，物品标签需要用"#"开头
+      # 在物品或物品标签前加上"!"代表排除该物品
+      # 填入"*"或没有item字段，则代表任意物品
+      item: rotten_flesh
   # 玩家行走距离超过distance格时触发
   walk_distance:
     - name: 行走40米
@@ -146,13 +146,13 @@ criteria:
       reversed: true
   # 玩家与entity之间的距离在distance给定的范围内时触发
   distance_to_entity:
-    - name: 贴贴
+    - name: 跟其他玩家贴贴
       entity: player
       # 距离范围，可以是浮点数
       distance: ..1
       # 若为true则反转范围，例如 a..b 代表 a <= var && var <= b ，而反转了之后代表 a < var || var > b
       reversed: false
-    - name: 离所有玩家15格以上
+    - name: 离其他玩家15格以上
       entity: player
       distance: 15..
   # 玩家视角朝向的偏航角在yaw给定的范围内，且俯仰角也在pitch给定的范围内时触发
@@ -186,20 +186,20 @@ criteria:
       offhand: shield
   # 血量在health给定的范围内时触发
   health:
-    - name: 血量少于10点
+    - name: 血量高于10点
       # 血量范围，可以是浮点数
       amount: 10..
       #反转范围 ">=10" <-reverse-> "<10"
       reversed: true
-    - name: 血量多于10点
+    - name: 血量低于10点
       amount: ..10
       reversed: true
   # 饥饿值在hunger给定的范围内时触发
   food_level:
-    - name: 饥饿值少于18点
+    - name: 饱食度大于18点
       amount: 18..
       reversed: true
-    - name: 饥饿值多于18点
+    - name: 饱食度小于18点
       amount: ..18
       reversed: true
   # 玩家的头的上方和前后左右，以及脚的下方和前后左右均为block方块时触发
@@ -239,8 +239,8 @@ criteria:
   respawn_time:
     - name: 死亡后三秒内复活
       # 检查模式，可以是delay或stay，不可以留空
-      # 若为respawn_delay，则在玩家点击复活时检查距离死亡的时间，若时间在time给定的范围内则触发
-      # 若为stay_death_time，则当玩家在死亡界面停留的时间在time给定的范围内时触发
+      # 若为delay，则在玩家点击复活时检查距离死亡的时间，若时间在time给定的范围内则触发
+      # 若为stay，则当玩家在死亡界面停留的时间在time给定的范围内时触发
       mode: delay
       # 时间单位为游戏刻(ticks)，是一个整数范围，留空时使用".."
       time: 60..
@@ -254,14 +254,13 @@ criteria:
   # 持续以type方式移动或不移动超过time时间时触发，具体取决于reversed
   move_time:
     - name: 15秒不移动
-      # 可以是move, walk, sprint, sneak, swim, glide, jump, fall, on_air, rotate
+      # 可以是move, sprint, sneak, swim, glide, jump, fall, on_air, rotate，不可指定多个
       # move: 位置移动（不包括视角移动）
-      # walk: 行走
       # sprint: 疾跑
       # sneak: 潜行
       # swim: 游泳
       # glide: 滑翔，例如用鞘翅飞行
-      # jump: 跳跃，此移动方式暂不支持reversed为false的触发方式
+      # jump: 跳跃，此移动方式不支持reversed为false的触发方式
       # fall: 坠落
       # on_air: 滞空
       # rotate: 视角移动
@@ -295,9 +294,29 @@ criteria:
       type: rotate
       time: 100
   # 具体触发规则见mode字段的注释
-  change_criteria_time:
-
-
+  criteria_hold_time:
+    - name: 100秒不换词条
+      # 检查模式，可以是delay或stay，不可以留空
+      # 若为delay，则在玩家切换词条时检查距离获得该词条的时间，若时间在time给定的范围内则触发
+      # 若为stay，则当玩家持有该词条的持续时间在time给定的范围内时触发
+      mode: stay
+      time: ..2000
+      # 反转时间范围
+      reversed: true
+  # 距离上次死亡的时间超过time时触发
+  after_death_time:
+    - name: 上次死亡在60秒之前
+      difficulty: very_easy
+      time: 1200
+  # 血量在count范围内时触发
+  life_count:
+    - name: 剩余规则大于7个
+      difficulty: trigger_definitely
+      # 血量范围，必须是整数范围
+      count: 8..
+    - name: 剩余规则小于7个
+      difficulty: trigger_definitely
+      count: ..6
 
 
 

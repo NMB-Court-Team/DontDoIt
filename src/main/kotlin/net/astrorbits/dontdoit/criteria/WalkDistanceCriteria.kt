@@ -1,6 +1,7 @@
 package net.astrorbits.dontdoit.criteria
 
-import net.astrorbits.dontdoit.criteria.system.CriteriaType
+import net.astrorbits.dontdoit.criteria.helper.CriteriaType
+import net.astrorbits.dontdoit.system.CriteriaChangeReason
 import net.astrorbits.dontdoit.team.TeamData
 import org.bukkit.Statistic
 import java.util.UUID
@@ -15,8 +16,8 @@ class WalkDistanceCriteria : Criteria() {
     private val playerOnBindWalkOnWaterDistance: MutableMap<UUID, Int> = mutableMapOf()
     private val playerOnBindWalkUnderWaterDistance: MutableMap<UUID, Int> = mutableMapOf()
 
-    override fun onBind(teamData: TeamData) {
-        super.onBind(teamData)
+    override fun onBind(teamData: TeamData, reason: CriteriaChangeReason) {
+        super.onBind(teamData, reason)
         for (player in teamData.members) {
             val uuid = player.uniqueId
             playerOnBindWalkDistance[uuid] = player.getStatistic(Statistic.WALK_ONE_CM)
@@ -25,8 +26,8 @@ class WalkDistanceCriteria : Criteria() {
         }
     }
 
-    override fun onUnbind(teamData: TeamData) {
-        super.onUnbind(teamData)
+    override fun onUnbind(teamData: TeamData, reason: CriteriaChangeReason) {
+        super.onUnbind(teamData, reason)
         for (player in teamData.members) {
             val uuid = player.uniqueId
             playerOnBindWalkDistance.remove(uuid)

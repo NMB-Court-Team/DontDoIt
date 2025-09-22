@@ -1,4 +1,4 @@
-package net.astrorbits.dontdoit.criteria.system
+package net.astrorbits.dontdoit.criteria.helper
 
 enum class CriteriaType {
     EAT_ITEM,
@@ -28,7 +28,14 @@ enum class CriteriaType {
     DISTANCE_TO_ENTITY,
     HEIGHTMAP_MATCHING_POS,
     INVENTORY_CONTAINING_ITEM,
+    LIFE_COUNT,
 
     RESPAWN_TIME,
-    MOVE_TIME
+    MOVE_TIME,
+    CRITERIA_HOLD_TIME,
+    AFTER_DEATH_TIME,
+
+    Y_LEVEL,
+    USER_DEFINED,
+    IMMEDIATE_TRIGGER
 }

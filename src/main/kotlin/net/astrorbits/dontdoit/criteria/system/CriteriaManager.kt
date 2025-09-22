@@ -4,10 +4,13 @@ import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList
 import net.astrorbits.dontdoit.DontDoIt
 import net.astrorbits.dontdoit.criteria.*
+import net.astrorbits.dontdoit.criteria.helper.MoveType
 import net.astrorbits.dontdoit.team.TeamData
 import net.astrorbits.dontdoit.team.TeamManager
 import net.astrorbits.lib.config.Config
 import org.bukkit.entity.Player
+import org.bukkit.event.Listener
+import org.bukkit.plugin.java.JavaPlugin
 import java.util.function.Supplier
 
 object CriteriaManager {
@@ -27,7 +30,7 @@ object CriteriaManager {
         get() = _allCriteria
 
     fun trigger(criteria: Criteria, player: Player) {
-        val teamData = TeamManager.getTeamOf(player) ?: return
+        val teamData = TeamManager.getTeam(player) ?: return
         trigger(criteria, teamData)
     }
 
@@ -36,20 +39,22 @@ object CriteriaManager {
         //TODO
     }
 
-    fun init() {
+    fun init(plugin: JavaPlugin) {
+        MoveType.registerListener(plugin)
+
         registerAll()
 
         criteriaConfig = Config(
             "criteria",
-            DontDoIt.instance.dataPath.resolve(CRITERIA_FILE_NAME),
+            plugin.dataPath.resolve(CRITERIA_FILE_NAME),
             CRITERIA_FILE_NAME,
-            DontDoIt.LOGGER
+            plugin.slF4JLogger
         )
         allCriteriaConfigData = criteriaConfig.defineConfig(CriteriaConfigData(
             "criteria",
             _allCriteriaTypes.keys.associateWith { emptyList() }
         ))
-        loadFromConfig()
+        loadFromConfig(plugin)
     }
 
     fun registerAll() {
@@ -80,8 +85,12 @@ object CriteriaManager {
         register("distance_to_entity", ::DistanceToEntityCriteria)
         register("heightmap_matching_pos", ::HeightmapMatchingPosCriteria)
         register("inventory_containing_item", ::InventoryContainingItemCriteria)
+        register("life_count", ::LifeCountCriteria)
 
         register("respawn_time", ::RespawnTimeCriteria)
+        register("move_time", ::MoveTimeCriteria)
+        register("criteria_hold_time", ::CriteriaHoldTimeCriteria)
+        register("after_death_time", ::AfterDeathTimeCriteria)
 
 //        register("move_time_idle", ::EmptyCriteria)
 //        register("jump_time_idle", ::EmptyCriteria)
@@ -95,7 +104,11 @@ object CriteriaManager {
         _allCriteriaTypes[id] = initializer
     }
 
-    private fun loadFromConfig() {
+    private val listeners: ReferenceArrayList<Listener> = ReferenceArrayList()
+
+    private fun loadFromConfig(plugin: JavaPlugin) {
+        val pluginManager = plugin.server.pluginManager
+
         val allCriteriaTypes = allCriteriaTypes
         val configData = allCriteriaConfigData.get()
         for ((id, allData) in configData) {
@@ -109,6 +122,9 @@ object CriteriaManager {
                     continue
                 }
                 _allCriteria.add(criteria)
+                if (criteria is Listener) {
+                    pluginManager.registerEvents(criteria, plugin)
+                }
             }
         }
     }
