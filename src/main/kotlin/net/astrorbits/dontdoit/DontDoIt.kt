@@ -14,13 +14,12 @@ import org.slf4j.LoggerFactory
 class DontDoIt : JavaPlugin() {
     override fun onEnable() {
         _instance = this
-        stateManager = GameStateManager //是这样吗
 
         Configs.init()
         CriteriaManager.init(this)
         GlobalSettings.init(this)
         TitleManager.init(this)
-        stateManager.reset()
+        GameStateManager.reset()
 
         Preparation.register(this)
         server.pluginManager.registerEvents(EventListener, this)
@@ -31,7 +30,7 @@ class DontDoIt : JavaPlugin() {
     }
 
     override fun onDisable() {
-        stateManager.onDisable()
+        GameStateManager.onDisable()
     }
 
     companion object {
@@ -44,8 +43,5 @@ class DontDoIt : JavaPlugin() {
 
         const val PLUGIN_NAME = "DoNotDoIt"
         val LOGGER: Logger = LoggerFactory.getLogger(PLUGIN_NAME)
-
-        lateinit var stateManager: GameStateManager
-            private set
     }
 }

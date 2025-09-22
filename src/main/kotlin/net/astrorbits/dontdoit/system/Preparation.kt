@@ -22,20 +22,20 @@ object Preparation : Listener {
 
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
-        if (!DontDoIt.stateManager.isWaiting()) return
+        if (!GameStateManager.isWaiting()) return
         event.player.sendMessage("Hello, ${event.player.name}")
         event.player.inventory.setItem(TEAM_ITEM_SLOT, ItemStack(Material.LIGHT_GRAY_WOOL))
     }
 
     @EventHandler
     fun onInventory(event: InventoryClickEvent){
-        if (!DontDoIt.stateManager.isWaiting()) return
+        if (!GameStateManager.isWaiting()) return
         event.isCancelled = true
     }
 
     @EventHandler
     fun onTeamSelect(event: PlayerDropItemEvent){
-        if (!DontDoIt.stateManager.isWaiting()) return
+        if (!GameStateManager.isWaiting()) return
         val type = event.itemDrop.itemStack.type
 //        val teamColor = TeamColor.entries.find { it.material == type } ?: return
 //        if(TeamColor.contains(type)){

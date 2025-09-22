@@ -91,13 +91,6 @@ object CriteriaManager {
         register("move_time", ::MoveTimeCriteria)
         register("criteria_hold_time", ::CriteriaHoldTimeCriteria)
         register("after_death_time", ::AfterDeathTimeCriteria)
-
-//        register("move_time_idle", ::EmptyCriteria)
-//        register("jump_time_idle", ::EmptyCriteria)
-//        register("sprint_time_idle", ::EmptyCriteria)
-//        register("sneak_time_duration", ::EmptyCriteria)
-//        register("angle_change_time_idle", ::EmptyCriteria)
-
     }
 
     fun register(id: String, initializer: Supplier<Criteria>) {
