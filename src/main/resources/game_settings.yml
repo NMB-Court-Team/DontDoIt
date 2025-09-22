@@ -1,16 +1,29 @@
 team_name:
-  dark_blue: <bold><dark_blue><shadow:#a0000000>深海蓝</shadow></dark_blue></bold>
+  dark_red: <bold><dark_red><shadow:#a0000000>绯樱红</shadow></dark_red></bold>
+  red: <bold><red><shadow:#a0000000>珊瑚红</shadow></red></bold>
+  gold: <bold><gold><shadow:#a0000000>琥珀金</shadow></gold></bold>
+  yellow: <bold><yellow><shadow:#a0000000>柠檬黄</shadow></yellow></bold>
+  green: <bold><green><shadow:#a0000000>翡翠绿</shadow></green></bold>
   dark_green: <bold><dark_green><shadow:#a0000000>青柠绿</shadow></dark_green></bold>
   dark_aqua: <bold><dark_aqua><shadow:#a0000000>碧涛青</shadow></dark_aqua></bold>
-  dark_red: <bold><dark_red><shadow:#a0000000>绯樱红</shadow></dark_red></bold>
-  dark_purple: <bold><dark_purple><shadow:#a0000000>暮霞紫</shadow></dark_purple></bold>
-  gold: <bold><gold><shadow:#a0000000>琥珀金</shadow></gold></bold>
-  blue: <bold><blue><shadow:#a0000000>星空蓝</shadow></blue></bold>
-  green: <bold><green><shadow:#a0000000>翡翠绿</shadow></green></bold>
   aqua: <bold><aqua><shadow:#a0000000>天空蓝</shadow></aqua></bold>
-  red: <bold><red><shadow:#a0000000>珊瑚红</shadow></red></bold>
+  dark_blue: <bold><dark_blue><shadow:#a0000000>深海蓝</shadow></dark_blue></bold>
+  blue: <bold><blue><shadow:#a0000000>星空蓝</shadow></blue></bold>
+  dark_purple: <bold><dark_purple><shadow:#a0000000>暮霞紫</shadow></dark_purple></bold>
   light_purple: <bold><light_purple><shadow:#a0000000>薰衣粉</shadow></light_purple></bold>
-  yellow: <bold><yellow><shadow:#a0000000>柠檬黄</shadow></yellow></bold>
+team_item:
+  dark_red: brown_wool
+  red: red_wool
+  gold: orange_wool
+  yellow: yellow_wool
+  green: lime_wool
+  dark_green: green_wool
+  dark_aqua: cyan_wool
+  aqua: light_blue_wool
+  dark_blue: blue_wool
+  blue: purple_wool
+  dark_purple: magenta_wool
+  light_purple: pink_wool
 
 sidebar_title: <shadow:#a0000000><gradient:#ff0000:#EF903E>※ <bold>禁止事项</bold> ※
 sidebar_entry:

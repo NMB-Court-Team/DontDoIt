@@ -4,6 +4,7 @@ import net.astrorbits.dontdoit.DontDoIt
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -19,12 +20,11 @@ object Preparation : Listener {
 
     const val TEAM_ITEM_SLOT = 0
 
-
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
         if (!DontDoIt.stateManager.isWaiting()) return
         event.player.sendMessage("Hello, ${event.player.name}")
-        event.player.inventory.setItem(TEAM_ITEM_SLOT, ItemStack(TeamColor.LIGHT_GRAY.material))
+        event.player.inventory.setItem(TEAM_ITEM_SLOT, ItemStack(Material.LIGHT_GRAY_WOOL))
     }
 
     @EventHandler
@@ -37,11 +37,12 @@ object Preparation : Listener {
     fun onTeamSelect(event: PlayerDropItemEvent){
         if (!DontDoIt.stateManager.isWaiting()) return
         val type = event.itemDrop.itemStack.type
-        val teamColor = TeamColor.entries.find { it.material == type } ?: return
-        if(TeamColor.contains(type)){
-            event.player.inventory.setItem(TEAM_ITEM_SLOT, ItemStack(teamColor.next().material))
-            assignTeamByWool(event.player, teamColor.next().color)
-        }
+//        val teamColor = TeamColor.entries.find { it.material == type } ?: return
+//        if(TeamColor.contains(type)){
+//            event.player.inventory.setItem(TEAM_ITEM_SLOT, ItemStack(teamColor.next().material))
+//            assignTeamByWool(event.player, teamColor.next().color)
+//        }
+        //TODO: 循环切换
         event.itemDrop.remove()
     }
 

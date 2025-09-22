@@ -5,15 +5,17 @@ import net.astrorbits.dontdoit.GlobalSettings
 import net.astrorbits.dontdoit.criteria.Criteria
 import net.astrorbits.lib.StringHelper.isUuid
 import net.astrorbits.lib.scoreboard.SidebarDisplay
+import net.astrorbits.lib.text.LegacyText
 import net.astrorbits.lib.text.TextHelper.format
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.scoreboard.Team
 
-class TeamData(val color: NamedTextColor, val team: Team) {
+class TeamData(val color: NamedTextColor, val team: Team, val teamItem: Material) {
     val teamName: Component
         get() = team.displayName()
     val members: List<Player>
@@ -74,7 +76,7 @@ class TeamData(val color: NamedTextColor, val team: Team) {
         isDead = true
         members.forEach { player ->
             player.isInvulnerable = true
-            player.sendMessage("§c你的队伍已失败，进入旁观模式")
+            player.sendActionBar(LegacyText.toComponent("§c你的队伍已失败，进入旁观模式"))
             player.gameMode = GameMode.SPECTATOR
         }
     }

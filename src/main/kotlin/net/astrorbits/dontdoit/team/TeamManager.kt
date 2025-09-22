@@ -29,11 +29,12 @@ object TeamManager {
         scoreboard = server.scoreboardManager.newScoreboard
         for ((name, color) in TEAM_COLORS) {
             val teamName = Configs.getTeamName(color) ?: continue
+            val teamItem = Configs.getTeamItem(color) ?: continue
             val team = scoreboard.registerNewTeam(name)
             team.color(color)
             team.displayName(teamName)
             team.prefix(Component.text("[").color(color).append(teamName).append("]"))
-            val teamData = TeamData(color, team)
+            val teamData = TeamData(color, team, teamItem)
             _teams.add(teamData)
         }
     }
@@ -49,6 +50,10 @@ object TeamManager {
 
     fun getTeamOf(player: Player): TeamData? {
         return _teams.firstOrNull { player in it }
+    }
+
+    fun getWinner(): TeamData? {
+        return _teams.firstOrNull { !it.isDead }
     }
 
     fun tick(currentState: GameState) {

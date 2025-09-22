@@ -179,15 +179,20 @@ criteria:
   health:
     - name: 血量少于10点
       # 血量范围，可以是浮点数
-      health: ..9.9
+      amount: 10..
+      #反转范围 ">=10" <-reverse-> "<10"
+      reversed: true
     - name: 血量多于10点
-      health: 10.1..
+      amount: ..10
+      reversed: true
   # 饥饿值在hunger给定的范围内时触发
-  hunger:
+  food_level:
     - name: 饥饿值少于18点
-      hunger: ..17
+      amount: 18..
+      reversed: true
     - name: 饥饿值多于18点
-      hunger: 19..
+      amount: ..18
+      reversed: true
   # 玩家的头的上方和前后左右，以及脚的下方和前后左右均为block方块时触发
   surrounded_by_block:
     - name: 完全暴露于空气中

@@ -67,11 +67,15 @@ object CriteriaManager {
         register("interact_with_block_holding_item", ::InteractBlockWithItemCriteria)
 
         register("hurt_entity", ::HurtEntityCriteria)
-        register("hurt_by_entity", ::HurtByEntityCriteria)
         register("kill_entity", ::KillEntityCriteria)
+        register("hurt_by_entity", ::HurtByEntityCriteria)
         register("kill_by_entity", ::KillByEntityCriteria)
 
+        register("angle", ::RotationCriteria)
+        register("health", ::HealthCriteria)
+        register("food_level", ::FoodLevelCriteria)
         register("standing_on_block", ::StandingOnBlockCriteria)
+        register("distance_to_entity", ::DistanceToEntityCriteria)
         register("heightmap_matching_pos", ::HeightmapMatchingPosCriteria)
         register("inventory_containing_item", ::InventoryContainingItemCriteria)
 
@@ -85,20 +89,23 @@ object CriteriaManager {
 //        register("pick_up", ::PickUpCriteria) v
 //        register("craft", ::EmptyCriteria)    v
 //        register("damage", ::EmptyCriteria)   v
-//        register("death", ::EmptyCriteria)
+//        register("death", ::EmptyCriteria)    v
 //        register("receive_damage", ::EmptyCriteria)   v
 //        register("walk", ::EmptyCriteria) v
 //        register("kill", ::EmptyCriteria) v
 //        register("fall", ::EmptyCriteria) v
 //        register("jump", ::EmptyCriteria) v
-//        register("entity_distance", ::EmptyCriteria)
-//        register("angle_pitch", ::EmptyCriteria)
+
+//        register("entity_distance", ::EmptyCriteria)  v
+//        register("angle_pitch", ::EmptyCriteria)  v
+//        register("surround_by", ::EmptyCriteria)
+
 //        register("mainhand", ::EmptyCriteria) v
 //        register("offhand", ::EmptyCriteria)  v
-//        register("health", ::EmptyCriteria)
-//        register("hunger", ::EmptyCriteria)
-//        register("surround_by", ::EmptyCriteria)
-//        register("inventory_item", ::EmptyCriteria)
+//        register("health", ::EmptyCriteria)   v
+//        register("hunger", ::EmptyCriteria)   v
+//
+//        register("inventory_item", ::EmptyCriteria)   v
 //        register("positioned_on", ::EmptyCriteria)    v
 
 //        register("move_time_idle", ::EmptyCriteria)

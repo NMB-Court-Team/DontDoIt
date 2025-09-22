@@ -7,6 +7,7 @@ import net.astrorbits.lib.text.TextHelper.bold
 import net.astrorbits.lib.text.TextHelper.shadowColor
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.Material
 
 object Configs {
     const val CONFIG_FILE_NAME = "game_settings.yml"
@@ -23,6 +24,10 @@ object Configs {
         TEAM_COLORS.inverse().mapValues { (color, name) -> Component.empty().append(Component.text(name).color(color).bold().shadowColor(0xa0000000.toInt())) },
         { TEAM_COLORS[it]!! },
         { TextHelper.parseMiniMessage(it) }
+    ))
+    val TEAM_ITEM: StringConfigData = CONFIG.defineConfig(StringConfigData(
+        "team_item",
+        "light_gray_wool"
     ))
     val SIDEBAR_TITLE: TextConfigData = CONFIG.defineConfig(TextConfigData(
         "sidebar_title",
@@ -52,6 +57,10 @@ object Configs {
 
     fun getTeamName(color: NamedTextColor): Component? {
         return TEAM_NAME.get()[color]
+    }
+
+    fun getTeamItem(color: NamedTextColor): Material? {
+        return Material.getMaterial(TEAM_ITEM.get())
     }
 
     fun init() {

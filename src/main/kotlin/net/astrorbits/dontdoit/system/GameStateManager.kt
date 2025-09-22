@@ -2,7 +2,6 @@ package net.astrorbits.dontdoit.system
 
 import net.astrorbits.dontdoit.DontDoIt
 import net.astrorbits.dontdoit.team.TeamManager
-import net.astrorbits.dontdoit.team.TeamManager.teams
 import net.astrorbits.lib.task.TaskBuilder
 import net.astrorbits.lib.task.TaskType
 import net.astrorbits.lib.text.LegacyText
@@ -30,8 +29,8 @@ object GameStateManager {
     fun endGame() {
         state = GameState.FINISHED
         Bukkit.broadcast(LegacyText.toComponent("§c游戏结束！"))
-        val winner = teams.entries.maxByOrNull { it.value.life }?.value
-        DontDoIt.server.broadcast(LegacyText.toComponent("§6游戏结束！胜利队伍: ${winner?.name}"))
+        val winner = TeamManager.getWinner()
+        DontDoIt.server.broadcast(LegacyText.toComponent("§6游戏结束！胜利队伍: ${winner?.teamName}"))
     }
 
     fun pause() {

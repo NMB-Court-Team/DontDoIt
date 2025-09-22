@@ -65,7 +65,7 @@ class WalkCriteria : Criteria() {
         val walkDistanceString = data[WALK_DISTANCE_KEY] ?: throw InvalidCriteriaException(this, "Missing key '$WALK_DISTANCE_KEY'")
         val walkDistanceMeters = try {
             walkDistanceString.toFloat()
-        } catch (e: NumberFormatException) {
+        } catch (_: NumberFormatException) {
             throw InvalidCriteriaException(this, "Invalid walk distance: $walkDistanceString")
         }
         walkDistance = floor(walkDistanceMeters * CENTIMETER_PER_METER).toInt()
