@@ -1,41 +1,48 @@
 package net.astrorbits.dontdoit.criteria.helper
 
 enum class CriteriaType {
+    // 物品相关
     EAT_ITEM,
     DROP_ITEM,
     CRAFT_ITEM,
     PICK_UP_ITEM,
     HOLDING_ITEM,
+    INVENTORY_CONTAINING_ITEM,
 
-    WALK_DISTANCE,
-    JUMP,
-    FALL_DISTANCE,
-
+    // 方块相关
     BREAK_BLOCK,
     PLACE_BLOCK,
     INTERACT_BLOCK_WITH_ITEM,
+    SURROUNDED_BY_BLOCK,
+    STANDING_ON_BLOCK,
+    BUCKET_OPERATION,
 
+    // 实体相关
     HURT_ENTITY,
     KILL_ENTITY,
     HURT_BY_ENTITY,
     KILLED_BY_ENTITY,
-
-    HEALTH,
-    ROTATION,
-    FOOD_LEVEL,
-    SURROUNDED_BY_BLOCK,
-    STANDING_ON_BLOCK,
     DISTANCE_TO_ENTITY,
-    HEIGHTMAP_MATCHING_POS,
-    INVENTORY_CONTAINING_ITEM,
-    LIFE_COUNT,
 
+    // 时间相关
     RESPAWN_TIME,
     MOVE_TIME,
     CRITERIA_HOLD_TIME,
     AFTER_DEATH_TIME,
 
+    // 杂项
+    HEALTH,
+    ROTATION,
+    FOOD_LEVEL,
+    HEIGHTMAP_MATCHING_POS,
+    LIFE_COUNT,
+    WALK_DISTANCE,
+    JUMP,
+    FALL_DISTANCE,
+    LEVEL_UP,
+    IMMEDIATE_TRIGGER,
+
+    // 内建类型
     Y_LEVEL,
-    USER_DEFINED,
-    IMMEDIATE_TRIGGER
+    USER_DEFINED
 }

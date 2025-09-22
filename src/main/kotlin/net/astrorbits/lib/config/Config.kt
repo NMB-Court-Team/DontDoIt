@@ -77,7 +77,7 @@ class Config(
         }
     }
 
-    private fun getDefaultConfigInputStream(): InputStream = javaClass.getResourceAsStream(defaultConfigResourcePath) ?: throw IllegalArgumentException("Cannot find resource $defaultConfigResourcePath")
+    private fun getDefaultConfigInputStream(): InputStream = javaClass.classLoader.getResourceAsStream(defaultConfigResourcePath) ?: throw IllegalArgumentException("Cannot find resource $defaultConfigResourcePath")
 
     operator fun contains(key: String): Boolean = yamlConfig.contains(key)
 

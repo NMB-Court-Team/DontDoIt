@@ -25,7 +25,12 @@ class DistanceToEntityCriteria : Criteria(), Listener, EntityInspectCandidate {
             this.entityTypes = entityTypes
             this.isWildcard = isWildcard
         }
-        data.setDoubleRangeField(DISTANCE_RANGE_KEY, true) { distanceRangeSquared = DoubleRange(it.min * it.min, it.max * it.max) }
+        data.setDoubleRangeField(DISTANCE_RANGE_KEY, true) {
+            distanceRangeSquared = DoubleRange(
+                if (it.min == Double.NEGATIVE_INFINITY) Double.NEGATIVE_INFINITY else it.min * it.min,
+                it.max * it.max
+            )
+        }
         data.setBoolField(RANGE_REVERSED_KEY, true) { rangeReversed = it }
     }
 

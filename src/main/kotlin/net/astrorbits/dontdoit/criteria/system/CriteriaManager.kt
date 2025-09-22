@@ -54,6 +54,7 @@ object CriteriaManager {
             "criteria",
             _allCriteriaTypes.keys.associateWith { emptyList() }
         ))
+        criteriaConfig.load()
         loadFromConfig(plugin)
     }
 
@@ -63,34 +64,36 @@ object CriteriaManager {
         register("craft_item", ::CraftItemCriteria)
         register("pick_up_item", ::PickUpItemCriteria)
         register("holding_item", ::HoldingItemCriteria)
-
-        register("walk_distance", ::WalkDistanceCriteria)
-        register("jump", ::JumpCriteria)
-        register("fall_distance", ::FallDistanceCriteria)
+        register("inventory_containing_item", ::InventoryContainingItemCriteria)
 
         register("break_block", ::BreakBlockCriteria)
         register("place_block", ::PlaceBlockCriteria)
         register("interact_block_with_item", ::InteractBlockWithItemCriteria)
+        register("surrounded_by_block", ::SurroundedByBlockCriteria)
+        register("standing_on_block", ::StandingOnBlockCriteria)
+        register("bucket_operation", ::BucketOperationCriteria)
 
         register("hurt_entity", ::HurtEntityCriteria)
         register("kill_entity", ::KillEntityCriteria)
         register("hurt_by_entity", ::HurtByEntityCriteria)
         register("killed_by_entity", ::KilledByEntityCriteria)
-
-        register("health", ::HealthCriteria)
-        register("rotation", ::RotationCriteria)
-        register("food_level", ::FoodLevelCriteria)
-        register("surrounded_by_block", ::SurroundedByBlockCriteria)
-        register("standing_on_block", ::StandingOnBlockCriteria)
         register("distance_to_entity", ::DistanceToEntityCriteria)
-        register("heightmap_matching_pos", ::HeightmapMatchingPosCriteria)
-        register("inventory_containing_item", ::InventoryContainingItemCriteria)
-        register("life_count", ::LifeCountCriteria)
 
         register("respawn_time", ::RespawnTimeCriteria)
         register("move_time", ::MoveTimeCriteria)
         register("criteria_hold_time", ::CriteriaHoldTimeCriteria)
         register("after_death_time", ::AfterDeathTimeCriteria)
+
+        register("health", ::HealthCriteria)
+        register("rotation", ::RotationCriteria)
+        register("food_level", ::FoodLevelCriteria)
+        register("heightmap_matching_pos", ::HeightmapMatchingPosCriteria)
+        register("life_count", ::LifeCountCriteria)
+        register("walk_distance", ::WalkDistanceCriteria)
+        register("jump", ::JumpCriteria)
+        register("fall_distance", ::FallDistanceCriteria)
+        register("level_up", ::LevelUpCriteria)
+        register("immediate_trigger", ::ImmediateTriggerCriteria)
     }
 
     fun register(id: String, initializer: Supplier<Criteria>) {
@@ -120,6 +123,10 @@ object CriteriaManager {
                 }
             }
         }
+    }
+
+    fun onDisable() {
+        criteriaConfig.close()
     }
 
     fun getRandomCriteria(): Criteria {

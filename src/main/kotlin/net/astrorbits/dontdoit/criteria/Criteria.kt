@@ -94,8 +94,10 @@ abstract class Criteria {
         }
         try {
             fieldSetter(content)
+        } catch (e: InvalidCriteriaException) {
+            throw e
         } catch (e: Exception) {
-            throw InvalidCriteriaException(this@Criteria, "Invalid value: '$content'")
+            throw InvalidCriteriaException(this@Criteria, "Invalid value: '$content'. Reason: ${e.message}")
         }
     }
 
@@ -207,6 +209,7 @@ abstract class Criteria {
         for (stringEntry in stringEntries) {
             if (stringEntry == "*") {
                 isWildcard = true
+                continue
             }
             var isTag = false
             var isReversed = false

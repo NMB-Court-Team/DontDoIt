@@ -31,6 +31,8 @@ class DontDoIt : JavaPlugin() {
 
     override fun onDisable() {
         GameStateManager.onDisable()
+        CriteriaManager.onDisable()
+        Configs.CONFIG.close()
     }
 
     companion object {
@@ -41,7 +43,7 @@ class DontDoIt : JavaPlugin() {
         val server: Server
             get() = instance.server
 
-        const val PLUGIN_NAME = "DoNotDoIt"
+        const val PLUGIN_NAME = "DontDoIt"
         val LOGGER: Logger = LoggerFactory.getLogger(PLUGIN_NAME)
     }
 }

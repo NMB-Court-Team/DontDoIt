@@ -24,7 +24,7 @@ class MoveTimeCriteria : Criteria(), Listener {
         data.setField(MOVE_TYPE_KEY) { moveType = MoveType.valueOf(it) }
         data.setIntField(MOVE_TIME_KEY) { moveTime = it }
         data.setBoolField(REVERSED_KEY, true) { reversed = it }
-        if (moveType === MoveType.Jump && !reversed) throw InvalidCriteriaException(this, "Definition 'type: move' with 'reversed: false' is not supported")
+        if (moveType === MoveType.Jump && !reversed) throw InvalidCriteriaException(this, "Definition 'type: jump' with 'reversed: false' is not supported")
     }
 
     override fun onUnbind(teamData: TeamData, reason: CriteriaChangeReason) {

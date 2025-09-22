@@ -30,7 +30,7 @@ object Preparation : Listener {
     @EventHandler
     fun onInventory(event: InventoryClickEvent){
         if (!GameStateManager.isWaiting()) return
-        event.isCancelled = true
+        //event.isCancelled = true
     }
 
     @EventHandler

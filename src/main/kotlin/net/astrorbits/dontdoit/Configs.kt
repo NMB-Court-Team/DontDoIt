@@ -25,9 +25,11 @@ object Configs {
         { TEAM_COLORS[it]!! },
         { TextHelper.parseMiniMessage(it) }
     ))
-    val TEAM_ITEM: StringConfigData = CONFIG.defineConfig(StringConfigData(
+    val TEAM_ITEM: ParserMapConfigData<NamedTextColor, Material> = CONFIG.defineConfig(ParserMapConfigData(
         "team_item",
-        "light_gray_wool"
+        TEAM_COLORS.inverse().mapValues { Material.STONE },
+        { TEAM_COLORS[it]!! },
+        { Material.matchMaterial(it) ?: throw IllegalArgumentException("Unknown item: $it") }
     ))
     val SIDEBAR_TITLE: TextConfigData = CONFIG.defineConfig(TextConfigData(
         "sidebar_title",
@@ -59,11 +61,11 @@ object Configs {
         return TEAM_NAME.get()[color]
     }
 
-    fun getTeamItem(color: NamedTextColor): Material? {
-        return Material.getMaterial(TEAM_ITEM.get())
+    fun getTeamItem(color: NamedTextColor): Material {
+        return TEAM_ITEM.get()[color]!!
     }
 
     fun init() {
-        // static init
+        CONFIG.load()
     }
 }

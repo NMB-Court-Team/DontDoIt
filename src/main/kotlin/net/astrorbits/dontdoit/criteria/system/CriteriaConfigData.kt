@@ -16,7 +16,7 @@ class CriteriaConfigData(
         val result = HashMap<String, List<Map<String, String>>>()
         for (type in CriteriaManager.allCriteriaTypes.keys) {
             val criteria = allCriteria.getMapList(type)
-            result[type] = criteria.map { e -> e.mapKeys { it.toString() }.mapValues { it.toString() } }
+            result[type] = criteria.map { e -> e.mapKeys { it.key.toString() }.mapValues { it.value.toString() } }
         }
         return result
     }

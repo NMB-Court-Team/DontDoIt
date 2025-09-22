@@ -19,63 +19,84 @@ criteria:
   # 玩家行走距离超过distance格时触发
   walk_distance:
     - name: 行走40米
+      difficulty: normal
       # 行走距离，可以是浮点数
       distance: 40
   # 挖掘block中包含的方块时触发
   break_block:
     - name: 挖掘安山岩
+      difficulty: normal
       # 格式与item字段相同
       block: andesite
     - name: 挖掘石头
+      difficulty: normal
       block: stone
     - name: 挖掘钻石矿
+      difficulty: hard
       block: diamond_ore
     - name: 挖掘磨制安山岩
+      difficulty: normal
       block: polished_andesite
     - name: 挖掘煤矿
+      difficulty: normal
       block: coal_ore
     - name: 挖掘铁矿
+      difficulty: normal
       block: iron_ore
     - name: 挖掘原木
-      block: "#log"
+      difficulty: normal
+      block: "#logs"
     - name: 挖掘泥土
+      difficulty: normal
       block: dirt
   # 捡起item中包含的物品时触发
   pick_up_item:
     - name: 拾起煤炭
+      difficulty: normal
       item: coal
     - name: 捡起腐肉
-      item: flesh
+      difficulty: normal
+      item: rotten_flesh
     - name: 捡起安山岩
+      difficulty: normal
       item: andesite
     - name: 捡起圆石
+      difficulty: normal
       item: cobblestone
     - name: 捡起钻石
+      difficulty: hard
       item: diamond
   # 在空中掉落超过distance格时触发
   fall_distance:
     - name: 坠落5格
+      difficulty: normal
       # 坠落距离，可以是浮点数
       distance: 5
   # 合成item时触发
   craft_item:
     - name: 合成石镐
+      difficulty: hard
       item: stone_pickaxe
     - name: 合成铁镐
+      difficulty: hard
       item: iron_pickaxe
     - name: 合成熔炉
+      difficulty: hard
       item: furnace
     - name: 合成木镐
+      difficulty: hard
       item: wooden_pickaxe
     - name: 合成盾牌
+      difficulty: hard
       item: shield
   # 一次性对entity造成amount点damage_type类型的伤害时触发
   hurt_entity:
     - name: 造成伤害
+      difficulty: easy
       # 实体类型，格式与item字段相同
-      entity: *
+      entity: "*"
       # 伤害类型，格式与item字段相同
-      damage_type: *
+      damage_type: "*"
       # 伤害量，可以是浮点数
       # 格式为"[<min>]..[<max>]"，代表一个大于等于<min>且小于等于<max>的范围
       # <min>为空时代表小于等于<max>
@@ -86,78 +107,99 @@ criteria:
   # 一次性收到来自entity的amount点damage_type类型的伤害时触发
   hurt_by_entity:
     - name: 受到伤害
-      entity: *
-      damage_type: *
+      difficulty: very_easy
+      entity: "*"
+      damage_type: "*"
       amount: ..
       reversed: false
   # 以damage_type类型的伤害杀死entity中包含的实体时触发
   kill_entity:
     - name: 杀死生物
-      entity: *
-      damage_type: *
+      difficulty: easy
+      entity: "*"
+      damage_type: "*"
     - name: 杀死玩家
+      difficulty: easy
       entity: player
   # 被entity因damage_type类型的伤害杀死时触发
   killed_by_entity:
     - name: 死亡
-      entity: *
-      damage_type: *
+      difficulty: very_easy
+      entity: "*"
+      damage_type: "*"
   # 跳跃时触发
   jump:
     - name: 蹦跶
+      difficulty: trigger_definitely
   # 拿着item与方块交互时触发
   interact_with_block_item:
     - name: 打开工作台
+      difficulty: easy
       block: crafting_table
-      item: *
+      item: "*"
     - name: 打开熔炉
-      item: *
+      difficulty: normal
+      item: "*"
     - name: 手持石镐打开工作台
+      difficulty: hard
       block: crafting_table
       item: stone_pickaxe
   # 丢出item时触发
   drop_item:
     - name: 丢弃物品
-      item: *
+      difficulty: easy
+      item: "*"
   # 放置block方块时触发
   place_block:
     - name: 放置方块
-      block: *
+      difficulty: easy
+      block: '*'
   # 站在或不站在block方块上时触发，具体取决于reversed
   standing_on_block:
     - name: 站在地上
-      block: *
+      difficulty: trigger_definitely
+      block: "*"
     - name: 站在安山岩上
+      difficulty: easy
       block: andesite
     - name: 站在草方块上
+      difficulty: easy
       block: grass_block
     - name: 站在基岩上
+      difficulty: normal
       block: bedrock
     - name: 站在石头上
+      difficulty: easy
       block: stone
     - name: 站在磨制安山岩上
+      difficulty: normal
       block: polished_andesite
     - name: 站在树叶上
+      difficulty: normal
       block: "#leaves"
     - name: 滞空
-      block: *
+      difficulty: trigger_definitely
+      block: "*"
       # 若为false，则站在block方块上时触发
       # 若为true，则不站在block方块上时触发
       reversed: true
   # 玩家与entity之间的距离在distance给定的范围内时触发
   distance_to_entity:
     - name: 跟其他玩家贴贴
+      difficulty: normal
       entity: player
       # 距离范围，可以是浮点数
       distance: ..1
       # 若为true则反转范围，例如 a..b 代表 a <= var && var <= b ，而反转了之后代表 a < var || var > b
       reversed: false
     - name: 离其他玩家15格以上
+      difficulty: normal
       entity: player
       distance: 15..
   # 玩家视角朝向的偏航角在yaw给定的范围内，且俯仰角也在pitch给定的范围内时触发
   rotation:
     - name: 抬头
+      difficulty: normal
       # 偏航角范围，使用角度制，可以是浮点数，留空时使用".."，即任意值
       yaw: ..
       yaw_reversed: false
@@ -165,72 +207,93 @@ criteria:
       pitch: ..-60
       pitch_reversed: false
     - name: 低头
+      difficulty: normal
       pitch: 60..
   # 主手拿着mainhand物品，且副手拿着offhand物品时触发
   holding_item:
     - name: 主手拿着工作台
+      difficulty: normal
       # 主手物品，格式同item字段
       mainhand: crafting_table
     - name: 主手拿着安山岩
+      difficulty: normal
       mainhand: andesite
     - name: 主手拿着磨制安山岩
+      difficulty: normal
       mainhand: polished_andesite
     - name: 主手拿着铁镐
+      difficulty: normal
       mainhand: iron_pickaxe
     - name: 主手拿着木斧
+      difficulty: normal
       mainhand: wooden_axe
     - name: 主手拿着石镐
+      difficulty: normal
       mainhand: stone_pickaxe
-    - name: 副手拿着盾牌
+    - name: 副手持盾
+      difficulty: normal
       # 副手物品，格式同item字段
       offhand: shield
   # 血量在health给定的范围内时触发
   health:
     - name: 血量高于10点
+      difficulty: very_easy
       # 血量范围，可以是浮点数
       amount: 10..
       #反转范围 ">=10" <-reverse-> "<10"
       reversed: true
     - name: 血量低于10点
+      difficulty: very_easy
       amount: ..10
       reversed: true
   # 饥饿值在hunger给定的范围内时触发
   food_level:
     - name: 饱食度大于18点
+      difficulty: very_easy
       amount: 18..
       reversed: true
     - name: 饱食度小于18点
+      difficulty: very_easy
       amount: ..18
       reversed: true
   # 玩家的头的上方和前后左右，以及脚的下方和前后左右均为block方块时触发
   surrounded_by_block:
     - name: 完全暴露于空气中
+      difficulty: easy
       block: "#air"
     - name: 自闭
+      difficulty: normal
       block: "#air"
       # 注：此处的反转行为代表周围的所有方块都不是block
       reversed: true
   # 物品栏内有至少1个item物品或没有item物品时触发，具体取决于reversed
   inventory_containing_item:
-    - name: 包里有铁锭
+    - name: 背包里有铁锭
+      difficulty: easy
       item: iron_ingot
-    - name: 包里有钻石
+    - name: 背包里有钻石
+      difficulty: hard
       item: diamond
-    - name: 包里有煤炭
+    - name: 背包里有煤炭
+      difficulty: easy
       item: coal
-    - name: 包里有泥土
+    - name: 背包里有泥土
+      difficulty: easy
       item: dirt
-    - name: 包里没有腐肉
-      item: flesh
+    - name: 背包里没有腐肉
+      difficulty: very_easy
+      item: rotten_flesh
       # 若为false，则物品栏内有至少1个item物品时触发
       # 若为true，则物品栏内没有item物品时触发
       reversed: true
   # 玩家所在位置的heightmap高度图对应的最高位置与玩家所在位置相同或不同时触发，具体取决于reversed
   heightmap_matching_pos:
     - name: 头顶无方块遮挡
+      difficulty: very_easy
       # 高度图，只能指定单个，具体可用参数参考命令/execute 的 positioned over <heightmap> 子命令的<heightmap>参数
       heightmap: world_surface
     - name: 头顶有方块遮挡
+      difficulty: easy
       heightmap: world_surface
       # 若为false，则位置相同时触发
       # 若为true，则位置不同时触发
@@ -238,6 +301,7 @@ criteria:
   # 具体触发规则见mode字段的注释
   respawn_time:
     - name: 死亡后三秒内复活
+      difficulty: easy
       # 检查模式，可以是delay或stay，不可以留空
       # 若为delay，则在玩家点击复活时检查距离死亡的时间，若时间在time给定的范围内则触发
       # 若为stay，则当玩家在死亡界面停留的时间在time给定的范围内时触发
@@ -247,13 +311,16 @@ criteria:
       # 反转时间范围
       reversed: true
     - name: 死亡后三秒内不复活
+      difficulty: easy
       mode: stay
       time: 60..
     - name: 复活
+      difficulty: easy
       mode: delay
   # 持续以type方式移动或不移动超过time时间时触发，具体取决于reversed
   move_time:
     - name: 15秒不移动
+      difficulty: hard
       # 可以是move, sprint, sneak, swim, glide, jump, fall, on_air, rotate，不可指定多个
       # move: 位置移动（不包括视角移动）
       # sprint: 疾跑
@@ -271,31 +338,41 @@ criteria:
       # 若为true，则保持不以type方式移动超过time时间时触发
       reversed: true
     - name: 持续移动40秒
+      difficulty: normal
       type: move
       time: 800
     - name: 20秒内不疾跑
+      difficulty: normal
       type: sprint
       time: 400
       reversed: true
     - name: 持续疾跑30秒
+      difficulty: normal
       type: sprint
       time: 600
     - name: 30秒内不潜行
+      difficulty: normal
       type: sneak
       time: 600
       reversed: true
     - name: 潜行3秒
+      difficulty: normal
       type: sneak
       time: 60
     - name: 30秒内不蹦跶
+      difficulty: normal
       type: jump
       time: 600
+      reversed: true
     - name: 5秒不改变视角
+      difficulty: hard
       type: rotate
       time: 100
+      reversed: true
   # 具体触发规则见mode字段的注释
   criteria_hold_time:
     - name: 100秒不换词条
+      difficulty: trigger_definitely
       # 检查模式，可以是delay或stay，不可以留空
       # 若为delay，则在玩家切换词条时检查距离获得该词条的时间，若时间在time给定的范围内则触发
       # 若为stay，则当玩家持有该词条的持续时间在time给定的范围内时触发
@@ -317,6 +394,25 @@ criteria:
     - name: 剩余规则小于7个
       difficulty: trigger_definitely
       count: ..6
-
-
-
+  # 升级时触发
+  level_up:
+    - name: 升级
+      difficulty: hard
+  # 自爆词条，立即触发
+  immediate_trigger:
+    - name: □□□□□
+      difficulty: trigger_definitely
+  # 当用桶装起流体或倒出fluid流体时触发，具体取决于type
+  bucket_operation:
+    - name: 用桶装水
+      difficulty: hard
+      # 流体名称，只能是水、熔岩或细雪，不可指定多个
+      fluid: water
+      # 可以是fill或pour
+      # fill: 装起流体
+      # pour: 倒出流体
+      type: fill
+    - name: 用桶倒水
+      difficulty: hard
+      fluid: water
+      type: pour
