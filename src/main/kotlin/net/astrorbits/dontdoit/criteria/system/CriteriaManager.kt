@@ -1,8 +1,9 @@
-package net.astrorbits.dontdoit.criteria
+package net.astrorbits.dontdoit.criteria.system
 
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList
 import net.astrorbits.dontdoit.DontDoIt
+import net.astrorbits.dontdoit.criteria.*
 import net.astrorbits.dontdoit.team.TeamData
 import net.astrorbits.dontdoit.team.TeamManager
 import net.astrorbits.lib.config.Config
@@ -58,9 +59,9 @@ object CriteriaManager {
         register("pick_up_item", ::PickUpItemCriteria)
         register("holding_item", ::HoldingItemCriteria)
 
-        register("walk", ::WalkCriteria)
+        register("walk_distance", ::WalkDistanceCriteria)
         register("jump", ::JumpCriteria)
-        register("fall", ::FallCriteria)
+        register("fall_distance", ::FallDistanceCriteria)
 
         register("break_block", ::BreakBlockCriteria)
         register("place_block", ::PlaceBlockCriteria)
@@ -95,7 +96,7 @@ object CriteriaManager {
     }
 
     private fun loadFromConfig() {
-        val allCriteriaTypes = this.allCriteriaTypes
+        val allCriteriaTypes = allCriteriaTypes
         val configData = allCriteriaConfigData.get()
         for ((id, allData) in configData) {
             val initializer = allCriteriaTypes[id] ?: continue

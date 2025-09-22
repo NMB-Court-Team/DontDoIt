@@ -1,6 +1,7 @@
 package net.astrorbits.dontdoit.criteria
 
 import com.destroystokyo.paper.event.player.PlayerJumpEvent
+import net.astrorbits.dontdoit.criteria.system.CriteriaType
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 

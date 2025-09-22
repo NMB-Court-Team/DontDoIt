@@ -1,5 +1,6 @@
 package net.astrorbits.dontdoit.criteria
 
+import net.astrorbits.dontdoit.criteria.system.CriteriaType
 import net.astrorbits.dontdoit.criteria.type.BlockCriteria
 import net.astrorbits.dontdoit.team.TeamData
 import net.astrorbits.lib.math.vector.Vec3d
@@ -8,7 +9,6 @@ import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
-import kotlin.math.floor
 
 class SurroundedByBlockCriteria : Criteria(), Listener, BlockCriteria {
     override val type: CriteriaType = CriteriaType.SURROUNDED_BY_BLOCK

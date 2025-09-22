@@ -1,5 +1,6 @@
 package net.astrorbits.dontdoit.criteria
 
+import net.astrorbits.dontdoit.criteria.system.CriteriaType
 import net.astrorbits.dontdoit.criteria.type.BlockCriteria
 import net.astrorbits.dontdoit.criteria.type.ItemCriteria
 import org.bukkit.Material

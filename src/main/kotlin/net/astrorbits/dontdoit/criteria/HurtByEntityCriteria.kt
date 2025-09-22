@@ -1,6 +1,6 @@
 package net.astrorbits.dontdoit.criteria
 
-import net.astrorbits.dontdoit.criteria.HurtEntityCriteria.Companion
+import net.astrorbits.dontdoit.criteria.system.CriteriaType
 import net.astrorbits.dontdoit.criteria.type.DamageTypeCriteria
 import net.astrorbits.dontdoit.criteria.type.EntityCriteria
 import net.astrorbits.lib.range.DoubleRange

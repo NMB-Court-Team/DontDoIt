@@ -1,4 +1,4 @@
-package net.astrorbits.dontdoit.criteria
+package net.astrorbits.dontdoit.criteria.enums
 
 enum class TriggerDifficulty {
     TRIGGER_DEFINITELY,  // 几乎一定会触发的自爆词条，比如：滞空，蹦跶

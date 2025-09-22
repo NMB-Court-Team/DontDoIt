@@ -1,6 +1,6 @@
 package net.astrorbits.dontdoit
 
-import net.astrorbits.dontdoit.criteria.CriteriaManager
+import net.astrorbits.dontdoit.criteria.system.CriteriaManager
 import net.astrorbits.dontdoit.system.Preparation
 import net.astrorbits.dontdoit.system.GameStateManager
 import net.astrorbits.dontdoit.system.TitleManager

@@ -1,8 +1,8 @@
 package net.astrorbits.dontdoit.criteria
 
+import net.astrorbits.dontdoit.criteria.system.CriteriaType
 import net.astrorbits.dontdoit.criteria.type.ItemCriteria
 import org.bukkit.Material
-import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener

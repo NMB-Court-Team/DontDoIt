@@ -1,10 +1,11 @@
 package net.astrorbits.dontdoit.criteria
 
+import net.astrorbits.dontdoit.criteria.system.CriteriaType
 import net.astrorbits.dontdoit.team.TeamData
 import kotlin.properties.Delegates
 
-class FallCriteria : Criteria() {
-    override val type: CriteriaType = CriteriaType.FALL
+class FallDistanceCriteria : Criteria() {
+    override val type: CriteriaType = CriteriaType.FALL_DISTANCE
     var distance: Double by Delegates.notNull()
 
     override fun readData(data: Map<String, String>) {

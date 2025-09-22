@@ -1,5 +1,7 @@
 package net.astrorbits.dontdoit.criteria
 
+import net.astrorbits.dontdoit.criteria.enums.WaitTimeMode
+import net.astrorbits.dontdoit.criteria.system.CriteriaType
 import net.astrorbits.dontdoit.team.TeamData
 import net.astrorbits.lib.range.IntRange
 import org.bukkit.Bukkit
@@ -11,7 +13,7 @@ import java.util.*
 
 class RespawnTimeCriteria : Criteria(), Listener {
     override val type: CriteriaType = CriteriaType.RESPAWN_TIME
-    lateinit var mode: Mode
+    lateinit var waitTimeMode: WaitTimeMode
     var reviveTimeTicksRange: IntRange = IntRange.INFINITY
     var rangeReversed: Boolean = false
 
@@ -19,13 +21,13 @@ class RespawnTimeCriteria : Criteria(), Listener {
 
     override fun readData(data: Map<String, String>) {
         super.readData(data)
-        data.setField(MODE_KEY) { mode = Mode.valueOf(it.uppercase()) }
+        data.setField(WAIT_TIME_MODE_KEY) { waitTimeMode = WaitTimeMode.valueOf(it.uppercase()) }
         data.setIntRangeField(REVIVE_TIME_TICKS_RANGE_KEY, true) { reviveTimeTicksRange = it }
         data.setBoolField(RANGE_REVERSED_KEY, true) { rangeReversed = it }
     }
 
     override fun tick(teamData: TeamData) {
-        if (mode != Mode.STAY_DEATH_TIME) return
+        if (waitTimeMode != WaitTimeMode.STAY) return
         for (player in teamData.members) {
             val uuid = player.uniqueId
             val deathTick = playerDeathServerTick[uuid] ?: continue
@@ -44,7 +46,7 @@ class RespawnTimeCriteria : Criteria(), Listener {
 
     @EventHandler
     fun onPlayerRevive(event: PlayerRespawnEvent) {
-        if (mode != Mode.RESPAWN_DELAY) return
+        if (waitTimeMode != WaitTimeMode.DELAY) return
         val uuid = event.player.uniqueId
         val deathTick = playerDeathServerTick[uuid] ?: return
         val currentTick = Bukkit.getCurrentTick()
@@ -53,12 +55,8 @@ class RespawnTimeCriteria : Criteria(), Listener {
         }
     }
 
-    enum class Mode {
-        RESPAWN_DELAY, STAY_DEATH_TIME
-    }
-
     companion object {
-        const val MODE_KEY = "mode"
+        const val WAIT_TIME_MODE_KEY = "mode"
         const val REVIVE_TIME_TICKS_RANGE_KEY = "time"
         const val RANGE_REVERSED_KEY = "time_reversed"
     }

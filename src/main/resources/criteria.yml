@@ -17,7 +17,7 @@ criteria:
       # impossible          几乎不可能触发的词条，比如：哈哈我想不出来，能写出不可能触发的词条的也是神人了
       difficulty: normal
   # 玩家行走距离超过distance格时触发
-  walk:
+  walk_distance:
     - name: 行走40米
       # 行走距离，可以是浮点数
       distance: 40
@@ -53,7 +53,7 @@ criteria:
     - name: 捡起钻石
       item: diamond
   # 在空中掉落超过distance格时触发
-  fall:
+  fall_distance:
     - name: 坠落5格
       # 坠落距离，可以是浮点数
       distance: 5
@@ -235,19 +235,69 @@ criteria:
       # 若为false，则位置相同时触发
       # 若为true，则位置不同时触发
       reversed: true
-  # 在time时间范围内复活时触发
+  # 具体触发规则见mode字段的注释
   respawn_time:
     - name: 死亡后三秒内复活
-      # 检查模式，可以是respawn_delay或stay_death_time，不可以留空
+      # 检查模式，可以是delay或stay，不可以留空
       # 若为respawn_delay，则在玩家点击复活时检查距离死亡的时间，若时间在time给定的范围内则触发
       # 若为stay_death_time，则当玩家在死亡界面停留的时间在time给定的范围内时触发
-      mode: respawn_delay
+      mode: delay
       # 时间单位为游戏刻(ticks)，是一个整数范围，留空时使用".."
-      time: 3..
+      time: 60..
       # 反转时间范围
       reversed: true
     - name: 死亡后三秒内不复活
-      mode: stay_death_time
-      time: 3..
+      mode: stay
+      time: 60..
     - name: 复活
-      mode: respawn_delay
+      mode: delay
+  # 持续以type方式移动或不移动超过time时间时触发，具体取决于reversed
+  move_time:
+    - name: 15秒不移动
+      # 可以是move, walk, sprint, sneak, swim, glide, jump, fall, on_air, rotate
+      # move: 位置移动（不包括视角移动）
+      # walk: 行走
+      # sprint: 疾跑
+      # sneak: 潜行
+      # swim: 游泳
+      # glide: 滑翔，例如用鞘翅飞行
+      # jump: 跳跃，此移动方式暂不支持reversed为false的触发方式
+      # fall: 坠落
+      # on_air: 滞空
+      # rotate: 视角移动
+      type: move
+      # 时间单位为游戏刻(ticks)，是一个整数
+      time: 300
+      # 若为false，则持续以type形式移动超过time时间时触发
+      # 若为true，则保持不以type方式移动超过time时间时触发
+      reversed: true
+    - name: 持续移动40秒
+      type: move
+      time: 800
+    - name: 20秒内不疾跑
+      type: sprint
+      time: 400
+      reversed: true
+    - name: 持续疾跑30秒
+      type: sprint
+      time: 600
+    - name: 30秒内不潜行
+      type: sneak
+      time: 600
+      reversed: true
+    - name: 潜行3秒
+      type: sneak
+      time: 60
+    - name: 30秒内不蹦跶
+      type: jump
+      time: 600
+    - name: 5秒不改变视角
+      type: rotate
+      time: 100
+  # 具体触发规则见mode字段的注释
+  change_criteria_time:
+
+
+
+
+

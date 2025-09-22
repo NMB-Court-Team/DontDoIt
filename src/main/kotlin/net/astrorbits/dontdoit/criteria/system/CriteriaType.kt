@@ -1,4 +1,4 @@
-package net.astrorbits.dontdoit.criteria
+package net.astrorbits.dontdoit.criteria.system
 
 enum class CriteriaType {
     EAT_ITEM,
@@ -7,9 +7,9 @@ enum class CriteriaType {
     PICK_UP_ITEM,
     HOLDING_ITEM,
 
-    WALK,
+    WALK_DISTANCE,
     JUMP,
-    FALL,
+    FALL_DISTANCE,
 
     BREAK_BLOCK,
     PLACE_BLOCK,
@@ -29,5 +29,6 @@ enum class CriteriaType {
     HEIGHTMAP_MATCHING_POS,
     INVENTORY_CONTAINING_ITEM,
 
-    RESPAWN_TIME
+    RESPAWN_TIME,
+    MOVE_TIME
 }

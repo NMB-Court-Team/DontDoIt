@@ -1,13 +1,14 @@
 package net.astrorbits.dontdoit.criteria
 
+import net.astrorbits.dontdoit.criteria.system.CriteriaType
 import net.astrorbits.dontdoit.team.TeamData
 import org.bukkit.Statistic
 import java.util.UUID
 import kotlin.math.floor
 import kotlin.properties.Delegates
 
-class WalkCriteria : Criteria() {
-    override val type: CriteriaType = CriteriaType.WALK
+class WalkDistanceCriteria : Criteria() {
+    override val type: CriteriaType = CriteriaType.WALK_DISTANCE
     var walkDistance by Delegates.notNull<Int>()
 
     private val playerOnBindWalkDistance: MutableMap<UUID, Int> = mutableMapOf()

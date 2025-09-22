@@ -3,6 +3,9 @@ package net.astrorbits.dontdoit.criteria
 import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList
+import net.astrorbits.dontdoit.criteria.enums.TriggerDifficulty
+import net.astrorbits.dontdoit.criteria.system.CriteriaManager
+import net.astrorbits.dontdoit.criteria.system.CriteriaType
 import net.astrorbits.dontdoit.team.TeamData
 import net.astrorbits.lib.Identifier
 import net.astrorbits.lib.range.DoubleRange
