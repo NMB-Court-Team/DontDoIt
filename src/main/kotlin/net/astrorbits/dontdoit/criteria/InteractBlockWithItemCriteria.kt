@@ -8,7 +8,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockPlaceEvent
 
 class InteractBlockWithItemCriteria : Criteria(), Listener, BlockCriteria, ItemCriteria {
-    override val type = CriteriaType.INTERACT_WITH_BLOCK_HOLDING_ITEM
+    override val type = CriteriaType.INTERACT_BLOCK_WITH_ITEM
     lateinit var blockTypes: Set<Material>
     lateinit var itemTypes: Set<Material>
     var isBlockWildcard: Boolean = false

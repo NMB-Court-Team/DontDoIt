@@ -104,12 +104,15 @@ criteria:
   jump:
     - name: 蹦跶
   # 拿着item与方块交互时触发
-  interact_with_block_holding_item:
+  interact_with_block_item:
     - name: 打开工作台
       block: crafting_table
       item: *
     - name: 打开熔炉
       item: *
+    - name: 手持石镐打开工作台
+      block: crafting_table
+      item: stone_pickaxe
   # 丢出item时触发
   drop_item:
     - name: 丢弃物品

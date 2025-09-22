@@ -13,7 +13,7 @@ enum class CriteriaType {
 
     BREAK_BLOCK,
     PLACE_BLOCK,
-    INTERACT_WITH_BLOCK_HOLDING_ITEM,
+    INTERACT_BLOCK_WITH_ITEM,
 
     HURT_ENTITY,
     KILL_ENTITY,
@@ -23,6 +23,7 @@ enum class CriteriaType {
     HEALTH,
     Rotation,
     FOOD_LEVEL,
+    SURROUNDING_BY,
     STANDING_ON_BLOCK,
     DISTANCE_TO_ENTITY,
     HEIGHTMAP_MATCHING_POS,

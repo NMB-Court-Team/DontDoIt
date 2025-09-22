@@ -64,55 +64,27 @@ object CriteriaManager {
 
         register("break_block", ::BreakBlockCriteria)
         register("place_block", ::PlaceBlockCriteria)
-        register("interact_with_block_holding_item", ::InteractBlockWithItemCriteria)
+        register("interact_block_with_item", ::InteractBlockWithItemCriteria)
 
         register("hurt_entity", ::HurtEntityCriteria)
         register("kill_entity", ::KillEntityCriteria)
         register("hurt_by_entity", ::HurtByEntityCriteria)
         register("kill_by_entity", ::KillByEntityCriteria)
 
-        register("angle", ::RotationCriteria)
         register("health", ::HealthCriteria)
+        register("rotation", ::RotationCriteria)
         register("food_level", ::FoodLevelCriteria)
+        register("surrounding_by", ::SurroundingByCriteria)
         register("standing_on_block", ::StandingOnBlockCriteria)
         register("distance_to_entity", ::DistanceToEntityCriteria)
         register("heightmap_matching_pos", ::HeightmapMatchingPosCriteria)
         register("inventory_containing_item", ::InventoryContainingItemCriteria)
 
-
-
-//        register("break_block", ::BreakBlockCriteria) v
-//        register("place_block", ::EmptyCriteria)  v
-//        register("step_on", ::EmptyCriteria)  v
-//        register("used_item", ::ConsumeItemCriteria)  v
-//        register("drop_item", ::EmptyCriteria)    v
-//        register("pick_up", ::PickUpCriteria) v
-//        register("craft", ::EmptyCriteria)    v
-//        register("damage", ::EmptyCriteria)   v
-//        register("death", ::EmptyCriteria)    v
-//        register("receive_damage", ::EmptyCriteria)   v
-//        register("walk", ::EmptyCriteria) v
-//        register("kill", ::EmptyCriteria) v
-//        register("fall", ::EmptyCriteria) v
-//        register("jump", ::EmptyCriteria) v
-
-//        register("entity_distance", ::EmptyCriteria)  v
-//        register("angle_pitch", ::EmptyCriteria)  v
-//        register("surround_by", ::EmptyCriteria)
-
-//        register("mainhand", ::EmptyCriteria) v
-//        register("offhand", ::EmptyCriteria)  v
-//        register("health", ::EmptyCriteria)   v
-//        register("hunger", ::EmptyCriteria)   v
-//
-//        register("inventory_item", ::EmptyCriteria)   v
-//        register("positioned_on", ::EmptyCriteria)    v
-
 //        register("move_time_idle", ::EmptyCriteria)
+//        register("jump_time_idle", ::EmptyCriteria)
+//        register("revive_time_idle", ::EmptyCriteria)
 //        register("sprint_time_idle", ::EmptyCriteria)
 //        register("sneak_time_duration", ::EmptyCriteria)
-//        register("revive_time_idle", ::EmptyCriteria)
-//        register("jump_time_idle", ::EmptyCriteria)
 //        register("angle_change_time_idle", ::EmptyCriteria)
 
     }
