@@ -53,39 +53,54 @@ object CriteriaManager {
 
     fun registerAll() {
         register("eat_item", ::EatItemCriteria)
-        register("walk", ::WalkCriteria)
-        register("break_block", ::BreakBlockCriteria)
-        register("kill_entity", ::KillEntityCriteria)
+        register("drop_item", ::DropItemCriteria)
+        register("craft_item", ::CraftItemCriteria)
         register("pick_up_item", ::PickUpItemCriteria)
+        register("holding_item", ::HoldingItemCriteria)
+
+        register("walk", ::WalkCriteria)
+        register("jump", ::JumpCriteria)
+        register("fall", ::FallCriteria)
+
+        register("break_block", ::BreakBlockCriteria)
+        register("place_block", ::PlaceBlockCriteria)
+        register("interact_with_block_holding_item", ::InteractBlockWithItemCriteria)
+
+        register("hurt_entity", ::HurtEntityCriteria)
+        register("hurt_by_entity", ::HurtByEntityCriteria)
+        register("kill_entity", ::KillEntityCriteria)
+        register("kill_by_entity", ::KillByEntityCriteria)
+
         register("standing_on_block", ::StandingOnBlockCriteria)
         register("heightmap_matching_pos", ::HeightmapMatchingPosCriteria)
-        register("holding_item", ::HoldingItemCriteria)
-        register("fall", ::FallCriteria)
-        register("hurt_entity", ::HurtEntityCriteria)
+        register("inventory_containing_item", ::InventoryContainingItemCriteria)
 
-//        register("break_block", ::BreakBlockCriteria)
-//        register("place_block", ::EmptyCriteria)
-//        register("step_on", ::EmptyCriteria)
-//        register("used_item", ::ConsumeItemCriteria)
-//        register("drop_item", ::EmptyCriteria)
-//        register("pick_up", ::PickUpCriteria)
-//        register("craft", ::EmptyCriteria)
-//        register("damage", ::EmptyCriteria)
+
+
+//        register("break_block", ::BreakBlockCriteria) v
+//        register("place_block", ::EmptyCriteria)  v
+//        register("step_on", ::EmptyCriteria)  v
+//        register("used_item", ::ConsumeItemCriteria)  v
+//        register("drop_item", ::EmptyCriteria)    v
+//        register("pick_up", ::PickUpCriteria) v
+//        register("craft", ::EmptyCriteria)    v
+//        register("damage", ::EmptyCriteria)   v
 //        register("death", ::EmptyCriteria)
-//        register("receive_damage", ::EmptyCriteria)
-//        register("walk", ::EmptyCriteria)
-//        register("kill", ::EmptyCriteria)
-//        register("fall", ::EmptyCriteria)
-//        register("jump", ::EmptyCriteria)
+//        register("receive_damage", ::EmptyCriteria)   v
+//        register("walk", ::EmptyCriteria) v
+//        register("kill", ::EmptyCriteria) v
+//        register("fall", ::EmptyCriteria) v
+//        register("jump", ::EmptyCriteria) v
 //        register("entity_distance", ::EmptyCriteria)
 //        register("angle_pitch", ::EmptyCriteria)
-//        register("mainhand", ::EmptyCriteria)
-//        register("offhand", ::EmptyCriteria)
+//        register("mainhand", ::EmptyCriteria) v
+//        register("offhand", ::EmptyCriteria)  v
 //        register("health", ::EmptyCriteria)
 //        register("hunger", ::EmptyCriteria)
 //        register("surround_by", ::EmptyCriteria)
 //        register("inventory_item", ::EmptyCriteria)
-//        register("positioned_on", ::EmptyCriteria)
+//        register("positioned_on", ::EmptyCriteria)    v
+
 //        register("move_time_idle", ::EmptyCriteria)
 //        register("sprint_time_idle", ::EmptyCriteria)
 //        register("sneak_time_duration", ::EmptyCriteria)

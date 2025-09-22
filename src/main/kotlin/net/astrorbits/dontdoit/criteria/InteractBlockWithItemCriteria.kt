@@ -1,0 +1,52 @@
+package net.astrorbits.dontdoit.criteria
+
+import net.astrorbits.dontdoit.criteria.type.BlockCriteria
+import net.astrorbits.dontdoit.criteria.type.ItemCriteria
+import org.bukkit.Material
+import org.bukkit.event.EventHandler
+import org.bukkit.event.Listener
+import org.bukkit.event.block.BlockPlaceEvent
+
+class InteractBlockWithItemCriteria : Criteria(), Listener, BlockCriteria, ItemCriteria {
+    override val type = CriteriaType.INTERACT_WITH_BLOCK_HOLDING_ITEM
+    lateinit var blockTypes: Set<Material>
+    lateinit var itemTypes: Set<Material>
+    var isBlockWildcard: Boolean = false
+    var isItemWildcard: Boolean = false
+
+    override fun getCandidateBlockTypes(): Set<Material> {
+        return blockTypes
+    }
+
+    override fun getCandidateItemTypes(): Set<Material> {
+        return itemTypes
+    }
+
+    override fun readData(data: Map<String, String>) {
+        super.readData(data)
+        data.setBlockTypes(BLOCK_TYPES_KEY) { blockTypes, isWildcard ->
+            this.blockTypes = blockTypes
+            this.isBlockWildcard = isWildcard
+        }
+        data.setItemTypes(ITEM_TYPES_KEY) { itemTypes, isWildcard ->
+            this.itemTypes = itemTypes
+            this.isItemWildcard = isWildcard
+        }
+    }
+
+    @EventHandler
+    fun onPlaceBlock(event: BlockPlaceEvent) {
+        val block = event.block
+        val item = event.itemInHand
+        if (isBlockWildcard || block.type in blockTypes) {
+            if (isItemWildcard || (item.type in itemTypes)){
+                trigger(event.player)
+            }
+        }
+    }
+
+    companion object {
+        const val BLOCK_TYPES_KEY = "block"
+        const val ITEM_TYPES_KEY = "item"
+    }
+}
