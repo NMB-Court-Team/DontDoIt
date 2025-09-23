@@ -1,4 +1,4 @@
-package net.astrorbits.dontdoit.team
+package net.astrorbits.dontdoit.system.team
 
 import net.astrorbits.dontdoit.Configs
 import net.astrorbits.dontdoit.GlobalSettings
@@ -37,7 +37,6 @@ class TeamData(val color: NamedTextColor, val team: Team, val teamItem: Material
         }
 
     val sidebarDisplay: SidebarDisplay = SidebarDisplay()
-
 
     init {
         sidebarDisplay.title = Configs.SIDEBAR_TITLE.get()
@@ -88,8 +87,8 @@ class TeamData(val color: NamedTextColor, val team: Team, val teamItem: Material
     }
 
     companion object {
-        const val TEAM_NAME_PLACEHOLDER = "{team_name}"
-        const val LIFE_COUNT_PLACEHOLDER = "{life}"
-        const val CRITERIA_DISPLAY_NAME_PLACEHOLDER = "{criteria}"
+        const val TEAM_NAME_PLACEHOLDER = "team_name"
+        const val LIFE_COUNT_PLACEHOLDER = "life"
+        const val CRITERIA_DISPLAY_NAME_PLACEHOLDER = "criteria"
     }
 }

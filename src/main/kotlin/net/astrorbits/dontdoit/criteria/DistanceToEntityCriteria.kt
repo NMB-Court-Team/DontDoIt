@@ -2,7 +2,7 @@ package net.astrorbits.dontdoit.criteria
 
 import net.astrorbits.dontdoit.criteria.helper.CriteriaType
 import net.astrorbits.dontdoit.criteria.inspect.EntityInspectCandidate
-import net.astrorbits.dontdoit.team.TeamData
+import net.astrorbits.dontdoit.system.team.TeamData
 import net.astrorbits.lib.range.DoubleRange
 import org.bukkit.entity.EntityType
 import org.bukkit.event.Listener

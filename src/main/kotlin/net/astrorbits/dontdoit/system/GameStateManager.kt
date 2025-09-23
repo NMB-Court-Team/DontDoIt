@@ -1,11 +1,15 @@
 package net.astrorbits.dontdoit.system
 
 import net.astrorbits.dontdoit.DontDoIt
-import net.astrorbits.dontdoit.team.TeamManager
+import net.astrorbits.dontdoit.criteria.system.CriteriaManager
+import net.astrorbits.dontdoit.system.generate.GameAreaGenerator
+import net.astrorbits.dontdoit.system.team.TeamManager
+import net.astrorbits.lib.math.vector.Vec3d
 import net.astrorbits.lib.task.TaskBuilder
 import net.astrorbits.lib.task.TaskType
 import net.astrorbits.lib.text.LegacyText
 import org.bukkit.Bukkit
+import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitTask
 
 object GameStateManager {
@@ -21,14 +25,17 @@ object GameStateManager {
             .runTask()
     }
 
-    fun startGame() {
+    fun startGame(starter: Player) {
         state = GameState.RUNNING
         Bukkit.broadcast(LegacyText.toComponent("§a游戏开始！"))
+        GameAreaGenerator.generate(Vec3d.fromLocation(starter.location).floor(), starter.world)
+        CriteriaManager.updateYLevelCriteria(GameAreaGenerator.groundYLevel!!)
+
+
     }
 
     fun endGame() {
         state = GameState.FINISHED
-        Bukkit.broadcast(LegacyText.toComponent("§c游戏结束！"))
         val winner = TeamManager.getWinner()
         DontDoIt.server.broadcast(LegacyText.toComponent("§6游戏结束！胜利队伍: ${winner?.teamName}"))
     }
@@ -40,11 +47,14 @@ object GameStateManager {
 
     fun reset() {
         state = GameState.PREPARING
-        Bukkit.broadcast(LegacyText.toComponent("§5重置"))
+        Bukkit.broadcast(LegacyText.toComponent("§e已重置游戏状态"))
     }
 
     fun tick() {
         TeamManager.tick(state)
+        if (!isWaiting()) {
+            Preparation.tick()
+        }
     }
 
     fun onDisable() {

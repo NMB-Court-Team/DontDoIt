@@ -6,6 +6,9 @@ import net.astrorbits.dontdoit.system.CriteriaCommand
 import net.astrorbits.dontdoit.system.Preparation
 import net.astrorbits.dontdoit.system.GameStateManager
 import net.astrorbits.dontdoit.system.TitleManager
+import net.astrorbits.lib.Identifier
+import net.minecraft.server.MinecraftServer
+import org.bukkit.NamespacedKey
 import org.bukkit.Server
 import org.bukkit.plugin.java.JavaPlugin
 import org.slf4j.Logger
@@ -45,5 +48,9 @@ class DontDoIt : JavaPlugin() {
 
         const val PLUGIN_NAME = "DontDoIt"
         val LOGGER: Logger = LoggerFactory.getLogger(PLUGIN_NAME)
+
+        fun id(path: String): NamespacedKey {
+            return NamespacedKey(instance, path)
+        }
     }
 }

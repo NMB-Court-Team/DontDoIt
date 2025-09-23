@@ -1,7 +1,7 @@
 package net.astrorbits.dontdoit.criteria
 
 import net.astrorbits.dontdoit.criteria.helper.CriteriaType
-import net.astrorbits.dontdoit.team.TeamData
+import net.astrorbits.dontdoit.system.team.TeamData
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener

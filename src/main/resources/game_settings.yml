@@ -1,3 +1,4 @@
+# ==== 游戏文本 ====
 team_name:
   dark_red: "<bold><dark_red><shadow:#a0000000>绯樱红</shadow></dark_red></bold>"
   red: "<bold><red><shadow:#a0000000>珊瑚红</shadow></red></bold>"
@@ -11,7 +12,33 @@ team_name:
   blue: "<bold><blue><shadow:#a0000000>星空蓝</shadow></blue></bold>"
   dark_purple: "<bold><dark_purple><shadow:#a0000000>暮霞紫</shadow></dark_purple></bold>"
   light_purple: "<bold><light_purple><shadow:#a0000000>薰衣粉</shadow></light_purple></bold>"
-team_item:
+
+sidebar:
+  title: "<shadow:#a0000000><gradient:#ff0000:#EF903E>※ <bold>禁止事项</bold> ※"
+  entry:
+    name: "{team_name}<white><shadow:#a0aa0000>[<red>❤</red><white>{life:%02d}]"
+    number: "<white><shadow:#a0000000>{criteria}"
+  entry_dead:
+    name: "<strikethrough>{team_name}<gray><shadow:#a0000000>[💔00]"
+    number: "<gray><shadow:#a0000000>已淘汰"
+
+change_team_item_name: "<italic:false><aqua>[<key:key.use>]<yellow>切换队伍"
+modify_custom_criteria_item_name: "<italic:false><aqua>[<key:key.use>]<yellow>设置自定义词条"
+join_spectator: "<yellow>你现在是<gray><bold>旁观者"
+join_team: "<yellow>你加入了队伍 {team_name}"
+
+modify_custom_criteria:
+  title: "<aqua><bold>设置自定义词条"
+  body:
+    - "<white>在下方的文本框修改自定义词条内容"
+    - "<white>然后点击“确认”按钮以保存修改"
+    - ""
+  text_box_title: "<yellow>自定义词条内容"
+  no_button_label: "<white>取消"
+  yes_button_label: "<white>确认"
+
+# 物品
+join_team_item:
   dark_red: brown_wool
   red: red_wool
   gold: orange_wool
@@ -24,13 +51,45 @@ team_item:
   blue: purple_wool
   dark_purple: magenta_wool
   light_purple: pink_wool
+spectator_item: light_gray_wool
+modify_custom_criteria_item: writable_book
 
-sidebar_title: "<shadow:#a0000000><gradient:#ff0000:#EF903E>※ <bold>禁止事项</bold> ※"
-sidebar_entry:
-  name: "{team_name}<white><shadow:#a0aa0000>[<red>❤</red><white>{life:%02d}]"
-  number: "<white><shadow:#a0000000>{criteria}"
-sidebar_entry_dead:
-  name: "<strikethrough>{team_name}<gray><shadow:#a0000000>[💔00]"
-  number: "<gray><shadow:#a0000000>已淘汰"
+# ==== 各方块生成配置 ====
+# 安山岩生成
+andesite_generation:
+  # 深度范围，必须是整数范围。若不同项的范围有重合，则优先使用靠前的项
+  - depth: 1..10
+    # 生成比例
+    ratio: 0.75
+# 煤矿石生成
+coal_ore_generation:
+  - depth: 1..3
+    ratio: 0.10
+  - depth: 4..7
+    ratio: 0.07
+  - depth: 8..10
+    ratio: 0.02
+# 铁矿石生成
+iron_ore_generation:
+  - depth: 4..7
+    ratio: 0.02
+  - depth: 8..10
+    ratio: 0.05
+# 钻石矿石生成
+diamond_ore_generation:
+  - depth: 8..10
+    ratio: 0.01
+# 基岩深度
+bedrock_depth: 11
 
-default_life_count: 10
+
+
+# ==== 可在游戏内动态配置的项 ====
+# 游戏区域大小
+game_area_size: 65
+# 最大规则数量（队伍血量）
+life_count: 10
+# 常规模式下，获取钻石时的行为，可以是reduce_others_life或add_self_life
+# reduce_others_life: 减少其他队伍1点生命值
+# add_self_life: 增加自己队伍1点生命值
+diamond_behavior: reduce_others_life

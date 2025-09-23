@@ -1,7 +1,8 @@
-package net.astrorbits.dontdoit.team
+package net.astrorbits.dontdoit.system.team
 
 import com.google.common.collect.BiMap
 import net.astrorbits.dontdoit.Configs
+import net.astrorbits.dontdoit.criteria.system.CriteriaManager
 import net.astrorbits.dontdoit.system.GameState
 import net.astrorbits.dontdoit.system.GameStateManager
 import net.astrorbits.lib.collection.CollectionHelper.toBiMap
@@ -29,8 +30,8 @@ object TeamManager {
     fun init(server: Server) {
         scoreboard = server.scoreboardManager.newScoreboard
         for ((name, color) in TEAM_COLORS) {
-            val teamName = Configs.getTeamName(color) ?: continue
-            val teamItem = Configs.getTeamItem(color) ?: continue
+            val teamName = Configs.getTeamName(color)
+            val teamItem = Configs.getJoinTeamItemMaterial(color)
             val team = scoreboard.registerNewTeam(name)
             team.color(color)
             team.displayName(teamName)
@@ -48,9 +49,17 @@ object TeamManager {
         }
     }
 
+    fun joinTeam(player: Player, color: NamedTextColor) {
+        getTeam(color).team.addPlayer(player)
+    }
+
+    fun leaveTeam(player: Player) {
+        getTeam(player)?.team?.removePlayer(player)
+    }
+
     /** 更新计分板显示 */
     fun updateSidebars() {
-        val teams = this.teams
+        val teams = teams
         for (teamData in teams) {
             val otherTeams = teams.filter { it !== teamData }
             teamData.updateSidebar(otherTeams)
@@ -67,6 +76,22 @@ object TeamManager {
 
     fun getWinner(): TeamData? {
         return _teams.firstOrNull { !it.isDead }
+    }
+
+    fun onStartGame() {
+        for (teamData in teams) {
+            if (teamData.hasMember) {
+                teamData.isInUse = true
+                teamData.criteria = CriteriaManager.getRandomCriteria()
+            }
+        }
+    }
+
+    fun onEnterPreparation() {
+        for (teamData in teams) {
+            teamData.criteria = null
+            teamData.isInUse = false
+        }
     }
 
     fun tick(currentState: GameState) {

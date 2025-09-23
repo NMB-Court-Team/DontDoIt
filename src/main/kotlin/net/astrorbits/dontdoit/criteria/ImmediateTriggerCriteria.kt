@@ -3,7 +3,7 @@ package net.astrorbits.dontdoit.criteria
 import net.astrorbits.dontdoit.DontDoIt
 import net.astrorbits.dontdoit.criteria.helper.CriteriaType
 import net.astrorbits.dontdoit.system.CriteriaChangeReason
-import net.astrorbits.dontdoit.team.TeamData
+import net.astrorbits.dontdoit.system.team.TeamData
 import net.astrorbits.lib.math.Duration
 import net.astrorbits.lib.task.TaskBuilder
 import net.astrorbits.lib.task.TaskType

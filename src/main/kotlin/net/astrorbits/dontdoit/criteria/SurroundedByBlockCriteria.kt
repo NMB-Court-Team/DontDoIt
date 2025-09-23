@@ -2,7 +2,7 @@ package net.astrorbits.dontdoit.criteria
 
 import net.astrorbits.dontdoit.criteria.helper.CriteriaType
 import net.astrorbits.dontdoit.criteria.inspect.BlockInspectCandidate
-import net.astrorbits.dontdoit.team.TeamData
+import net.astrorbits.dontdoit.system.team.TeamData
 import net.astrorbits.lib.math.vector.Vec3d
 import net.astrorbits.lib.math.vector.Vec3i.Companion.getBlock
 import org.bukkit.Material

@@ -10,6 +10,7 @@ import io.papermc.paper.registry.data.dialog.action.DialogAction
 import io.papermc.paper.registry.data.dialog.input.DialogInput
 import io.papermc.paper.registry.data.dialog.type.DialogType
 import net.astrorbits.dontdoit.system.DiamondBehavior
+import net.astrorbits.dontdoit.system.generate.BlockGeneration
 import net.astrorbits.lib.text.TextHelper.toMessage
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickCallback
@@ -17,6 +18,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
+import kotlin.math.floor
 
 
 object GlobalSettings {
@@ -40,8 +42,9 @@ object GlobalSettings {
 
     }
 
-    var lifeCount: Int = Configs.DEFAULT_LIFE_COUNT.get()
-    var diamondBehavior: DiamondBehavior = DiamondBehavior.REDUCE_OTHERS_LIFE
+    var gameAreaSize: Int = Configs.GAME_AREA_SIZE.get()
+    var lifeCount: Int = Configs.LIFE_COUNT.get()
+    var diamondBehavior: DiamondBehavior = Configs.DIAMOND_BEHAVIOR.get()
 
     @Suppress("UnstableApiUsage")
     fun openLifeDialog(player: Player) {
@@ -73,10 +76,9 @@ object GlobalSettings {
                             100,
                             DialogAction.customClick( { context, player ->
                                 val value = context.getFloat("life_count")?: 0.0
-                                lifeCount = Math.floor(value.toDouble()).toInt()
+                                lifeCount = floor(value.toDouble()).toInt()
                                 player.sendMessage(Component.text("队伍生命已设置为 $lifeCount"))
                                 isDialogOpen = false
-                                true
                             }, ClickCallback.Options.builder().build())
                         ),
                         ActionButton.create(
@@ -85,7 +87,6 @@ object GlobalSettings {
                             100,
                             DialogAction.customClick( { _, _ ->
                                 isDialogOpen = false
-                                true
                             }, ClickCallback.Options.builder().build())
                         )
                     )
@@ -94,5 +95,4 @@ object GlobalSettings {
 
         player.showDialog(dialog)
     }
-
 }

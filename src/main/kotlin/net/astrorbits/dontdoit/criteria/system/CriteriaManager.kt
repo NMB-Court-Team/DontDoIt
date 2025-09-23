@@ -1,13 +1,19 @@
 package net.astrorbits.dontdoit.criteria.system
 
+import it.unimi.dsi.fastutil.objects.Object2ReferenceMap
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap
-import it.unimi.dsi.fastutil.objects.ReferenceArrayList
+import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet
 import net.astrorbits.dontdoit.DontDoIt
 import net.astrorbits.dontdoit.criteria.*
+import net.astrorbits.dontdoit.criteria.builtin.UserDefinedCriteria
+import net.astrorbits.dontdoit.criteria.builtin.YLevelCriteria
+import net.astrorbits.dontdoit.criteria.helper.BuiltinCriteria
 import net.astrorbits.dontdoit.criteria.helper.MoveType
-import net.astrorbits.dontdoit.team.TeamData
-import net.astrorbits.dontdoit.team.TeamManager
+import net.astrorbits.dontdoit.criteria.helper.YLevelType
+import net.astrorbits.dontdoit.system.team.TeamData
+import net.astrorbits.dontdoit.system.team.TeamManager
 import net.astrorbits.lib.config.Config
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
@@ -22,12 +28,12 @@ object CriteriaManager {
     lateinit var allCriteriaConfigData: CriteriaConfigData
 
     private val _allCriteriaTypes: Object2ReferenceOpenHashMap<String, Supplier<Criteria>> = Object2ReferenceOpenHashMap()
-    private val _allCriteria: ReferenceArrayList<Criteria> = ReferenceArrayList()
+    private val _allCriteria: ReferenceOpenHashSet<Criteria> = ReferenceOpenHashSet()
 
     val allCriteriaTypes: Map<String, Supplier<Criteria>>
         get() = _allCriteriaTypes
-    val allCriteria: List<Criteria>
-        get() = _allCriteria
+    val allCriteria: Set<Criteria>
+        get() = _allCriteria.filter { if (it is BuiltinCriteria) it.shouldUse() else true }.toSet()
 
     fun trigger(criteria: Criteria, player: Player) {
         val teamData = TeamManager.getTeam(player) ?: return
@@ -100,8 +106,6 @@ object CriteriaManager {
         _allCriteriaTypes[id] = initializer
     }
 
-    private val listeners: ReferenceArrayList<Listener> = ReferenceArrayList()
-
     private fun loadFromConfig(plugin: JavaPlugin) {
         val pluginManager = plugin.server.pluginManager
 
@@ -122,6 +126,46 @@ object CriteriaManager {
                     pluginManager.registerEvents(criteria, plugin)
                 }
             }
+        }
+    }
+
+    fun onServerLoadInit() {
+        addUserDefinedCriteria()
+        addYLevelCriteria()
+    }
+
+    lateinit var userDefinedCriteria: Object2ReferenceMap<NamedTextColor, UserDefinedCriteria>
+    lateinit var yLevelCriteria: Object2ReferenceMap<YLevelType, YLevelCriteria>
+
+    fun addUserDefinedCriteria() {
+        val criteria = Object2ReferenceOpenHashMap<NamedTextColor, UserDefinedCriteria>()
+        for ((_, color) in TeamManager.TEAM_COLORS) {
+            criteria[color] = UserDefinedCriteria(color)
+        }
+        _allCriteria.addAll(criteria.values)
+        userDefinedCriteria = criteria
+    }
+
+    fun addYLevelCriteria() {
+        val criteria = Object2ReferenceOpenHashMap<YLevelType, YLevelCriteria>()
+        for (type in YLevelType.entries) {
+            val c = YLevelCriteria()
+            c.setBorder(Int.MIN_VALUE, type.belowBorder)
+            criteria[type] = c
+        }
+        _allCriteria.addAll(criteria.values)
+        yLevelCriteria = criteria
+    }
+
+    fun updateUserDefinedCriteria(names: Map<NamedTextColor, String>) {
+        for ((color, name) in names) {
+            userDefinedCriteria[color]?.setName(name)
+        }
+    }
+
+    fun updateYLevelCriteria(groundYLevel: Int) {
+        for ((type, criteria) in yLevelCriteria) {
+            criteria.setBorder(groundYLevel + type.groundOffset, type.belowBorder)
         }
     }
 

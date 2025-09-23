@@ -11,8 +11,8 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.command.brigadier.argument.CustomArgumentType
 import net.astrorbits.dontdoit.criteria.helper.CriteriaType
-import net.astrorbits.dontdoit.team.TeamData
-import net.astrorbits.dontdoit.team.TeamManager
+import net.astrorbits.dontdoit.system.team.TeamData
+import net.astrorbits.dontdoit.system.team.TeamManager
 import net.astrorbits.lib.command.CommandHelper
 import net.astrorbits.lib.text.TextHelper.toMessage
 import net.kyori.adventure.text.Component
