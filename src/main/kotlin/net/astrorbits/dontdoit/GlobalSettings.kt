@@ -4,11 +4,20 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.dialog.Dialog
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
+import io.papermc.paper.registry.data.dialog.ActionButton
+import io.papermc.paper.registry.data.dialog.DialogBase
+import io.papermc.paper.registry.data.dialog.action.DialogAction
+import io.papermc.paper.registry.data.dialog.input.DialogInput
+import io.papermc.paper.registry.data.dialog.type.DialogType
 import net.astrorbits.dontdoit.system.DiamondBehavior
 import net.astrorbits.lib.text.TextHelper.toMessage
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.event.ClickCallback
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextColor
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
+
 
 object GlobalSettings {
     private const val COMMAND_NAME = "settings"
@@ -20,7 +29,7 @@ object GlobalSettings {
             .executes { ctx ->
                 if (isDialogOpen) throw DIALOG_IS_OPEN.create()
                 val player = ctx.source.sender as Player
-                player.showDialog(createDialog())
+                openLifeDialog(player)
                 isDialogOpen = true
                 return@executes 1
             }.build()
@@ -28,12 +37,62 @@ object GlobalSettings {
             val registrar = event.registrar()
             registrar.register(node)
         })
+
     }
 
     var lifeCount: Int = Configs.DEFAULT_LIFE_COUNT.get()
     var diamondBehavior: DiamondBehavior = DiamondBehavior.REDUCE_OTHERS_LIFE
 
-    fun createDialog(): Dialog {
-        TODO()
+    @Suppress("UnstableApiUsage")
+    fun openLifeDialog(player: Player) {
+        val dialog = Dialog.create { builder ->
+            builder.empty()
+                .base(
+                    DialogBase.builder(Component.text("设置队伍生命"))
+                        .inputs(
+                            listOf(
+                                DialogInput.numberRange(
+                                    "life_count", // 输入字段 ID
+                                    Component.text("队伍生命", NamedTextColor.LIGHT_PURPLE),
+                                    1f, 99f // min, max
+                                )
+                                    .step(1f) // 步长
+                                    .initial(lifeCount.toFloat()) // 初始值
+                                    .labelFormat("%s: %s") // 格式化文本
+                                    .width(300)
+                                    .build()
+                            )
+                        )
+                        .build()
+                )
+                .type(
+                    DialogType.confirmation(
+                        ActionButton.create(
+                            Component.text("确认✔", TextColor.color(0xAEFFC1)),
+                            Component.text("保存设置"),
+                            100,
+                            DialogAction.customClick( { context, player ->
+                                val value = context.getFloat("life_count")?: 0.0
+                                lifeCount = Math.floor(value.toDouble()).toInt()
+                                player.sendMessage(Component.text("队伍生命已设置为 $lifeCount"))
+                                isDialogOpen = false
+                                true
+                            }, ClickCallback.Options.builder().build())
+                        ),
+                        ActionButton.create(
+                            Component.text("取消❌", TextColor.color(0xFFA0B1)),
+                            Component.text("放弃更改"),
+                            100,
+                            DialogAction.customClick( { _, _ ->
+                                isDialogOpen = false
+                                true
+                            }, ClickCallback.Options.builder().build())
+                        )
+                    )
+                )
+        }
+
+        player.showDialog(dialog)
     }
+
 }

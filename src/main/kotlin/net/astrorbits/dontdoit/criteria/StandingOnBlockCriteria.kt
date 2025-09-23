@@ -29,10 +29,12 @@ class StandingOnBlockCriteria : Criteria(), Listener, BlockInspectCandidate {
 
     override fun tick(teamData: TeamData) {
         for (player in teamData.members) {
+            @Suppress("DEPRECATION")
             if (isWildcard && reversed && !player.isOnGround) {
                 trigger(player)
                 break
             }
+            @Suppress("DEPRECATION")
             if (player.isOnGround) {
                 val world = player.world
                 val groundPos = player.location.clone().add(0.0, -0.01, 0.0)

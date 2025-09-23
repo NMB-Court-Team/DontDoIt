@@ -87,6 +87,7 @@ sealed class MoveType {
 
     data object OnAir : MoveType() {
         override fun isMoving(player: Player): Boolean {
+            @Suppress("DEPRECATION")
             return !player.isOnGround
         }
     }
