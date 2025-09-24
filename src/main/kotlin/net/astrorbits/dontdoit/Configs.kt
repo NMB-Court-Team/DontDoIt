@@ -99,7 +99,7 @@ object Configs {
     // 物品
     val JOIN_TEAM_ITEM: ParserMapConfigData<NamedTextColor, Material> = CONFIG.defineConfig(ParserMapConfigData(
         "join_team_item",
-        TEAM_COLORS.inverse().mapValues { Material.STONE },
+        TEAM_COLORS.inverse().mapValues { Material.STICK },
         { TEAM_COLORS[it]!! },
         ::parseMaterial
     ))

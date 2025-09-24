@@ -69,7 +69,7 @@ object Preparation : Listener {
     @EventHandler
     fun onItemSwap(event: PlayerSwapHandItemsEvent) {
         if (!GameStateManager.isWaiting()) return
-        if (event.mainHandItem.isPrepareGameItem() || event.offHandItem.isPrepareGameItem()) {
+        if (event.offHandItem.isPrepareGameItem()) {
             event.isCancelled = true
         }
     }
@@ -168,6 +168,7 @@ object Preparation : Listener {
     }
 
     private fun createJoinTeamItem(color: NamedTextColor): ItemStack {
+        DontDoIt.LOGGER.info(color.toString())
         val material = getJoinTeamItemMaterial(color)
         val item = ItemStack.of(Material.STICK, 1)
         val itemMeta = item.itemMeta
