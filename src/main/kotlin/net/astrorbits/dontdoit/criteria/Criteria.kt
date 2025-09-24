@@ -36,7 +36,7 @@ abstract class Criteria {
      * @param teamData 绑定了此词条的队伍
      * @param reason 切换词条的原因
      */
-    open fun onBind(teamData: TeamData, reason: CriteriaChangeReason) {  //TODO 调用
+    open fun onBind(teamData: TeamData, reason: CriteriaChangeReason) {
         holders.add(teamData)
     }
 
@@ -50,7 +50,7 @@ abstract class Criteria {
      * @param teamData 解除绑定了此词条的队伍
      * @param reason 切换词条的原因
      */
-    open fun onUnbind(teamData: TeamData, reason: CriteriaChangeReason) {  //TODO 调用
+    open fun onUnbind(teamData: TeamData, reason: CriteriaChangeReason) {
         holders.remove(teamData)
     }
 

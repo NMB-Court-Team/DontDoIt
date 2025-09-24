@@ -17,13 +17,21 @@ abstract class Timer {
         set(value) {
             _currentTime = value.ticks.toInt()
         }
+    var currentTimeTicks: Int
+        get() = _currentTime
+        set(value) { _currentTime = value }
     var startTime: Duration
         get() = Duration.ticks(_startTime.toDouble())
         set(value) {
             _startTime = value.ticks.toInt()
         }
+    var startTimeTicks: Int
+        get() = _startTime
+        set(value) { _startTime = value }
     val elapsedTime: Duration
         get() = if (timerType == TimerType.TIMING) currentTime else startTime - currentTime
+    val elapsedTimeTicks: Int
+        get() = if (timerType == TimerType.TIMING) _currentTime else _startTime - _currentTime
 
     constructor(plugin: JavaPlugin) {
         this.plugin = plugin

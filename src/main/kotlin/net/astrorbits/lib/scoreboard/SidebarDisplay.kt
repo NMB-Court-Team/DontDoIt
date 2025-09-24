@@ -17,13 +17,20 @@ import org.bukkit.scoreboard.Scoreboard
  * 对所有需要被显示的玩家显示的内容都一样的侧边栏
  */
 class SidebarDisplay {
-    private val scoreboard: Scoreboard = Bukkit.getScoreboardManager().newScoreboard
+    val scoreboard: Scoreboard = Bukkit.getScoreboardManager().newScoreboard
     private val uid: Int = getUid()
-    private var objective: Objective = scoreboard.registerNewObjective(
+    var objective: Objective = scoreboard.registerNewObjective(
         objectiveName(uid),
         Criteria.DUMMY,
         Component.empty()
     )
+
+    constructor()
+
+    constructor(title: Component, content: List<ScoreEntry> = emptyList()) {
+        this.title = title
+        this.content = content
+    }
 
     var lineCount: Int = 0
 
@@ -33,7 +40,7 @@ class SidebarDisplay {
     var content: List<ScoreEntry> = emptyList()
         get() {
             val scores = ArrayList<Score>()
-            for (i in 0..lineCount) {
+            for (i in 0 until lineCount) {
                 scores.add(objective.getScore(scoreName(i)))
             }
             return scores.map { score ->
@@ -59,15 +66,6 @@ class SidebarDisplay {
             field = value
         }
 
-    fun clearDisplay() {
-        unregisterDisplay()
-        objective = scoreboard.registerNewObjective(
-            objectiveName(uid),
-            Criteria.DUMMY,
-            Component.empty()
-        )
-    }
-
     fun hide() {
         objective.displaySlot = null
     }
@@ -87,7 +85,7 @@ class SidebarDisplay {
     }
 
     fun removePlayer(player: Player) {
-        player.scoreboard = emptyScoreboard
+        player.scoreboard = Bukkit.getScoreboardManager().mainScoreboard
     }
 
     data class ScoreEntry(val name: Component, val number: Component)
@@ -98,8 +96,6 @@ class SidebarDisplay {
         private fun getUid(): Int {
             return globalUid++
         }
-
-        private val emptyScoreboard: Scoreboard by lazy { Bukkit.getScoreboardManager().newScoreboard }
 
         private fun scoreName(index: Int): String = "line.$index"
         private fun objectiveName(uid: Int): String = "sidebar_display.$uid"

@@ -181,7 +181,7 @@ object Configs {
     val GUESS_HINT_MESSAGE: TextConfigData = CONFIG.defineConfig(TextConfigData(
         "guess_hint_message",
         "<yellow>输入<light_purple><hover:show_text:'<aqua>点击填入聊天框'><click:suggest_command:/criteria guess>" +
-            "/criteria guess \\<玩家名\\> \\<是否猜中\\></click></hover> <yellow>来标记玩家是否猜中词条"
+            "/criteria guess \\<玩家名> \\<是否猜中></click></hover> <yellow>来标记玩家是否猜中词条"
     ))
     val GUESS_COOLDOWN_FINISHED_MESSAGE: TextConfigData = CONFIG.defineConfig(TextConfigData(
         "guess_cooldown_finished_message",

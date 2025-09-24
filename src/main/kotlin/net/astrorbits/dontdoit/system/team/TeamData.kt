@@ -4,6 +4,7 @@ import net.astrorbits.dontdoit.Configs
 import net.astrorbits.dontdoit.DontDoIt
 import net.astrorbits.dontdoit.DynamicSettings
 import net.astrorbits.dontdoit.criteria.Criteria
+import net.astrorbits.dontdoit.criteria.helper.CriteriaType
 import net.astrorbits.dontdoit.criteria.system.CriteriaManager
 import net.astrorbits.dontdoit.system.CriteriaChangeReason
 import net.astrorbits.dontdoit.system.GameState
@@ -13,6 +14,7 @@ import net.astrorbits.lib.math.Duration
 import net.astrorbits.lib.scoreboard.SidebarDisplay
 import net.astrorbits.lib.task.Timer
 import net.astrorbits.lib.task.TimerType
+import net.astrorbits.lib.text.TextHelper.append
 import net.astrorbits.lib.text.TextHelper.clickRunCommand
 import net.astrorbits.lib.text.TextHelper.format
 import net.kyori.adventure.text.Component
@@ -25,7 +27,8 @@ import org.bukkit.SoundCategory
 import org.bukkit.entity.Player
 import org.bukkit.scoreboard.Team
 
-class TeamData(val color: NamedTextColor, val team: Team) {
+class TeamData(val color: NamedTextColor) {
+    val team: Team
     val teamId: String
         get() = team.name
     val teamName: Component
@@ -42,7 +45,7 @@ class TeamData(val color: NamedTextColor, val team: Team) {
         private set
     val isEliminated: Boolean
         get() = lifeCount <= 0
-    val sidebarDisplay: SidebarDisplay = SidebarDisplay()
+    val sidebarDisplay: SidebarDisplay = SidebarDisplay(Configs.SIDEBAR_TITLE.get())
     var criteria: Criteria? = null
         set(value) {
             TeamManager.updateSidebars()
@@ -59,7 +62,8 @@ class TeamData(val color: NamedTextColor, val team: Team) {
             criteria?.tick(this@TeamData)
 
             // 自定义词条消息
-            if ((currentTime.seconds.toInt() - CUSTOM_CRITERIA_ANNOUNCE_DELAY_SEC) % CUSTOM_CRITERIA_ANNOUNCE_COOLDOWN_SEC == 0) {
+            if (criteria?.type != CriteriaType.USER_DEFINED) return
+            if ((currentTimeTicks - CUSTOM_CRITERIA_ANNOUNCE_DELAY_SEC * 20) % (CUSTOM_CRITERIA_ANNOUNCE_COOLDOWN_SEC * 20) == 0) {
                 broadcastOtherTeams(
                     Component.empty().append(
                         Configs.HOLDING_CUSTOM_CRITERIA_MESSAGE.get().format(
@@ -99,8 +103,30 @@ class TeamData(val color: NamedTextColor, val team: Team) {
     }
 
     init {
-        sidebarDisplay.hide()
-        sidebarDisplay.title = Configs.SIDEBAR_TITLE.get()
+        val teamName = Configs.getTeamName(color)
+        val team = sidebarDisplay.scoreboard.registerNewTeam(TeamManager.TEAM_COLORS.inverse()[color]!!)
+        team.color(color)
+        team.displayName(teamName)
+        team.prefix(Component.text("[").color(color).append(teamName).append("]"))
+        this.team = team
+    }
+
+    fun join(player: Player) {
+        team.addPlayer(player)
+        setPlayerDisplayName(player)
+        sidebarDisplay.addPlayer(player)
+    }
+
+    fun setPlayerDisplayName(player: Player) {
+        val displayName = Component.empty().append(team.prefix()).append(Component.text(player.name).color(color))
+        player.displayName(displayName)
+        player.playerListName(displayName)
+    }
+
+    fun leave(player: Player) {
+        team.removePlayer(player)
+        TeamManager.setSpectatorDisplayName(player)
+        sidebarDisplay.removePlayer(player)
     }
 
     fun onGameStart() {
@@ -212,6 +238,7 @@ class TeamData(val color: NamedTextColor, val team: Team) {
                 0.0, null, true
             )
         }
+        mainTimer.resetAndStart()
     }
 
     private val allowGuess: Boolean
@@ -292,6 +319,7 @@ class TeamData(val color: NamedTextColor, val team: Team) {
         }
 
         guessCooldownTimer.start()
+        mainTimer.resetAndStart()
         return null
     }
 

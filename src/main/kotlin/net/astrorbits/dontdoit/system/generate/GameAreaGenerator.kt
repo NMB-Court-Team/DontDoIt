@@ -49,6 +49,7 @@ object GameAreaGenerator : Listener {
         }
 
         this.world = world
+        world.difficulty = Difficulty.NORMAL
         center = centerLoc
         groundYLevel = generateCenter.y
 
@@ -138,6 +139,7 @@ object GameAreaGenerator : Listener {
     }
 
     fun onEnterPreparation() {
+        world?.difficulty = Difficulty.PEACEFUL
         world?.worldBorder?.reset()
         world = null
         center = null

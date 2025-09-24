@@ -16,6 +16,7 @@ import net.astrorbits.lib.text.TitleHelper
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.title.Title
 import org.bukkit.Bukkit
+import org.bukkit.Difficulty
 import org.bukkit.entity.Player
 import org.bukkit.scheduler.BukkitTask
 
@@ -45,6 +46,11 @@ object GameStateManager {
             Component.empty(),
             5, 50, 10
         ))
+        Bukkit.getOnlinePlayers().forEach { player ->
+            player.isInvulnerable = false
+            player.allowFlight = false
+            player.inventory.clear()
+        }
     }
 
     const val TRIGGER_COUNT_PLACEHOLDER = "count"

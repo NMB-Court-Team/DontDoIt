@@ -13,7 +13,6 @@ import net.astrorbits.dontdoit.system.team.TeamData.Companion.TEAM_NAME_PLACEHOL
 import net.astrorbits.lib.collection.CollectionHelper.toBiMap
 import net.astrorbits.lib.scoreboard.SidebarDisplay
 import net.astrorbits.lib.task.Timer
-import net.astrorbits.lib.text.TextHelper.append
 import net.astrorbits.lib.text.TextHelper.format
 import net.astrorbits.lib.text.TextHelper.gray
 import net.kyori.adventure.text.Component
@@ -24,8 +23,6 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.event.player.PlayerJoinEvent
-import org.bukkit.scoreboard.Scoreboard
-import java.util.UUID
 
 object TeamManager : Listener {
     val TEAM_COLORS: BiMap<String, NamedTextColor> = setOf(
@@ -39,7 +36,6 @@ object TeamManager : Listener {
         NamedTextColor.DARK_PURPLE
     ).associateBy { NamedTextColor.NAMES.valueToKey()[it]!! }.toBiMap()
 
-    lateinit var scoreboard: Scoreboard
     private val _teams: MutableList<TeamData> = mutableListOf()
     val spectatorSidebarDisplay: SidebarDisplay = SidebarDisplay()
 
@@ -49,17 +45,9 @@ object TeamManager : Listener {
     fun init(server: Server) {
         server.pluginManager.registerEvents(this, DontDoIt.instance)
 
-        scoreboard = server.scoreboardManager.newScoreboard
-        for ((name, color) in TEAM_COLORS) {
-            val teamName = Configs.getTeamName(color)
-            val team = scoreboard.registerNewTeam(name)
-            team.color(color)
-            team.displayName(teamName)
-            team.prefix(Component.text("[").color(color).append(teamName).append("]"))
-            val teamData = TeamData(color, team)
-            _teams.add(teamData)
+        for ((_, color) in TEAM_COLORS) {
+            _teams.add(TeamData(color))
         }
-        spectatorSidebarDisplay.hide()
         spectatorSidebarDisplay.title = Configs.SIDEBAR_TITLE.get()
     }
 
@@ -72,14 +60,18 @@ object TeamManager : Listener {
     }
 
     fun joinTeam(player: Player, color: NamedTextColor) {
-        val team = getTeam(color).team
-        team.addPlayer(player)
-        player.displayName(Component.empty().append(team.prefix()).append(player.name))
+        leaveTeam(player)
+        getTeam(color).join(player)
     }
 
     fun leaveTeam(player: Player) {
-        getTeam(player)?.team?.removePlayer(player)
-        player.displayName(Component.text(player.name).gray())
+        getTeam(player)?.leave(player)
+    }
+
+    fun setSpectatorDisplayName(player: Player) {
+        val displayName = Component.text(player.name).gray()
+        player.displayName(displayName)
+        player.playerListName(displayName)
     }
 
     /** 更新计分板显示 */
@@ -122,18 +114,23 @@ object TeamManager : Listener {
 
     @EventHandler
     fun onJoinServer(event: PlayerJoinEvent) {
+        if (GameStateManager.isWaiting()) return
         val player = event.player
-        if (getTeam(player) == null) {
+        val team = getTeam(player)
+        if (team == null) {
             spectatorSidebarDisplay.addPlayer(player)
             player.gameMode = GameMode.SPECTATOR
+            setSpectatorDisplayName(player)
+        } else {
+            team.setPlayerDisplayName(player)
         }
     }
 
-    private val announceGuessTimer: Timer = object : Timer(DontDoIt.instance) {
+    private val guessHintAnnounceTimer: Timer = object : Timer(DontDoIt.instance) {
         override fun onStart() { }
         override fun onTick() {
-            if ((currentTime.seconds.toInt() - GUESS_ANNOUNCE_DELAY_SEC) % GUESS_ANNOUNCE_COOLDOWN_SEC == 0) {
-                getInUseTeams().values.forEach{ it.broadcast(Configs.GUESS_HINT_MESSAGE.get()) }
+            if ((currentTimeTicks - GUESS_ANNOUNCE_DELAY_SEC * 20) % (GUESS_ANNOUNCE_COOLDOWN_SEC * 20) == 0) {
+                getInUseTeams().values.forEach { it.broadcast(Configs.GUESS_HINT_MESSAGE.get()) }
             }
         }
         override fun onStop() { }
@@ -149,17 +146,20 @@ object TeamManager : Listener {
             }
         }
         for (player in Bukkit.getOnlinePlayers()) {
-            if (getTeam(player) == null) {
+            val team = getTeam(player)
+            if (team == null) {
                 player.gameMode = GameMode.SPECTATOR
                 spectatorSidebarDisplay.addPlayer(player)
             } else {
                 player.gameMode = GameMode.SURVIVAL
                 spectatorSidebarDisplay.removePlayer(player)
+                team.sidebarDisplay.addPlayer(player)
             }
         }
         if (DynamicSettings.allowGuessCriteria) {
-            announceGuessTimer.start()
+            guessHintAnnounceTimer.start()
         }
+        updateSidebars()
     }
 
     fun tryEndGame() {
@@ -169,7 +169,7 @@ object TeamManager : Listener {
     }
 
     fun onGameEnd() {
-        announceGuessTimer.reset()
+        guessHintAnnounceTimer.reset()
         teams.forEach { team -> team.onGameEnd() }
     }
 

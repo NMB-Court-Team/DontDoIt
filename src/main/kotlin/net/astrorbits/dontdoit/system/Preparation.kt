@@ -11,7 +11,6 @@ import net.astrorbits.dontdoit.Configs
 import net.astrorbits.dontdoit.Configs.getJoinTeamItemMaterial
 import net.astrorbits.dontdoit.DontDoIt
 import net.astrorbits.dontdoit.DynamicSettings
-import net.astrorbits.dontdoit.system.generate.GameAreaGenerator
 import net.astrorbits.dontdoit.system.team.TeamData
 import net.astrorbits.dontdoit.system.team.TeamManager
 import net.astrorbits.lib.item.ItemHelper.getBoolPdc
@@ -20,6 +19,7 @@ import net.astrorbits.lib.math.Duration
 import net.astrorbits.lib.task.TaskBuilder
 import net.astrorbits.lib.task.TaskType
 import net.astrorbits.lib.text.TextHelper.format
+import net.astrorbits.lib.text.TextHelper.gray
 import net.astrorbits.lib.text.TextHelper.red
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickCallback
@@ -42,23 +42,37 @@ import org.bukkit.plugin.java.JavaPlugin
 object Preparation : Listener {
     fun onEnterPreparation() {
         for (player in Bukkit.getOnlinePlayers()) {
-            player.inventory.clear()
-            putPrepareGameItems(player)
+            setPrepared(player)
         }
     }
 
-    fun putPrepareGameItems(player: Player) {
+    private fun setPrepared(player: Player) {
+        player.inventory.clear()
+        putPrepareGameItemsAndSetDisplay(player)
+        player.gameMode = GameMode.ADVENTURE
+        player.isInvulnerable = true
+        player.allowFlight = true
+    }
+
+    fun putPrepareGameItemsAndSetDisplay(player: Player) {
         player.sendMessage(Configs.ENTER_PREPARE_MESSAGE.get())
-        player.inventory.setItem(TEAM_ITEM_SLOT, createSpectatorTeamItem())
+        val team = TeamManager.getTeam(player)
+        if (team == null) {
+            player.inventory.setItem(TEAM_ITEM_SLOT, createSpectatorTeamItem())
+            TeamManager.setSpectatorDisplayName(player)
+        } else {
+            player.inventory.setItem(TEAM_ITEM_SLOT, createJoinTeamItem(team.color))
+            player.inventory.setItem(MODIFY_CUSTOM_CRITERIA_ITEM_SLOT, createModifyCustomCriteriaItem())
+            team.setPlayerDisplayName(player)
+            team.sidebarDisplay.addPlayer(player)
+        }
         putStartGameItem(player)
     }
 
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
         if (!GameStateManager.isWaiting()) return
-        event.player.inventory.clear()
-        putPrepareGameItems(event.player)
-        event.player.gameMode = GameMode.ADVENTURE
+        setPrepared(event.player)
     }
 
     @EventHandler

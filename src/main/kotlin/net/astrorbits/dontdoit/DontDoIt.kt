@@ -2,9 +2,11 @@ package net.astrorbits.dontdoit
 
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import net.astrorbits.dontdoit.criteria.system.CriteriaManager
+import net.astrorbits.dontdoit.debug.DebugCommand
 import net.astrorbits.dontdoit.system.CriteriaCommand
 import net.astrorbits.dontdoit.system.Preparation
 import net.astrorbits.dontdoit.system.GameStateManager
+import org.bukkit.Difficulty
 import org.bukkit.NamespacedKey
 import org.bukkit.Server
 import org.bukkit.plugin.java.JavaPlugin
@@ -25,7 +27,9 @@ class DontDoIt : JavaPlugin() {
         lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
             val registrar = event.registrar()
             CriteriaCommand.register(registrar)
+            DebugCommand.register(registrar)
         }
+        server.worlds.forEach { it.difficulty = Difficulty.PEACEFUL }
     }
 
     override fun onDisable() {
