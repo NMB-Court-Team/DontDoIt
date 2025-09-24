@@ -67,9 +67,6 @@ eliminated_message:
   title: "{team_name}"
   subtitle: "<dark_red>已淘汰"
 
-
-
-
 # 侧边栏
 sidebar:
   title: "<shadow:#a0000000><gradient:#ff0000:#EF903E>※ <bold>禁止事项</bold> ※"
@@ -92,7 +89,7 @@ modify_custom_criteria:
   no_button_label: "<white>取消"
   yes_button_label: "<white>确认"
 
-# /criteria 命令的文本
+# /criteria命令的文本
 criteria_command:
   failed:
     game_not_start: "游戏尚未开始"

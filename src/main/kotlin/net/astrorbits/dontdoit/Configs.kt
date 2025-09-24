@@ -21,33 +21,12 @@ object Configs {
         DontDoIt.LOGGER
     )
 
-    // 游戏文本
+    //region 游戏文本
     val TEAM_NAME: ParserMapConfigData<NamedTextColor, Component> = CONFIG.defineConfig(ParserMapConfigData(
         "team_name",
         TEAM_COLORS.inverse().mapValues { (color, name) -> Component.empty().append(Component.text(name).color(color).bold().shadowColor(0xa0000000.toInt())) },
         { TEAM_COLORS[it]!! },
         { TextHelper.parseMiniMessage(it) }
-    ))
-
-    val SIDEBAR_TITLE: TextConfigData = CONFIG.defineConfig(TextConfigData(
-        "sidebar.title",
-        "<shadow:#a0000000><gradient:#ff0000:#EF903E>※ <bold>禁止事项</bold> ※"
-    ))
-    val SIDEBAR_ENTRY_NAME: TextConfigData = CONFIG.defineConfig(TextConfigData(
-        "sidebar.entry.name",
-        "{team_name}<white><shadow:#a0aa0000>[<red>❤</red><white>{life:%02d}]"
-    ))
-    val SIDEBAR_ENTRY_NUMBER: TextConfigData = CONFIG.defineConfig(TextConfigData(
-        "sidebar.entry.number",
-        "<white><shadow:#a0000000>{criteria}"
-    ))
-    val SIDEBAR_ENTRY_DEAD_NAME: TextConfigData = CONFIG.defineConfig(TextConfigData(
-        "sidebar.entry_dead.name",
-        "<strikethrough>{team_name}<gray><shadow:#a0000000>[\uD83D\uDC9400]"
-    ))
-    val SIDEBAR_ENTRY_DEAD_NUMBER: TextConfigData = CONFIG.defineConfig(TextConfigData(
-        "sidebar.entry_dead.number",
-        "<gray><shadow:#a0000000>已淘汰"
     ))
 
     val CHANGE_TEAM_ITEM_NAME: TextConfigData = CONFIG.defineConfig(TextConfigData(
@@ -63,6 +42,12 @@ object Configs {
         "<italic:false><aqua>[<key:key.use>]<gold>开始游戏！"
     ))
 
+    val CUSTOM_CRITERIA_NAME_PREFIX: StringConfigData = CONFIG.defineConfig(StringConfigData(
+        "custom_criteria_name_prefix",
+        "[自定义]"
+    ))
+
+    //region 准备阶段的消息
     val JOIN_SPECTATOR_MESSAGE: TextConfigData = CONFIG.defineConfig(TextConfigData(
         "join_spectator",
         "<yellow>你现在是<gray><bold>旁观者"
@@ -99,7 +84,152 @@ object Configs {
         "enter_prepare_message",
         "<yellow>请使用手上的物品<green><bold>选择队伍</bold><yellow>，然后设置<green><bold>自定义词条"
     ))
+    //endregion
 
+    //region 游戏切换阶段的消息
+    val START_GAME_MESSAGE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "start_game_message",
+        "<green><bold>游戏开始！"
+    ))
+    val END_GAME_ANNOUNCE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "end_game_message.announce",
+        "{team_name} <gold>获得胜利"
+    ))
+    val END_GAME_TITLE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "end_game_message.title",
+        "{team_name}"
+    ))
+    val END_GAME_SUBTITLE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "end_game_message.subtitle",
+        "<gold>获得胜利"
+    ))
+    val RESET_GAME_MESSAGE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "reset_game_message",
+        "<yellow>游戏已重置"
+    ))
+    //endregion
+
+    //region 触发次数统计
+    val TRIGGER_COUNT_HEAD: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "trigger_count_message.head",
+        "<gray>=====<yellow>触发次数<gray>====="
+    ))
+    val TRIGGER_COUNT_BODY: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "trigger_count_message.body",
+        "{player}<white>: <green>{count}"
+    ))
+    val TRIGGER_COUNT_TAIL: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "trigger_count_message.tail",
+        "<gray>================"
+    ))
+    //endregion
+
+    //region 游戏进行时的消息
+    val INGAME_ACTIONBAR: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "ingame_actionbar",
+        "<green>距离更换词条还有：<red>{time}秒  <green>剩余规则数量：<red>{life_count}"
+    ))
+    val CRITERIA_TRIGGERED_ANNOUNCE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "criteria_triggered_message.announce",
+        "{who_triggered} <gold>触发了规则 {criteria}"
+    ))
+    val CRITERIA_TRIGGERED_TITLE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "criteria_triggered_message.title",
+        "{criteria}"
+    ))
+    val CRITERIA_TRIGGERED_SUBTITLE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "criteria_triggered_message.subtitle",
+        "{who_triggered} <gold>触发了规则"
+    ))
+    val AUTO_CHANGE_CRITERIA_ANNOUNCE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "auto_change_criteria_message.announce",
+        "{team_name} <yellow>更换了词条，上一个词条是：{criteria}"
+    ))
+    val AUTO_CHANGE_CRITERIA_TITLE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "auto_change_criteria_message.title",
+        "词条更换"
+    ))
+    val GET_DIAMOND_MESSAGE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "get_diamond_message",
+        "{player} <yellow>获得了 <aqua>钻石"
+    ))
+    val HOLDING_CUSTOM_CRITERIA_MESSAGE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "holding_custom_criteria_message",
+        "{team_name} <yellow>拥有自定义规则 【{criteria}<yellow>】"
+    ))
+    val HOLDING_CUSTOM_CRITERIA_CLICK_MESSAGE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "holding_custom_criteria_click_message",
+        "<dark_aqua>【触发规则点这里】"
+    ))
+    val GUESS_HINT_MESSAGE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "guess_hint_message",
+        "<yellow>输入<light_purple><hover:show_text:'<aqua>点击填入聊天框'><click:suggest_command:/criteria guess>" +
+            "/criteria guess \\<玩家名\\> \\<是否猜中\\></click></hover> <yellow>来标记玩家是否猜中词条"
+    ))
+    val GUESS_SUCCESS_ANNOUNCE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "guessed_message.success.announce",
+        "{player} <yellow>猜中了词条，上一个词条是：{criteria}"
+    ))
+    val GUESS_SUCCESS_TITLE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "guessed_message.success.title",
+        "词条更换"
+    ))
+    val GUESS_SUCCESS_SUBTITLE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "guessed_message.success.subtitle",
+        "<yellow>猜中词条，剩余规则数<green>+{life_count}"
+    ))
+    val GUESS_FAILED_ANNOUNCE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "guessed_message.failed.announce",
+        "{player} <red>猜错了词条，上一个词条是：{criteria}"
+    ))
+    val GUESS_FAILED_TITLE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "guessed_message.failed.title",
+        "词条更换"
+    ))
+    val GUESS_FAILED_SUBTITLE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "guessed_message.failed.subtitle",
+        "<red>猜错词条，剩余规则数<dark_red>-{life_count}"
+    ))
+    val ELIMINATED_ANNOUNCE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "eliminated_message.announce",
+        "{team_name} <dark_red>已淘汰"
+    ))
+    val ELIMINATED_TITLE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "eliminated_message.title",
+        "{team_name}"
+    ))
+    val ELIMINATED_SUBTITLE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "eliminated_message.subtitle",
+        "<dark_red>已淘汰"
+    ))
+    //endregion
+
+    //endregion
+
+    //region 侧边栏
+    val SIDEBAR_TITLE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "sidebar.title",
+        "<shadow:#a0000000><gradient:#ff0000:#EF903E>※ <bold>禁止事项</bold> ※"
+    ))
+    val SIDEBAR_ENTRY_NAME: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "sidebar.entry.name",
+        "{team_name}<white><shadow:#a0aa0000>[<red>❤</red><white>{life:%02d}]"
+    ))
+    val SIDEBAR_ENTRY_NUMBER: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "sidebar.entry.number",
+        "<white><shadow:#a0000000>{criteria}"
+    ))
+    val SIDEBAR_ENTRY_DEAD_NAME: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "sidebar.entry_dead.name",
+        "<strikethrough>{team_name}<gray><shadow:#a0000000>[\uD83D\uDC9400]"
+    ))
+    val SIDEBAR_ENTRY_DEAD_NUMBER: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "sidebar.entry_dead.number",
+        "<gray><shadow:#a0000000>已淘汰"
+    ))
+    //endregion
+
+    //region 自定义词条
     val MODIFY_CUSTOM_CRITERIA_TITLE: TextConfigData = CONFIG.defineConfig(TextConfigData(
         "modify_custom_criteria.title",
         "<aqua><bold>设置自定义词条"
@@ -124,7 +254,9 @@ object Configs {
         "modify_custom_criteria.yes_button_label",
         "<white>确认"
     ))
+    //endregion
 
+    //region /criteria命令的文本
     val COMMAND_GAME_NOT_START: StringConfigData = CONFIG.defineConfig(StringConfigData(
         "criteria_command.failed.game_not_start",
         "游戏尚未开始"
@@ -137,8 +269,9 @@ object Configs {
         "criteria_command.failed.guess_self_criteria",
         "不允许自己标记自己队伍猜中了词条"
     ))
+    //endregion
 
-    // 物品
+    //region 物品
     private fun parseMaterial(id: String): Material {
         return Material.matchMaterial(id) ?: throw IllegalArgumentException("Unknown item: $id")
     }
@@ -161,8 +294,9 @@ object Configs {
         "start_game_item",
         Material.NETHER_STAR
     ))
+    //endregion
 
-    // 方块生成配置
+    //region 方块生成配置
     val ANDESITE_GENERATION: BlockGenerationConfigData = CONFIG.defineConfig(BlockGenerationConfigData(
         "andesite_generation",
         Material.ANDESITE,
@@ -187,8 +321,9 @@ object Configs {
         "bedrock_depth",
         11
     ))
+    //endregion
 
-    // 游戏玩法配置项
+    //region 游戏玩法配置项
     val Y_LEVEL_CRITERIA_ENABLED: BoolConfigData = CONFIG.defineConfig(BoolConfigData(
         "y_level_criteria_enabled",
         false
@@ -197,8 +332,9 @@ object Configs {
         "auto_change_criteria_time",
         120
     ))
+    //endregion
 
-    // 全局设置默认值
+    //region 全局设置默认值
     val GAME_AREA_SIZE: IntConfigData = CONFIG.defineConfig(IntConfigData(
         "game_area_size",
         65
@@ -215,6 +351,19 @@ object Configs {
         "allow_unbalanced_teams",
         false
     ))
+    val ALLOW_GUESS_CRITERIA: BoolConfigData = CONFIG.defineConfig(BoolConfigData(
+        "allow_guess_criteria",
+        true
+    ))
+    val GUESS_SUCCESS_ADD_LIFE: IntConfigData = CONFIG.defineConfig(IntConfigData(
+        "guess_success_add_life",
+        1
+    ))
+    val GUESS_FAILED_REDUCE_LIFE: IntConfigData = CONFIG.defineConfig(IntConfigData(
+        "guess_failed_reduce_life",
+        2
+    ))
+    //endregion
 
     fun getTeamName(color: NamedTextColor): Component {
         return TEAM_NAME.get()[color]!!

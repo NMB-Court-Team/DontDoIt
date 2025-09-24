@@ -15,7 +15,9 @@ import net.astrorbits.dontdoit.system.team.TeamData
 import net.astrorbits.dontdoit.system.team.TeamManager
 import net.astrorbits.lib.item.ItemHelper.getBoolPdc
 import net.astrorbits.lib.item.ItemHelper.getStringPdc
+import net.astrorbits.lib.math.Duration
 import net.astrorbits.lib.task.TaskBuilder
+import net.astrorbits.lib.task.TaskType
 import net.astrorbits.lib.text.LegacyText
 import net.astrorbits.lib.text.TextHelper.format
 import net.astrorbits.lib.text.TextHelper.red
@@ -83,14 +85,16 @@ object Preparation : Listener {
     }
 
     const val TEAM_NAME_PLACEHOLDER = "team_name"
+    const val INTERACTED_TAG = "${DontDoIt.PLUGIN_NAME}.interacted"
 
     @EventHandler
     fun onPlayerInteract(event: PlayerInteractEvent) {
-        if (!GameStateManager.isWaiting() || !event.action.isRightClick) return
+        if (!GameStateManager.isWaiting() || !event.action.isRightClick || event.player.interacted()) return
         val item = event.item ?: return
         if (!item.isPrepareGameItem()) return
 
         val player = event.player
+        player.markAsInteracted()
 
         val teamId = item.getTeamId()
         if (teamId != null) {
@@ -120,6 +124,17 @@ object Preparation : Listener {
         }
 
         event.isCancelled = true
+    }
+
+    private fun Player.interacted(): Boolean {
+        return this.scoreboardTags.contains(INTERACTED_TAG)
+    }
+
+    private fun Player.markAsInteracted() {
+        this.scoreboardTags.add(INTERACTED_TAG)
+        TaskBuilder(DontDoIt.instance, TaskType.Delayed(Duration.ticks(1.0)))
+            .setTask { this.scoreboardTags.remove(INTERACTED_TAG) }
+            .runTask()
     }
 
     private var canStartGame: Boolean = false
