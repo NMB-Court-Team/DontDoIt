@@ -10,7 +10,6 @@ import io.papermc.paper.registry.data.dialog.action.DialogAction
 import io.papermc.paper.registry.data.dialog.input.DialogInput
 import io.papermc.paper.registry.data.dialog.type.DialogType
 import net.astrorbits.dontdoit.system.DiamondBehavior
-import net.astrorbits.dontdoit.system.generate.BlockGeneration
 import net.astrorbits.lib.text.TextHelper.toMessage
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickCallback
@@ -45,6 +44,7 @@ object GlobalSettings {
     var gameAreaSize: Int = Configs.GAME_AREA_SIZE.get()
     var lifeCount: Int = Configs.LIFE_COUNT.get()
     var diamondBehavior: DiamondBehavior = Configs.DIAMOND_BEHAVIOR.get()
+    var allowUnbalancedTeams: Boolean = Configs.ALLOW_UNBALANCED_TEAMS.get()
 
     @Suppress("UnstableApiUsage")
     fun openLifeDialog(player: Player) {

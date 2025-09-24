@@ -1,25 +1,21 @@
 # ==== 游戏文本 ====
 team_name:
-  red: "<bold><red><shadow:#a0000000>珊瑚红</shadow></red></bold>"
-  gold: "<bold><gold><shadow:#a0000000>琥珀金</shadow></gold></bold>"
-  yellow: "<bold><yellow><shadow:#a0000000>柠檬黄</shadow></yellow></bold>"
-  green: "<bold><green><shadow:#a0000000>翡翠绿</shadow></green></bold>"
-  dark_green: "<bold><dark_green><shadow:#a0000000>青柠绿</shadow></dark_green></bold>"
-  aqua: "<bold><aqua><shadow:#a0000000>天空蓝</shadow></aqua></bold>"
-  blue: "<bold><blue><shadow:#a0000000>深海蓝</shadow></blue></bold>"
-  light_purple: "<bold><light_purple><shadow:#a0000000>薰衣粉</shadow></light_purple></bold>"
-
-sidebar:
-  title: "<shadow:#a0000000><gradient:#ff0000:#EF903E>※ <bold>禁止事项</bold> ※"
-  entry:
-    name: "{team_name}<white><shadow:#a0aa0000>[<red>❤</red><white>{life:%02d}]"
-    number: "<white><shadow:#a0000000>{criteria}"
-  entry_dead:
-    name: "<strikethrough>{team_name}<gray><shadow:#a0000000>[💔00]"
-    number: "<gray><shadow:#a0000000>已淘汰"
+  red: "<bold><red><shadow:#a0000000>红队</shadow></red></bold>"
+  gold: "<bold><gold><shadow:#a0000000>橙队</shadow></gold></bold>"
+  yellow: "<bold><yellow><shadow:#a0000000>黄队</shadow></yellow></bold>"
+  green: "<bold><green><shadow:#a0000000>绿队</shadow></green></bold>"
+  aqua: "<bold><aqua><shadow:#a0000000>蓝队</shadow></aqua></bold>"
+  dark_aqua: "<bold><dark_aqua><shadow:#a0000000>青队</shadow></dark_aqua></bold>"
+  light_purple: "<bold><light_purple><shadow:#a0000000>粉队</shadow></light_purple></bold>"
+  dark_purple: "<bold><dark_purple><shadow:#a0000000>紫队</shadow></dark_purple></bold>"
 
 change_team_item_name: "<italic:false><aqua>[<key:key.use>]<yellow>切换队伍"
 modify_custom_criteria_item_name: "<italic:false><aqua>[<key:key.use>]<yellow>设置自定义词条"
+start_game_item_name: "<italic:false><aqua>[<key:key.use>]<gold>开始游戏！"
+
+custom_criteria_name_prefix: "[自定义]"
+
+# 准备阶段的消息
 join_spectator_message: "<yellow>你现在是<gray><bold>旁观者"
 join_team_message: "<yellow>你加入了队伍 {team_name}"
 current_custom_criteria_message: "<yellow>你的队伍的自定义词条：<white>{name}"
@@ -30,6 +26,61 @@ self_remove_custom_criteria_message: "<yellow>已取消自己队伍定义的自�
 other_remove_custom_criteria_message: "<yellow>{player}取消了你的队伍定义的自定义词条"
 enter_prepare_message: "<yellow>请使用手上的物品<green><bold>选择队伍</bold><yellow>，然后设置<green><bold>自定义词条"
 
+# 游戏切换阶段的消息
+start_game_message: "<green><bold>游戏开始！"
+end_game_message:
+  announce: "{team_name} <gold>获得胜利"
+  title: "{team_name}"
+  subtitle: "<gold>获得胜利"
+reset_game_message: "<yellow>游戏已重置"
+
+# 触发次数统计
+trigger_count_message:
+  head: "<gray>=====<yellow>触发次数<gray>====="
+  body: "{player}<white>: <green>{count}"
+  tail: "<gray>================"
+
+# 游戏进行时的消息
+ingame_actionbar: "<green>距离更换词条还有：<red>{time}秒  <green>剩余规则数量：<red>{life_count}"
+criteria_triggered_message:
+  announce: "{who_triggered} <gold>触发了规则 {criteria}"
+  title: "{criteria}"
+  subtitle: "{who_triggered} <gold>触发了规则"
+auto_change_criteria_message:
+  announce: "{team_name} <yellow>更换了词条，上一个词条是：{criteria}"
+  title: "词条更换"
+get_diamond_message: "{player} <yellow>获得了 <aqua>钻石"
+holding_custom_criteria_message: "{team_name} <yellow>拥有自定义规则 【{criteria}<yellow>】"
+holding_custom_criteria_click_message: "<dark_aqua>【触发规则点这里】"
+guess_hint_message: "<yellow>输入<light_purple><hover:show_text:'<aqua>点击填入聊天框'><click:suggest_command:/criteria guess>/criteria guess \\<玩家名\\> \\<是否猜中\\></click></hover> <yellow>来标记玩家是否猜中词条"
+guessed_message:
+  success:
+    announce: "{player} <yellow>猜中了词条，上一个词条是：{criteria}"
+    title: "词条更换"
+    subtitle: "<yellow>猜中词条，剩余规则数<green>+{life_count}"
+  failed:
+    announce: "{player} <red>猜错了词条，上一个词条是：{criteria}"
+    title: "词条更换"
+    subtitle: "<red>猜错词条，剩余规则数<dark_red>-{life_count}"
+eliminated_message:
+  announce: "{team_name} <dark_red>已淘汰"
+  title: "{team_name}"
+  subtitle: "<dark_red>已淘汰"
+
+
+
+
+# 侧边栏
+sidebar:
+  title: "<shadow:#a0000000><gradient:#ff0000:#EF903E>※ <bold>禁止事项</bold> ※"
+  entry:
+    name: "{team_name}<white><shadow:#a0aa0000>[<red>❤</red><white>{life:%02d}]"
+    number: "<yellow><shadow:#a0000000>{criteria}"
+  entry_dead:
+    name: "<strikethrough>{team_name}<gray><shadow:#a0000000>[💔00]"
+    number: "<gray><shadow:#a0000000>已淘汰"
+
+# 设置自定义词条界面的文本
 modify_custom_criteria:
   title: "<aqua><bold>设置自定义词条"
   body:
@@ -41,11 +92,12 @@ modify_custom_criteria:
   no_button_label: "<white>取消"
   yes_button_label: "<white>确认"
 
+# /criteria 命令的文本
 criteria_command:
   failed:
     game_not_start: "游戏尚未开始"
     invalid_team_name: "玩家%s已淘汰或者是旁观者"
-    guess_self_criteria: "不允许自己标记自己队伍猜中了词条"
+    guess_self_criteria: "不允许自己标记自己猜中了词条"
 
 # 物品
 join_team_item:
@@ -53,12 +105,13 @@ join_team_item:
   gold: orange_wool
   yellow: yellow_wool
   green: lime_wool
-  dark_green: green_wool
   aqua: light_blue_wool
-  blue: blue_wool
-  light_purple: magenta_wool
+  dark_aqua: cyan_wool
+  light_purple: pink_wool
+  dark_purple: purple_wool
 spectator_item: light_gray_wool
 modify_custom_criteria_item: writable_book
+start_game_item: nether_star
 
 # ==== 各方块生成配置 ====
 # 安山岩生成
@@ -88,14 +141,27 @@ diamond_ore_generation:
 # 基岩深度
 bedrock_depth: 11
 
+# ==== 游戏玩法相关的配置项 ====
+# 是否启用有关Y高度的词条
+y_level_criteria_enabled: false
+# 自动切换词条的时间，必须是整数（单位：秒）
+auto_change_criteria_time: 120
 
 
 # ==== 可在游戏内动态配置的项 ====
 # 游戏区域大小
 game_area_size: 65
 # 最大规则数量（队伍血量）
-life_count: 10
+life_count: 15
 # 常规模式下，获取钻石时的行为，可以是reduce_others_life或add_self_life
 # reduce_others_life: 减少其他队伍1点生命值
 # add_self_life: 增加自己队伍1点生命值
 diamond_behavior: reduce_others_life
+# 是否允许各队伍人数不平衡
+allow_unbalanced_teams: false
+# 是否允许猜词条
+allow_guess_criteria: true
+# 猜中词条增加的生命值
+guess_success_add_life: 1
+# 猜错词条减少的规则数
+guess_failed_reduce_life: 2

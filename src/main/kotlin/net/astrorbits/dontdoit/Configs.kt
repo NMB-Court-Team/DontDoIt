@@ -58,6 +58,11 @@ object Configs {
         "modify_custom_criteria_item_name",
         "<italic:false><aqua>[<key:key.use>]<yellow>设置自定义词条"
     ))
+    val START_GAME_ITEM_NAME: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "start_game_item_name",
+        "<italic:false><aqua>[<key:key.use>]<gold>开始游戏！"
+    ))
+
     val JOIN_SPECTATOR_MESSAGE: TextConfigData = CONFIG.defineConfig(TextConfigData(
         "join_spectator",
         "<yellow>你现在是<gray><bold>旁观者"
@@ -144,15 +149,17 @@ object Configs {
         { TEAM_COLORS[it]!! },
         ::parseMaterial
     ))
-    val SPECTATOR_ITEM: ParserConfigData<Material> = CONFIG.defineConfig(ParserConfigData(
+    val SPECTATOR_ITEM: MaterialConfigData = CONFIG.defineConfig(MaterialConfigData(
         "spectator_item",
-        Material.LIGHT_GRAY_WOOL,
-        ::parseMaterial
+        Material.LIGHT_GRAY_WOOL
     ))
-    val MODIFY_CUSTOM_CRITERIA_ITEM: ParserConfigData<Material> = CONFIG.defineConfig(ParserConfigData(
+    val MODIFY_CUSTOM_CRITERIA_ITEM: MaterialConfigData = CONFIG.defineConfig(MaterialConfigData(
         "modify_custom_criteria_item",
-        Material.WRITABLE_BOOK,
-        ::parseMaterial
+        Material.WRITABLE_BOOK
+    ))
+    val START_GAME_ITEM: MaterialConfigData = CONFIG.defineConfig(MaterialConfigData(
+        "start_game_item",
+        Material.NETHER_STAR
     ))
 
     // 方块生成配置
@@ -181,6 +188,16 @@ object Configs {
         11
     ))
 
+    // 游戏玩法配置项
+    val Y_LEVEL_CRITERIA_ENABLED: BoolConfigData = CONFIG.defineConfig(BoolConfigData(
+        "y_level_criteria_enabled",
+        false
+    ))
+    val AUTO_CHANGE_CRITERIA_TIME: IntConfigData = CONFIG.defineConfig(IntConfigData(
+        "auto_change_criteria_time",
+        120
+    ))
+
     // 全局设置默认值
     val GAME_AREA_SIZE: IntConfigData = CONFIG.defineConfig(IntConfigData(
         "game_area_size",
@@ -190,12 +207,14 @@ object Configs {
         "life_count",
         10
     ))
-    val DIAMOND_BEHAVIOR: ParserConfigData<DiamondBehavior> = CONFIG.defineConfig(ParserConfigData(
+    val DIAMOND_BEHAVIOR: EnumConfigData<DiamondBehavior> = CONFIG.defineConfig(EnumConfigData(
         "diamond_behavior",
-        DiamondBehavior.REDUCE_OTHERS_LIFE,
-        { DiamondBehavior.valueOf(it.uppercase()) }
+        DiamondBehavior.REDUCE_OTHERS_LIFE
     ))
-
+    val ALLOW_UNBALANCED_TEAMS: BoolConfigData = CONFIG.defineConfig(BoolConfigData(
+        "allow_unbalanced_teams",
+        false
+    ))
 
     fun getTeamName(color: NamedTextColor): Component {
         return TEAM_NAME.get()[color]!!

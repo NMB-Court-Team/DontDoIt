@@ -89,6 +89,10 @@ class Config(
         return if (contains(key)) yamlConfig.getStringList(key) else null
     }
 
+    fun getBool(key: String): Boolean? {
+        return if (contains(key)) yamlConfig.getBoolean(key) else null
+    }
+
     fun getInt(key: String): Int? {
         return if (contains(key)) yamlConfig.getInt(key) else null
     }

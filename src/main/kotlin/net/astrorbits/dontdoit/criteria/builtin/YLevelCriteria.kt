@@ -1,5 +1,6 @@
 package net.astrorbits.dontdoit.criteria.builtin
 
+import net.astrorbits.dontdoit.Configs
 import net.astrorbits.dontdoit.criteria.Criteria
 import net.astrorbits.dontdoit.criteria.helper.BuiltinCriteria
 import net.astrorbits.dontdoit.criteria.helper.CriteriaType
@@ -47,6 +48,6 @@ class YLevelCriteria : Criteria(), BuiltinCriteria {
     override fun readData(data: Map<String, String>) { }
 
     override fun shouldUse(): Boolean {
-        return super.shouldUse() && !(border == Int.MIN_VALUE && belowBorder)
+        return super.shouldUse() && Configs.Y_LEVEL_CRITERIA_ENABLED.get() && !(border == Int.MIN_VALUE && belowBorder)
     }
 }

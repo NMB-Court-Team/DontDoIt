@@ -15,7 +15,7 @@ import org.bukkit.scheduler.BukkitTask
 object GameStateManager {
     private val LOGGER = DontDoIt.LOGGER
 
-    var state: GameState = GameState.PAUSED
+    var state: GameState = GameState.PREPARING
         private set
     private var tickTask: BukkitTask? = null
 
@@ -40,11 +40,6 @@ object GameStateManager {
         val winner = TeamManager.getWinner()
 
         DontDoIt.server.broadcast(LegacyText.toComponent("§6游戏结束！胜利队伍: ${winner?.teamName}"))
-    }
-
-    fun pause() {
-        state = GameState.PAUSED
-        Bukkit.broadcast(LegacyText.toComponent("§e进入等待阶段"))
     }
 
     fun reset() {

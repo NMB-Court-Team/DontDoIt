@@ -10,6 +10,7 @@ import io.papermc.paper.registry.data.dialog.type.DialogType
 import net.astrorbits.dontdoit.Configs
 import net.astrorbits.dontdoit.Configs.getJoinTeamItemMaterial
 import net.astrorbits.dontdoit.DontDoIt
+import net.astrorbits.dontdoit.GlobalSettings
 import net.astrorbits.dontdoit.system.team.TeamData
 import net.astrorbits.dontdoit.system.team.TeamManager
 import net.astrorbits.lib.item.ItemHelper.getBoolPdc
@@ -46,6 +47,7 @@ object Preparation : Listener {
     fun putPrepareGameItems(player: Player) {
         player.sendMessage(Configs.ENTER_PREPARE_MESSAGE.get())
         player.inventory.setItem(TEAM_ITEM_SLOT, createSpectatorTeamItem())
+        putStartGameItem(player)
     }
 
     @EventHandler
@@ -83,7 +85,7 @@ object Preparation : Listener {
     const val TEAM_NAME_PLACEHOLDER = "team_name"
 
     @EventHandler
-    fun onPlayerInteract(event: PlayerInteractEvent) { //TODO 为什么是Q键丢出交互，而不是右键交互
+    fun onPlayerInteract(event: PlayerInteractEvent) {
         if (!GameStateManager.isWaiting() || !event.action.isRightClick) return
         val item = event.item ?: return
         if (!item.isPrepareGameItem()) return
@@ -105,11 +107,55 @@ object Preparation : Listener {
                 )
                 player.inventory.setItem(MODIFY_CUSTOM_CRITERIA_ITEM_SLOT, createModifyCustomCriteriaItem())
             }
+            onTeamMembersUpdate()
         } else if (item.isModifyCustomCriteriaItem()) {
             val dialog = createModifyCustomCriteriaDialog(player) ?: return
             player.showDialog(dialog)
+        } else if (item.isStartGameItem()) {
+            if (!player.isOp) {
+                player.sendMessage(Component.text("You have not enough permission to do this").red())
+                return
+            }
+            GameStateManager.startGame(player)
         }
+
         event.isCancelled = true
+    }
+
+    private var canStartGame: Boolean = false
+
+    fun onTeamMembersUpdate() {
+        if (TeamManager.teams.count { it.hasMember } <= 1) {
+            canStartGame = false
+        } else if (GlobalSettings.allowUnbalancedTeams) {
+            canStartGame = true
+        } else {
+            val playerCounts: MutableMap<Int, Int> = mutableMapOf()  // Map<队伍中玩家的人数, 符合该条件的队伍数量>
+            for (team in TeamManager.teams) {
+                val memberCount = team.memberCount
+                val teamCount = playerCounts.computeIfAbsent(memberCount) { 0 }
+                playerCounts[memberCount] = teamCount + 1
+            }
+            playerCounts.remove(0)
+            canStartGame = playerCounts.size <= 1
+        }
+
+        for (player in Bukkit.getOnlinePlayers()) {
+            putStartGameItem(player)
+        }
+    }
+
+    fun putStartGameItem(player: Player) {
+        if (!GameStateManager.isWaiting() || !player.isOp) return
+        if (canStartGame && TeamManager.getTeam(player) != null) {
+            if (player.inventory.getItem(START_GAME_ITEM_SLOT)?.isStartGameItem() != true) {
+                player.inventory.setItem(START_GAME_ITEM_SLOT, createStartGameItem())
+            }
+        } else {
+            if (player.inventory.getItem(START_GAME_ITEM_SLOT)?.isStartGameItem() == true) {
+                player.inventory.setItem(START_GAME_ITEM_SLOT, ItemStack.empty())
+            }
+        }
     }
 
     const val CUSTOM_CRITERIA_PLACEHOLDER = "name"
@@ -148,9 +194,11 @@ object Preparation : Listener {
 
     const val TEAM_ITEM_SLOT = 0
     const val MODIFY_CUSTOM_CRITERIA_ITEM_SLOT = 1
+    const val START_GAME_ITEM_SLOT = 8
 
     val PREPARE_GAME_ITEM_PDC_KEY = DontDoIt.id("prepare_game_item")
     val MODIFY_CUSTOM_CRITERIA_PDC_KEY = DontDoIt.id("modify_custom_criteria")
+    val START_GAME_PDC_KEY = DontDoIt.id("start_game")
     val TEAM_ID_PDC_KEY = DontDoIt.id("team_id")
     const val SPECTATOR_ID = "spectator"
     val SPECTATOR_COLOR: NamedTextColor = NamedTextColor.GRAY
@@ -168,6 +216,18 @@ object Preparation : Listener {
         } else {
             createJoinTeamItem(nextColor)
         }
+    }
+
+    private fun createStartGameItem(): ItemStack {
+        val item = ItemStack.of(Material.FEATHER, 1)
+        val itemMeta = item.itemMeta
+        itemMeta.displayName(Configs.START_GAME_ITEM_NAME.get())
+        itemMeta.setMaxStackSize(1)
+        itemMeta.itemModel = Configs.START_GAME_ITEM.get().key
+        itemMeta.persistentDataContainer.set(PREPARE_GAME_ITEM_PDC_KEY, PersistentDataType.BOOLEAN, true)
+        itemMeta.persistentDataContainer.set(START_GAME_PDC_KEY, PersistentDataType.BOOLEAN, true)
+        item.setItemMeta(itemMeta)
+        return item
     }
 
     private fun createModifyCustomCriteriaItem(): ItemStack {
@@ -216,6 +276,10 @@ object Preparation : Listener {
 
     private fun ItemStack.isModifyCustomCriteriaItem(): Boolean {
         return this.getBoolPdc(MODIFY_CUSTOM_CRITERIA_PDC_KEY) ?: false
+    }
+
+    private fun ItemStack.isStartGameItem(): Boolean {
+        return this.getBoolPdc(START_GAME_PDC_KEY) ?: false
     }
 
     private fun ItemStack.getTeamId(): String? {

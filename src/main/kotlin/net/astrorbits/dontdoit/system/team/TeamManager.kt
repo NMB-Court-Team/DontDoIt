@@ -2,10 +2,14 @@ package net.astrorbits.dontdoit.system.team
 
 import com.google.common.collect.BiMap
 import net.astrorbits.dontdoit.Configs
+import net.astrorbits.dontdoit.DontDoIt
 import net.astrorbits.dontdoit.criteria.system.CriteriaManager
 import net.astrorbits.dontdoit.system.GameState
 import net.astrorbits.dontdoit.system.GameStateManager
 import net.astrorbits.lib.collection.CollectionHelper.toBiMap
+import net.astrorbits.lib.math.Duration
+import net.astrorbits.lib.task.Timer
+import net.astrorbits.lib.task.TimerType
 import net.astrorbits.lib.text.TextHelper.append
 import net.astrorbits.lib.text.TextHelper.gray
 import net.kyori.adventure.text.Component
@@ -15,16 +19,20 @@ import org.bukkit.entity.Player
 import org.bukkit.scoreboard.Scoreboard
 
 object TeamManager {
-    val TEAM_COLORS: BiMap<String, NamedTextColor> = NamedTextColor.NAMES.keyToValue().filterValues {
-        when (it) {
-            NamedTextColor.WHITE, NamedTextColor.GRAY, NamedTextColor.DARK_GRAY, NamedTextColor.BLACK,
-                NamedTextColor.DARK_RED, NamedTextColor.DARK_AQUA, NamedTextColor.DARK_BLUE, NamedTextColor.DARK_PURPLE -> false
-            else -> true
-        }
-    }.toBiMap()
+    val TEAM_COLORS: BiMap<String, NamedTextColor> = setOf(
+        NamedTextColor.RED,
+        NamedTextColor.GOLD,
+        NamedTextColor.YELLOW,
+        NamedTextColor.GREEN,
+        NamedTextColor.AQUA,
+        NamedTextColor.DARK_AQUA,
+        NamedTextColor.LIGHT_PURPLE,
+        NamedTextColor.DARK_PURPLE
+    ).associateBy { NamedTextColor.NAMES.valueToKey()[it]!! }.toBiMap()
 
     lateinit var scoreboard: Scoreboard
     private val _teams: MutableList<TeamData> = mutableListOf()
+    private val _teamTimers: MutableMap<NamedTextColor, TeamTimer> = mutableMapOf()
 
     val teams: List<TeamData>
         get() = _teams
@@ -40,6 +48,7 @@ object TeamManager {
             team.prefix(Component.text("[").color(color).append(teamName).append("]"))
             val teamData = TeamData(color, team, teamItem)
             _teams.add(teamData)
+            _teamTimers[color] = TeamTimer(teamData)
         }
     }
 
@@ -109,5 +118,20 @@ object TeamManager {
 
     fun guess(teamData: TeamData, guessed: Boolean) {
 
+    }
+
+    class TeamTimer(val teamData: TeamData) : Timer(DontDoIt.instance, Duration.seconds(Configs.AUTO_CHANGE_CRITERIA_TIME.get().toDouble()), TimerType.COUNTDOWN) {
+        override fun onStart() {
+
+        }
+
+        override fun onTick() {
+            TODO("Not yet implemented")
+        }
+
+        override fun onStop() {
+            teamData.criteria = CriteriaManager.getRandomCriteria()
+            //TODO 切换词条的显示
+        }
     }
 }
