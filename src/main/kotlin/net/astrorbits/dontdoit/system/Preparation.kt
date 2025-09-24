@@ -196,7 +196,7 @@ object Preparation : Listener {
     }
 
     private fun createJoinTeamItem(color: NamedTextColor): ItemStack {
-        DontDoIt.LOGGER.info(color.toString())
+        //DontDoIt.LOGGER.info(color.toString())
         val material = getJoinTeamItemMaterial(color)
         val item = ItemStack.of(Material.FEATHER, 1)
         val itemMeta = item.itemMeta
