@@ -10,7 +10,8 @@ import io.papermc.paper.registry.data.dialog.type.DialogType
 import net.astrorbits.dontdoit.Configs
 import net.astrorbits.dontdoit.Configs.getJoinTeamItemMaterial
 import net.astrorbits.dontdoit.DontDoIt
-import net.astrorbits.dontdoit.GlobalSettings
+import net.astrorbits.dontdoit.DynamicSettings
+import net.astrorbits.dontdoit.system.generate.GameAreaGenerator
 import net.astrorbits.dontdoit.system.team.TeamData
 import net.astrorbits.dontdoit.system.team.TeamManager
 import net.astrorbits.lib.item.ItemHelper.getBoolPdc
@@ -18,13 +19,13 @@ import net.astrorbits.lib.item.ItemHelper.getStringPdc
 import net.astrorbits.lib.math.Duration
 import net.astrorbits.lib.task.TaskBuilder
 import net.astrorbits.lib.task.TaskType
-import net.astrorbits.lib.text.LegacyText
 import net.astrorbits.lib.text.TextHelper.format
 import net.astrorbits.lib.text.TextHelper.red
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickCallback
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
+import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -57,6 +58,7 @@ object Preparation : Listener {
         if (!GameStateManager.isWaiting()) return
         event.player.inventory.clear()
         putPrepareGameItems(event.player)
+        event.player.gameMode = GameMode.ADVENTURE
     }
 
     @EventHandler
@@ -142,7 +144,7 @@ object Preparation : Listener {
     fun onTeamMembersUpdate() {
         if (TeamManager.teams.count { it.hasMember } <= 1) {
             canStartGame = false
-        } else if (GlobalSettings.allowUnbalancedTeams) {
+        } else if (DynamicSettings.allowUnbalancedTeams) {
             canStartGame = true
         } else {
             val playerCounts: MutableMap<Int, Int> = mutableMapOf()  // Map<队伍中玩家的人数, 符合该条件的队伍数量>

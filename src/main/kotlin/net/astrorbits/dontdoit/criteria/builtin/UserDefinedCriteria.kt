@@ -1,5 +1,6 @@
 package net.astrorbits.dontdoit.criteria.builtin
 
+import net.astrorbits.dontdoit.Configs
 import net.astrorbits.dontdoit.criteria.Criteria
 import net.astrorbits.dontdoit.criteria.helper.BuiltinCriteria
 import net.astrorbits.dontdoit.criteria.helper.CriteriaType
@@ -20,7 +21,7 @@ class UserDefinedCriteria(val teamColor: NamedTextColor) : Criteria(), BuiltinCr
     }
 
     fun setName(name: String) {
-        displayName = Component.text("[自定义]$name")
+        displayName = Component.text("${Configs.CUSTOM_CRITERIA_NAME_PREFIX.get()}$name")
     }
 
     override fun readData(data: Map<String, String>) { }

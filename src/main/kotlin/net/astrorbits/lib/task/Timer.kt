@@ -6,9 +6,9 @@ import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scheduler.BukkitTask
 
 abstract class Timer {
-    private val plugin: JavaPlugin
+    protected val plugin: JavaPlugin
     private var _currentTime: Int
-    private var timerTask: BukkitTask? = null
+    protected var timerTask: BukkitTask? = null
     var timerType: TimerType
     private var _startTime: Int
 
@@ -22,6 +22,8 @@ abstract class Timer {
         set(value) {
             _startTime = value.ticks.toInt()
         }
+    val elapsedTime: Duration
+        get() = if (timerType == TimerType.TIMING) currentTime else startTime - currentTime
 
     constructor(plugin: JavaPlugin) {
         this.plugin = plugin

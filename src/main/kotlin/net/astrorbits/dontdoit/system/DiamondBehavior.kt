@@ -1,8 +1,12 @@
 package net.astrorbits.dontdoit.system
 
-import net.kyori.adventure.text.Component
+import net.astrorbits.dontdoit.Configs
 
-enum class DiamondBehavior(val displayName: Component) {
-    REDUCE_OTHERS_LIFE(Component.text("减少其他队伍1点生命值")),
-    ADD_SELF_LIFE(Component.text("增加自己队伍1点生命值"))
+enum class DiamondBehavior {
+    REDUCE_OTHERS_LIFE,
+    ADD_SELF_LIFE;
+
+    fun getDescription(): String {
+        return Configs.DIAMOND_BEHAVIOR_DESCRIPTION.get()[this]!!
+    }
 }

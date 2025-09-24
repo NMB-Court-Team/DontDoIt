@@ -17,6 +17,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
+import java.util.*
 import java.util.function.Supplier
 
 object CriteriaManager {
@@ -34,15 +35,26 @@ object CriteriaManager {
         get() = _allCriteriaTypes
     val allCriteria: Set<Criteria>
         get() = _allCriteria.filter { if (it is BuiltinCriteria) it.shouldUse() else true }.toSet()
+    val triggerCountStat: MutableMap<UUID, Int> = mutableMapOf()
 
     fun trigger(criteria: Criteria, player: Player) {
         val teamData = TeamManager.getTeam(player) ?: return
-        trigger(criteria, teamData)
+        if (criteria === teamData.criteria) {
+            teamData.trigger(player)
+            val triggerCount = triggerCountStat.computeIfAbsent(player.uniqueId) { 0 }
+            triggerCountStat[player.uniqueId] = triggerCount + 1
+        }
     }
 
     fun trigger(criteria: Criteria, teamData: TeamData) {
         val teamCriteria = teamData.criteria ?: return
-        //TODO
+        if (teamCriteria === criteria) {
+            teamData.trigger()
+            for (player in teamData.members) {
+                val triggerCount = triggerCountStat.computeIfAbsent(player.uniqueId) { 0 }
+                triggerCountStat[player.uniqueId] = triggerCount + 1
+            }
+        }
     }
 
     fun init(plugin: JavaPlugin) {

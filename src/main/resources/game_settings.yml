@@ -14,6 +14,9 @@ modify_custom_criteria_item_name: "<italic:false><aqua>[<key:key.use>]<yellow>�
 start_game_item_name: "<italic:false><aqua>[<key:key.use>]<gold>开始游戏！"
 
 custom_criteria_name_prefix: "[自定义]"
+diamond_behavior_description:
+  reduce_others_life: "减少其他队伍1点生命值"
+  add_self_life: "增加自己队伍1点生命值"
 
 # 准备阶段的消息
 join_spectator_message: "<yellow>你现在是<gray><bold>旁观者"
@@ -32,6 +35,7 @@ end_game_message:
   announce: "{team_name} <gold>获得胜利"
   title: "{team_name}"
   subtitle: "<gold>获得胜利"
+draw_game_message: "<red>无人获胜"
 reset_game_message: "<yellow>游戏已重置"
 
 # 触发次数统计
@@ -49,17 +53,19 @@ criteria_triggered_message:
 auto_change_criteria_message:
   announce: "{team_name} <yellow>更换了词条，上一个词条是：{criteria}"
   title: "词条更换"
+  subtitle: "<yellow>上一个词条：{criteria}"
 get_diamond_message: "{player} <yellow>获得了 <aqua>钻石"
 holding_custom_criteria_message: "{team_name} <yellow>拥有自定义规则 【{criteria}<yellow>】"
-holding_custom_criteria_click_message: "<dark_aqua>【触发规则点这里】"
+holding_custom_criteria_click_message: "<dark_aqua><hover:show_text:'<aqua>点击触发'>【触发规则点这里】"
 guess_hint_message: "<yellow>输入<light_purple><hover:show_text:'<aqua>点击填入聊天框'><click:suggest_command:/criteria guess>/criteria guess \\<玩家名\\> \\<是否猜中\\></click></hover> <yellow>来标记玩家是否猜中词条"
+guess_cooldown_finished_message: "{team_name} <yellow>现在可以猜词条了"
 guessed_message:
   success:
-    announce: "{player} <yellow>猜中了词条，上一个词条是：{criteria}"
+    announce: "{player} <yellow>猜中了词条，剩余规则数<green>+{life_count}<yellow>，上一个词条是：{criteria}"
     title: "词条更换"
     subtitle: "<yellow>猜中词条，剩余规则数<green>+{life_count}"
   failed:
-    announce: "{player} <red>猜错了词条，上一个词条是：{criteria}"
+    announce: "{player} <red>猜错了词条，剩余规则数<dark_red>-{life_count}<red>，上一个词条是：{criteria}"
     title: "词条更换"
     subtitle: "<red>猜错词条，剩余规则数<dark_red>-{life_count}"
 eliminated_message:
@@ -71,8 +77,9 @@ eliminated_message:
 sidebar:
   title: "<shadow:#a0000000><gradient:#ff0000:#EF903E>※ <bold>禁止事项</bold> ※"
   entry:
-    name: "{team_name}<white><shadow:#a0aa0000>[<red>❤</red><white>{life:%02d}]"
+    name: "{team_name}<white><shadow:#a0aa0000>[<red>❤</red><white>{life_count:%02d}]"
     number: "<yellow><shadow:#a0000000>{criteria}"
+    number_winner: "<gold><shadow:#a0000000>获胜者"
   entry_dead:
     name: "<strikethrough>{team_name}<gray><shadow:#a0000000>[💔00]"
     number: "<gray><shadow:#a0000000>已淘汰"
@@ -93,8 +100,12 @@ modify_custom_criteria:
 criteria_command:
   failed:
     game_not_start: "游戏尚未开始"
-    invalid_team_name: "玩家%s已淘汰或者是旁观者"
+    guess_not_enabled: "猜词条玩法未开启"
+    invalid_player: "玩家%s已淘汰或者是旁观者"
+    not_custom_criteria: "队伍%s当前的词条不是自定义词条"
+    invalid_team_name: "队伍%s不存在或已淘汰"
     guess_self_criteria: "不允许自己标记自己猜中了词条"
+    guess_in_cooldown: "玩家%s所在队伍正在猜词条冷却中（剩余时间：%d）"
 
 # 物品
 join_team_item:
@@ -154,6 +165,11 @@ life_count: 15
 # reduce_others_life: 减少其他队伍1点生命值
 # add_self_life: 增加自己队伍1点生命值
 diamond_behavior: reduce_others_life
+# 是否启用钻石行为
+diamond_behavior_enabled: true
+# 钻石行为禁用阈值，当任意一名玩家生命值达到阈值及以下时，钻石行为将禁用
+# 此项配置仅在diamond_behavior为reduce_others_life时有效
+diamond_behavior_disabled_threshold: 7
 # 是否允许各队伍人数不平衡
 allow_unbalanced_teams: false
 # 是否允许猜词条

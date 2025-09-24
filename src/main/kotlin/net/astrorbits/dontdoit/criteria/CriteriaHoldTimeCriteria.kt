@@ -29,7 +29,7 @@ class CriteriaHoldTimeCriteria : Criteria() {
     }
 
     override fun onUnbind(teamData: TeamData, reason: CriteriaChangeReason) {
-        if (waitTimeMode == WaitTimeMode.DELAY && (reason == CriteriaChangeReason.AUTO || reason == CriteriaChangeReason.GUESSED)) {
+        if (waitTimeMode == WaitTimeMode.DELAY && (reason == CriteriaChangeReason.AUTO || reason.isGuess())) {
             val bindTick = bindTick[teamData.color]
             if (bindTick != null) {
                 val currentTick = Bukkit.getCurrentTick()

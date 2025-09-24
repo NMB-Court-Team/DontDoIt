@@ -46,6 +46,15 @@ object Configs {
         "custom_criteria_name_prefix",
         "[自定义]"
     ))
+    val DIAMOND_BEHAVIOR_DESCRIPTION: ParserMapConfigData<DiamondBehavior, String> = CONFIG.defineConfig(ParserMapConfigData(
+        "diamond_behavior_description",
+        mapOf(
+            DiamondBehavior.REDUCE_OTHERS_LIFE to "减少其他队伍1点生命值",
+            DiamondBehavior.ADD_SELF_LIFE to "增加自己队伍1点生命值"
+        ),
+        { DiamondBehavior.valueOf(it.uppercase()) },
+        { it }
+    ))
 
     //region 准备阶段的消息
     val JOIN_SPECTATOR_MESSAGE: TextConfigData = CONFIG.defineConfig(TextConfigData(
@@ -103,6 +112,10 @@ object Configs {
         "end_game_message.subtitle",
         "<gold>获得胜利"
     ))
+    val DRAW_GAME_MESSAGE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "draw_game_message",
+        "<red>无人获胜"
+    ))
     val RESET_GAME_MESSAGE: TextConfigData = CONFIG.defineConfig(TextConfigData(
         "reset_game_message",
         "<yellow>游戏已重置"
@@ -149,6 +162,10 @@ object Configs {
         "auto_change_criteria_message.title",
         "词条更换"
     ))
+    val AUTO_CHANGE_CRITERIA_SUBTITLE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "auto_change_criteria_message.subtitle",
+        "<yellow>上一个词条：{criteria}"
+    ))
     val GET_DIAMOND_MESSAGE: TextConfigData = CONFIG.defineConfig(TextConfigData(
         "get_diamond_message",
         "{player} <yellow>获得了 <aqua>钻石"
@@ -165,6 +182,10 @@ object Configs {
         "guess_hint_message",
         "<yellow>输入<light_purple><hover:show_text:'<aqua>点击填入聊天框'><click:suggest_command:/criteria guess>" +
             "/criteria guess \\<玩家名\\> \\<是否猜中\\></click></hover> <yellow>来标记玩家是否猜中词条"
+    ))
+    val GUESS_COOLDOWN_FINISHED_MESSAGE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "guess_cooldown_finished_message",
+        "{team_name} <yellow>现在可以猜词条了"
     ))
     val GUESS_SUCCESS_ANNOUNCE: TextConfigData = CONFIG.defineConfig(TextConfigData(
         "guessed_message.success.announce",
@@ -213,11 +234,15 @@ object Configs {
     ))
     val SIDEBAR_ENTRY_NAME: TextConfigData = CONFIG.defineConfig(TextConfigData(
         "sidebar.entry.name",
-        "{team_name}<white><shadow:#a0aa0000>[<red>❤</red><white>{life:%02d}]"
+        "{team_name}<white><shadow:#a0aa0000>[<red>❤</red><white>{life_count:%02d}]"
     ))
     val SIDEBAR_ENTRY_NUMBER: TextConfigData = CONFIG.defineConfig(TextConfigData(
         "sidebar.entry.number",
         "<white><shadow:#a0000000>{criteria}"
+    ))
+    val SIDEBAR_ENTRY_NUMBER_WINNER: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "sidebar.entry.number_winner",
+        "<gold><shadow:#a0000000>获胜者"
     ))
     val SIDEBAR_ENTRY_DEAD_NAME: TextConfigData = CONFIG.defineConfig(TextConfigData(
         "sidebar.entry_dead.name",
@@ -261,13 +286,29 @@ object Configs {
         "criteria_command.failed.game_not_start",
         "游戏尚未开始"
     ))
+    val COMMAND_GUESS_NOT_ENABLED: StringConfigData = CONFIG.defineConfig(StringConfigData(
+        "criteria_command.failed.guess_not_enabled",
+        "猜词条玩法未开启"
+    ))
     val COMMAND_INVALID_PLAYER: StringConfigData = CONFIG.defineConfig(StringConfigData(
         "criteria_command.failed.invalid_player",
         "玩家%s已淘汰或者是旁观者"
     ))
+    val COMMAND_NOT_CUSTOM_CRITERIA: StringConfigData = CONFIG.defineConfig(StringConfigData(
+        "criteria_command.failed.not_custom_criteria",
+        "队伍%s当前的词条不是自定义词条"
+    ))
+    val COMMAND_INVALID_TEAM_NAME: StringConfigData = CONFIG.defineConfig(StringConfigData(
+        "criteria_command.failed.invalid_team_name",
+        "无效的队伍名称"
+    ))
     val COMMAND_GUESS_SELF_CRITERIA: StringConfigData = CONFIG.defineConfig(StringConfigData(
         "criteria_command.failed.guess_self_criteria",
         "不允许自己标记自己队伍猜中了词条"
+    ))
+    val COMMAND_GUESS_IN_COOLDOWN: StringConfigData = CONFIG.defineConfig(StringConfigData(
+        "criteria_command.failed.guess_in_cooldown",
+        "玩家%s所在队伍正在猜词条冷却中（剩余时间：%d）"
     ))
     //endregion
 
@@ -346,6 +387,14 @@ object Configs {
     val DIAMOND_BEHAVIOR: EnumConfigData<DiamondBehavior> = CONFIG.defineConfig(EnumConfigData(
         "diamond_behavior",
         DiamondBehavior.REDUCE_OTHERS_LIFE
+    ))
+    val DIAMOND_BEHAVIOR_ENABLED: BoolConfigData = CONFIG.defineConfig(BoolConfigData(
+        "diamond_behavior_enabled",
+        true
+    ))
+    val DIAMOND_BEHAVIOR_DISABLED_THRESHOLD: IntConfigData = CONFIG.defineConfig(IntConfigData(
+        "diamond_behavior_disabled_threshold",
+        7
     ))
     val ALLOW_UNBALANCED_TEAMS: BoolConfigData = CONFIG.defineConfig(BoolConfigData(
         "allow_unbalanced_teams",

@@ -59,10 +59,6 @@ class SidebarDisplay {
             field = value
         }
 
-    init {
-        objective.displaySlot = DisplaySlot.SIDEBAR
-    }
-
     fun clearDisplay() {
         unregisterDisplay()
         objective = scoreboard.registerNewObjective(
@@ -70,6 +66,14 @@ class SidebarDisplay {
             Criteria.DUMMY,
             Component.empty()
         )
+    }
+
+    fun hide() {
+        objective.displaySlot = null
+    }
+
+    fun show() {
+        objective.displaySlot = DisplaySlot.SIDEBAR
     }
 
     fun unregisterDisplay() {
@@ -84,10 +88,6 @@ class SidebarDisplay {
 
     fun removePlayer(player: Player) {
         player.scoreboard = emptyScoreboard
-    }
-
-    override fun toString(): String {
-        return "SidebarDisplay(scoreboard=$scoreboard, objective=$objective, uid=$uid)"
     }
 
     data class ScoreEntry(val name: Component, val number: Component)

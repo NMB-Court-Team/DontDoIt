@@ -19,8 +19,7 @@ import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import kotlin.math.floor
 
-
-object GlobalSettings {
+object DynamicSettings {
     private const val COMMAND_NAME = "settings"
     private var isDialogOpen: Boolean = false
     private val DIALOG_IS_OPEN = SimpleCommandExceptionType(Component.text("配置界面被其他人占用，无法打开").toMessage())
@@ -44,7 +43,12 @@ object GlobalSettings {
     var gameAreaSize: Int = Configs.GAME_AREA_SIZE.get()
     var lifeCount: Int = Configs.LIFE_COUNT.get()
     var diamondBehavior: DiamondBehavior = Configs.DIAMOND_BEHAVIOR.get()
+    var diamondBehaviorEnabled: Boolean = Configs.DIAMOND_BEHAVIOR_ENABLED.get()
+    var diamondBehaviorDisabledThreshold: Int = Configs.DIAMOND_BEHAVIOR_DISABLED_THRESHOLD.get()
     var allowUnbalancedTeams: Boolean = Configs.ALLOW_UNBALANCED_TEAMS.get()
+    var allowGuessCriteria: Boolean = Configs.ALLOW_GUESS_CRITERIA.get()
+    var guessSuccessAddLife: Int = Configs.GUESS_SUCCESS_ADD_LIFE.get()
+    var guessFailedReduceLife: Int = Configs.GUESS_FAILED_REDUCE_LIFE.get()
 
     @Suppress("UnstableApiUsage")
     fun openLifeDialog(player: Player) {

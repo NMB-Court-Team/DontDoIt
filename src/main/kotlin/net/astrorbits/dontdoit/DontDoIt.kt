@@ -5,9 +5,6 @@ import net.astrorbits.dontdoit.criteria.system.CriteriaManager
 import net.astrorbits.dontdoit.system.CriteriaCommand
 import net.astrorbits.dontdoit.system.Preparation
 import net.astrorbits.dontdoit.system.GameStateManager
-import net.astrorbits.dontdoit.system.TitleManager
-import net.astrorbits.lib.Identifier
-import net.minecraft.server.MinecraftServer
 import org.bukkit.NamespacedKey
 import org.bukkit.Server
 import org.bukkit.plugin.java.JavaPlugin
@@ -20,8 +17,7 @@ class DontDoIt : JavaPlugin() {
 
         Configs.init()
         CriteriaManager.init(this)
-        GlobalSettings.init(this)
-        TitleManager.init(this)
+        DynamicSettings.init(this)
         GameStateManager.reset()
 
         Preparation.register(this)
