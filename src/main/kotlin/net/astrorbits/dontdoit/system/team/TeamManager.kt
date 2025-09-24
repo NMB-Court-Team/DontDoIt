@@ -7,6 +7,7 @@ import net.astrorbits.dontdoit.system.GameState
 import net.astrorbits.dontdoit.system.GameStateManager
 import net.astrorbits.lib.collection.CollectionHelper.toBiMap
 import net.astrorbits.lib.text.TextHelper.append
+import net.astrorbits.lib.text.TextHelper.gray
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Server
@@ -16,7 +17,8 @@ import org.bukkit.scoreboard.Scoreboard
 object TeamManager {
     val TEAM_COLORS: BiMap<String, NamedTextColor> = NamedTextColor.NAMES.keyToValue().filterValues {
         when (it) {
-            NamedTextColor.WHITE, NamedTextColor.GRAY, NamedTextColor.DARK_GRAY, NamedTextColor.BLACK -> false
+            NamedTextColor.WHITE, NamedTextColor.GRAY, NamedTextColor.DARK_GRAY, NamedTextColor.BLACK,
+                NamedTextColor.DARK_RED, NamedTextColor.DARK_AQUA, NamedTextColor.DARK_BLUE, NamedTextColor.DARK_PURPLE -> false
             else -> true
         }
     }.toBiMap()
@@ -50,11 +52,14 @@ object TeamManager {
     }
 
     fun joinTeam(player: Player, color: NamedTextColor) {
-        getTeam(color).team.addPlayer(player)
+        val team = getTeam(color).team
+        team.addPlayer(player)
+        player.displayName(Component.empty().append(team.prefix()).append(player.name))
     }
 
     fun leaveTeam(player: Player) {
         getTeam(player)?.team?.removePlayer(player)
+        player.displayName(Component.text(player.name).gray())
     }
 
     /** 更新计分板显示 */
@@ -100,5 +105,9 @@ object TeamManager {
                 team.criteria?.tick(team)
             }
         }
+    }
+
+    fun guess(teamData: TeamData, guessed: Boolean) {
+
     }
 }

@@ -1,16 +1,12 @@
 # ==== 游戏文本 ====
 team_name:
-  dark_red: "<bold><dark_red><shadow:#a0000000>绯樱红</shadow></dark_red></bold>"
   red: "<bold><red><shadow:#a0000000>珊瑚红</shadow></red></bold>"
   gold: "<bold><gold><shadow:#a0000000>琥珀金</shadow></gold></bold>"
   yellow: "<bold><yellow><shadow:#a0000000>柠檬黄</shadow></yellow></bold>"
   green: "<bold><green><shadow:#a0000000>翡翠绿</shadow></green></bold>"
   dark_green: "<bold><dark_green><shadow:#a0000000>青柠绿</shadow></dark_green></bold>"
-  dark_aqua: "<bold><dark_aqua><shadow:#a0000000>碧涛青</shadow></dark_aqua></bold>"
   aqua: "<bold><aqua><shadow:#a0000000>天空蓝</shadow></aqua></bold>"
-  dark_blue: "<bold><dark_blue><shadow:#a0000000>深海蓝</shadow></dark_blue></bold>"
-  blue: "<bold><blue><shadow:#a0000000>星空蓝</shadow></blue></bold>"
-  dark_purple: "<bold><dark_purple><shadow:#a0000000>暮霞紫</shadow></dark_purple></bold>"
+  blue: "<bold><blue><shadow:#a0000000>深海蓝</shadow></blue></bold>"
   light_purple: "<bold><light_purple><shadow:#a0000000>薰衣粉</shadow></light_purple></bold>"
 
 sidebar:
@@ -24,33 +20,43 @@ sidebar:
 
 change_team_item_name: "<italic:false><aqua>[<key:key.use>]<yellow>切换队伍"
 modify_custom_criteria_item_name: "<italic:false><aqua>[<key:key.use>]<yellow>设置自定义词条"
-join_spectator: "<yellow>你现在是<gray><bold>旁观者"
-join_team: "<yellow>你加入了队伍 {team_name}"
+join_spectator_message: "<yellow>你现在是<gray><bold>旁观者"
+join_team_message: "<yellow>你加入了队伍 {team_name}"
+current_custom_criteria_message: "<yellow>你的队伍的自定义词条：<white>{name}"
+self_set_custom_criteria_message: "<yellow>已将自定义词条设置为：<white>{name}"
+other_set_custom_criteria_message: "<yellow>{player}将自定义词条设置为：<white>{name}"
+not_set_custom_criteria_message: "<yellow>你的队伍尚未设置自定义词条"
+self_remove_custom_criteria_message: "<yellow>已取消自己队伍定义的自定义词条"
+other_remove_custom_criteria_message: "<yellow>{player}取消了你的队伍定义的自定义词条"
+enter_prepare_message: "<yellow>请使用手上的物品<green><bold>选择队伍</bold><yellow>，然后设置<green><bold>自定义词条"
 
 modify_custom_criteria:
   title: "<aqua><bold>设置自定义词条"
   body:
     - "<white>在下方的文本框修改自定义词条内容"
     - "<white>然后点击“确认”按钮以保存修改"
+    - "<white>留空代表取消自己队伍定义的自定义词条"
     - ""
   text_box_title: "<yellow>自定义词条内容"
   no_button_label: "<white>取消"
   yes_button_label: "<white>确认"
 
+criteria_command:
+  failed:
+    game_not_start: "游戏尚未开始"
+    invalid_team_name: "玩家%s已淘汰或者是旁观者"
+    guess_self_criteria: "不允许自己标记自己队伍猜中了词条"
+
 # 物品
 join_team_item:
-  dark_red: brown_wool
   red: red_wool
   gold: orange_wool
   yellow: yellow_wool
   green: lime_wool
   dark_green: green_wool
-  dark_aqua: cyan_wool
   aqua: light_blue_wool
-  dark_blue: blue_wool
-  blue: purple_wool
-  dark_purple: magenta_wool
-  light_purple: pink_wool
+  blue: blue_wool
+  light_purple: magenta_wool
 spectator_item: light_gray_wool
 modify_custom_criteria_item: writable_book
 

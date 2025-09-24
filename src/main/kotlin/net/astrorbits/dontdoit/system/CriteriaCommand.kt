@@ -1,22 +1,18 @@
 package net.astrorbits.dontdoit.system
 
-import com.mojang.brigadier.StringReader
-import com.mojang.brigadier.arguments.ArgumentType
-import com.mojang.brigadier.arguments.StringArgumentType
-import com.mojang.brigadier.context.CommandContext
+import com.mojang.brigadier.arguments.BoolArgumentType
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType
-import com.mojang.brigadier.suggestion.Suggestions
-import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import io.papermc.paper.command.brigadier.Commands
-import io.papermc.paper.command.brigadier.argument.CustomArgumentType
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes
+import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver
+import net.astrorbits.dontdoit.Configs
 import net.astrorbits.dontdoit.criteria.helper.CriteriaType
 import net.astrorbits.dontdoit.system.team.TeamData
 import net.astrorbits.dontdoit.system.team.TeamManager
-import net.astrorbits.lib.command.CommandHelper
 import net.astrorbits.lib.text.TextHelper.toMessage
 import net.kyori.adventure.text.Component
-import java.util.concurrent.CompletableFuture
+import org.bukkit.entity.Player
 
 object CriteriaCommand {
     const val COMMAND_NAME = "criteria"
@@ -24,45 +20,38 @@ object CriteriaCommand {
     fun register(registrar: Commands) {
         val builder = Commands.literal(COMMAND_NAME)
         builder.then(Commands.literal("trigger")
-            .then(Commands.argument("team", TeamIdArgumentType())
+            .then(Commands.argument("player", ArgumentTypes.player())
                 .executes { ctx ->
-                    val team = ctx.getArgument("team", TeamData::class.java)
-                    if (!GameStateManager.isRunning() || team.isDead || !team.isInUse || team.criteria?.type != CriteriaType.USER_DEFINED) return@executes 0
+                    if (!GameStateManager.isRunning()) throw GAME_NOT_START.create()
+                    val player = ctx.getArgument("player", PlayerSelectorArgumentResolver::class.java).resolve(ctx.source)[0]
+                    val team = TeamManager.getTeam(player)
+                    if (team == null || team.isDead || team.criteria?.type != CriteriaType.USER_DEFINED) throw INVALID_PLAYER.create(player.name)
                     team.criteria!!.trigger(team)
                     return@executes 1
                 }
             )
-        ).then(Commands.literal("define")
-            .then(Commands.argument("team", TeamIdArgumentType())
-                .then(Commands.argument("name", StringArgumentType.greedyString())
+        ).then(Commands.literal("guess")
+            .then(Commands.argument("player", ArgumentTypes.player())
+                .then(Commands.argument("guessed", BoolArgumentType.bool())
+                    .requires { it.sender is Player }
                     .executes { ctx ->
-                        if (GameStateManager.isRunning()) throw DEFINE_CRITERIA_WHEN_RUNNING.create()
-                        val team = ctx.getArgument("team", TeamData::class.java)
-                        val name = StringArgumentType.getString(ctx, "name")
-                        //TODO
+                        if (!GameStateManager.isRunning()) throw GAME_NOT_START.create()
+                        val player = ctx.getArgument("player", PlayerSelectorArgumentResolver::class.java).resolve(ctx.source)[0]
+                        val team = TeamManager.getTeam(player)
+                        if (team == null || team.isDead || team.criteria?.type != CriteriaType.USER_DEFINED) throw INVALID_PLAYER.create(player.name)
+                        if (player in team) throw GUESS_SELF_CRITERIA.create()
+                        val guessed = BoolArgumentType.getBool(ctx, "guessed")
+                        TeamManager.guess(team, guessed)
                         return@executes 1
                     }
                 )
             )
         )
+
+        registrar.register(builder.build())
     }
 
-    class TeamIdArgumentType : CustomArgumentType<TeamData, String> {
-        override fun parse(reader: StringReader): TeamData {
-            val teamId = reader.readUnquotedString()
-            val teamIds = TeamManager.getInUseTeams()
-            return teamIds[teamId] ?: throw INVALID_TEAM_NAME.create(teamId)
-        }
-
-        override fun getNativeType(): ArgumentType<String> {
-            return StringArgumentType.word()
-        }
-
-        override fun <S : Any> listSuggestions(context: CommandContext<S>, builder: SuggestionsBuilder): CompletableFuture<Suggestions> {
-            return CommandHelper.suggestMatching(TeamManager.getInUseTeams().keys, builder)
-        }
-    }
-
-    private val INVALID_TEAM_NAME = DynamicCommandExceptionType { name -> Component.text("无效的队伍名称：$name").toMessage() }
-    private val DEFINE_CRITERIA_WHEN_RUNNING = SimpleCommandExceptionType(Component.text("不可在游戏进行时修改自定义词条").toMessage())
+    private val GAME_NOT_START = SimpleCommandExceptionType(Component.text(Configs.COMMAND_GAME_NOT_START.get()).toMessage())
+    private val INVALID_PLAYER = DynamicCommandExceptionType { player -> Component.text(Configs.COMMAND_INVALID_PLAYER.get().format(player)).toMessage() }
+    private val GUESS_SELF_CRITERIA = SimpleCommandExceptionType(Component.text(Configs.COMMAND_GUESS_SELF_CRITERIA.get()).toMessage())
 }

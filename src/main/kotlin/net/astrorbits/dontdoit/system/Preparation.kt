@@ -14,6 +14,7 @@ import net.astrorbits.dontdoit.system.team.TeamData
 import net.astrorbits.dontdoit.system.team.TeamManager
 import net.astrorbits.lib.item.ItemHelper.getBoolPdc
 import net.astrorbits.lib.item.ItemHelper.getStringPdc
+import net.astrorbits.lib.task.TaskBuilder
 import net.astrorbits.lib.text.LegacyText
 import net.astrorbits.lib.text.TextHelper.format
 import net.astrorbits.lib.text.TextHelper.red
@@ -36,17 +37,21 @@ import org.bukkit.plugin.java.JavaPlugin
 
 object Preparation : Listener {
     fun onEnterPreparation() {
-
+        for (player in Bukkit.getOnlinePlayers()) {
+            player.inventory.clear()
+            putPrepareGameItems(player)
+        }
     }
 
     fun putPrepareGameItems(player: Player) {
-        player.sendMessage(LegacyText.toComponent("§e请使用手上的物品§l选择队伍§e，然后设置§l自定义词条"))
+        player.sendMessage(Configs.ENTER_PREPARE_MESSAGE.get())
         player.inventory.setItem(TEAM_ITEM_SLOT, createSpectatorTeamItem())
     }
 
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
         if (!GameStateManager.isWaiting()) return
+        event.player.inventory.clear()
         putPrepareGameItems(event.player)
     }
 
@@ -55,6 +60,7 @@ object Preparation : Listener {
         if (!GameStateManager.isWaiting()) return
         if (event.cursor.isPrepareGameItem() || event.currentItem?.isPrepareGameItem() == true) {
             event.isCancelled = true
+            event.view.setCursor(ItemStack.empty())
         }
     }
 
@@ -77,8 +83,8 @@ object Preparation : Listener {
     const val TEAM_NAME_PLACEHOLDER = "team_name"
 
     @EventHandler
-    fun onPlayerInteract(event: PlayerInteractEvent) {
-        if (!GameStateManager.isWaiting()) return
+    fun onPlayerInteract(event: PlayerInteractEvent) { //TODO 为什么是Q键丢出交互，而不是右键交互
+        if (!GameStateManager.isWaiting() || !event.action.isRightClick) return
         val item = event.item ?: return
         if (!item.isPrepareGameItem()) return
 
@@ -90,26 +96,48 @@ object Preparation : Listener {
             event.player.inventory.setItem(TEAM_ITEM_SLOT, nextTeamItem)
             if (nextTeamColor == SPECTATOR_COLOR) {
                 TeamManager.leaveTeam(player)
-                player.sendMessage(Configs.JOIN_SPECTATOR.get())
+                player.sendMessage(Configs.JOIN_SPECTATOR_MESSAGE.get())
                 player.inventory.setItem(MODIFY_CUSTOM_CRITERIA_ITEM_SLOT, ItemStack.empty())
             } else {
                 TeamManager.joinTeam(player, nextTeamColor)
-                player.sendMessage(Configs.JOIN_TEAM.get().format(mapOf(TEAM_NAME_PLACEHOLDER to TeamManager.getTeam(nextTeamColor).teamName)))
+                player.sendMessage(Configs.JOIN_TEAM_MESSAGE.get()
+                    .format(TEAM_NAME_PLACEHOLDER to TeamManager.getTeam(nextTeamColor).teamName)
+                )
                 player.inventory.setItem(MODIFY_CUSTOM_CRITERIA_ITEM_SLOT, createModifyCustomCriteriaItem())
             }
         } else if (item.isModifyCustomCriteriaItem()) {
             val dialog = createModifyCustomCriteriaDialog(player) ?: return
             player.showDialog(dialog)
         }
+        event.isCancelled = true
     }
+
+    const val CUSTOM_CRITERIA_PLACEHOLDER = "name"
 
     fun tick() {
         for (player in Bukkit.getOnlinePlayers()) {
             val team = TeamManager.getTeam(player)
-            if (team == null) {
-                player.sendActionBar(Configs.JOIN_SPECTATOR.get())
+            val mainhandStack = player.inventory.itemInMainHand
+            if (mainhandStack.isModifyCustomCriteriaItem()) {
+                if (team != null) {
+                    val name = customCriteriaNames[team.color]
+                    if (name == null) {
+                        player.sendActionBar(Configs.NOT_SET_CUSTOM_CRITERIA_MESSAGE.get())
+                    } else {
+                        player.sendActionBar(
+                            Configs.CURRENT_CUSTOM_CRITERIA_MESSAGE.get()
+                                .format(CUSTOM_CRITERIA_PLACEHOLDER to name)
+                        )
+                    }
+                }
             } else {
-                player.sendActionBar(Configs.JOIN_TEAM.get().format(mapOf(TEAM_NAME_PLACEHOLDER to TeamManager.getTeam(team.color).teamName)))
+                if (team == null) {
+                    player.sendActionBar(Configs.JOIN_SPECTATOR_MESSAGE.get())
+                } else {
+                    player.sendActionBar(Configs.JOIN_TEAM_MESSAGE.get()
+                        .format(TEAM_NAME_PLACEHOLDER to TeamManager.getTeam(team.color).teamName)
+                    )
+                }
             }
         }
     }
@@ -143,7 +171,7 @@ object Preparation : Listener {
     }
 
     private fun createModifyCustomCriteriaItem(): ItemStack {
-        val item = ItemStack.of(Material.STICK, 1)
+        val item = ItemStack.of(Material.FEATHER, 1)
         val itemMeta = item.itemMeta
         itemMeta.displayName(Configs.MODIFY_CUSTOM_CRITERIA_ITEM_NAME.get())
         itemMeta.setMaxStackSize(1)
@@ -155,7 +183,7 @@ object Preparation : Listener {
     }
 
     private fun createSpectatorTeamItem(): ItemStack {
-        val item = ItemStack.of(Material.STICK, 1)
+        val item = ItemStack.of(Material.FEATHER, 1)
         val itemMeta = item.itemMeta
         val itemName = Configs.CHANGE_TEAM_ITEM_NAME.get()
         itemMeta.displayName(itemName)
@@ -169,7 +197,7 @@ object Preparation : Listener {
 
     private fun createJoinTeamItem(color: NamedTextColor): ItemStack {
         val material = getJoinTeamItemMaterial(color)
-        val item = ItemStack.of(Material.STICK, 1)
+        val item = ItemStack.of(Material.FEATHER, 1)
         val itemMeta = item.itemMeta
         val itemName = Configs.CHANGE_TEAM_ITEM_NAME.get()
         itemMeta.displayName(itemName)
@@ -206,8 +234,7 @@ object Preparation : Listener {
                 .body(Configs.MODIFY_CUSTOM_CRITERIA_BODY.get().map {
                     DialogBody.plainMessage(it, 1024)
                 })
-                .inputs(listOf(DialogInput
-                    .text(CUSTOM_CRITERIA_NAME_DIALOG_KEY, Configs.MODIFY_CUSTOM_CRITERIA_TEXT_BOX_TITLE.get())
+                .inputs(listOf(DialogInput.text(CUSTOM_CRITERIA_NAME_DIALOG_KEY, Configs.MODIFY_CUSTOM_CRITERIA_TEXT_BOX_TITLE.get())
                     .initial(name)
                     .maxLength(10)
                     .width(150)
@@ -215,7 +242,6 @@ object Preparation : Listener {
                 ))
                 .afterAction(DialogBase.DialogAfterAction.CLOSE)
                 .canCloseWithEscape(true)
-                .pause(false)
                 .build()
             ).type(DialogType.confirmation(
                 ActionButton.builder(Configs.MODIFY_CUSTOM_CRITERIA_YES_BUTTON_LABEL.get())
@@ -227,7 +253,11 @@ object Preparation : Listener {
                                 audience.sendMessage(Component.text("Cannot set custom criteria name for team ${teamData.teamId} for unknown reason").red())
                                 return@customClick
                             }
-                            setCustomCriteriaName(teamData, inputName)
+                            if (inputName.isEmpty()) {
+                                removeCustomCriteriaName(player, teamData)
+                            } else {
+                                setCustomCriteriaName(player, teamData, inputName)
+                            }
                         },
                         ClickCallback.Options.builder().build()
                     )).build(),
@@ -237,7 +267,32 @@ object Preparation : Listener {
         return dialog
     }
 
-    private fun setCustomCriteriaName(teamData: TeamData, name: String) {
+    const val PLAYER_NAME_PLACEHOLDER = "player"
 
+    private fun setCustomCriteriaName(setter: Player, teamData: TeamData, name: String) {
+        customCriteriaNames[teamData.color] = name
+        setter.sendMessage(Configs.SELF_SET_CUSTOM_CRITERIA_MESSAGE.get()
+            .format(CUSTOM_CRITERIA_PLACEHOLDER to name)
+        )
+        for (player in teamData.members) {
+            if (player.uniqueId == setter.uniqueId) continue
+            player.sendMessage(Configs.OTHER_SET_CUSTOM_CRITERIA_MESSAGE.get()
+                .format(
+                    PLAYER_NAME_PLACEHOLDER to player.displayName(),
+                    CUSTOM_CRITERIA_PLACEHOLDER to name
+                )
+            )
+        }
+    }
+
+    private fun removeCustomCriteriaName(remover: Player, teamData: TeamData) {
+        customCriteriaNames.remove(teamData.color)
+        remover.sendMessage(Configs.SELF_REMOVE_CUSTOM_CRITERIA_MESSAGE.get())
+        for (player in teamData.members) {
+            if (player.uniqueId == remover.uniqueId) continue
+            player.sendMessage(Configs.OTHER_REMOVE_CUSTOM_CRITERIA_MESSAGE.get()
+                .format(PLAYER_NAME_PLACEHOLDER to player.displayName())
+            )
+        }
     }
 }

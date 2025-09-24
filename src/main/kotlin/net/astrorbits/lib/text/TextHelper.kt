@@ -97,10 +97,8 @@ object TextHelper {
                             val replacement = formatArgs[key]
                             if (replacement is Component && format.matches(STRING_PATTERN)) {
                                 builder.append(replacement)
-                            } else if (replacement != null) {
-                                builder.append(component.content(format.format(replacement)))
                             } else {
-                                builder.append(component.content(matchResult.value))
+                                builder.append(component.content(format.format(replacement)))
                             }
                         } else {
                             builder.append(component.content(matchResult.value))
@@ -120,6 +118,38 @@ object TextHelper {
                 return@process component
             }
         }
+    }
+
+    /**
+     * 把文本组件像Python的`f-string`那样格式化，会将字符串中的`{placeholder_name}`替换为[formatArgs]中对应`placeholder_name`键的参数
+     *
+     * 占位符后也可以加上`:%xxx`，例如`{placeholder_name:%xxx}`，此时会先将参数按照`%xxx`给出的格式化占位符，调用[String.format]进行格式化，再替换进去
+     *
+     * 与Python的`f-string`的格式化规则相同，`{{`是`{`的转义，`}}`是`}`的转义
+     *
+     * 如果某个参数对应的格式化占位符是`%s`，且参数类型是[Component]，则会进行特殊处理，具体为：
+     *
+     * 会把[Component]内部的文本和样式填入，而不是调用`.toString`后填入字符串
+     *
+     * 示例：
+     * ``` kotlin
+     * val player: Player = Bukkit.getPlayer("Miccebe")
+     * val score: Float = 15.63125f
+     * val text = Component.text("Player {player} reached score {score:%.2f}!")
+     *     .yellow().bold()
+     *     .format(mapOf(
+     *         "player" to player.name,
+     *         "score" to score
+     *     ))
+     * // text内容：Player Miccebe reached score 15.63!
+     * ```
+     *
+     * @param formatArgs 格式化参数
+     * @throws IllegalFormatException 格式化占位符的格式不正确时抛出，规则与[String.format]相同
+     * @see String.format
+     */
+    fun Component.format(vararg formatArgs: Pair<String, Any?>): Component {
+        return format(formatArgs.associate { it })
     }
 
     private val FORMAT_STRING_PATTERN = Regex("%(\\d+\\$)?([-#+ 0,(<]*)?(\\d+)?(\\.\\d+)?([tT])?([a-zA-Z%])")

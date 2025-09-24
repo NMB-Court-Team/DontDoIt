@@ -18,10 +18,10 @@ class SimpleTextBuilder(
 ) : MutableList<ComponentLike> by components {
     private var _cursor: Int? = null
     val cursor: Int
-        get() = _cursor ?: (components.size - 1)
+        get() = _cursor ?: components.size
 
     fun moveCursor(offset: Int) {
-        _cursor = (cursor + offset).coerceIn(0, components.size - 1)
+        _cursor = (cursor + offset).coerceIn(0, components.size)
     }
 
     fun getAtCursor(): ComponentLike = components[cursor]

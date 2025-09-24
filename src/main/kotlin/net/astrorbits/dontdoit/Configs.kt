@@ -58,13 +58,41 @@ object Configs {
         "modify_custom_criteria_item_name",
         "<italic:false><aqua>[<key:key.use>]<yellow>设置自定义词条"
     ))
-    val JOIN_SPECTATOR: TextConfigData = CONFIG.defineConfig(TextConfigData(
+    val JOIN_SPECTATOR_MESSAGE: TextConfigData = CONFIG.defineConfig(TextConfigData(
         "join_spectator",
         "<yellow>你现在是<gray><bold>旁观者"
     ))
-    val JOIN_TEAM: TextConfigData = CONFIG.defineConfig(TextConfigData(
+    val JOIN_TEAM_MESSAGE: TextConfigData = CONFIG.defineConfig(TextConfigData(
         "join_team",
         "<yellow>你加入了队伍 {team_name}"
+    ))
+    val CURRENT_CUSTOM_CRITERIA_MESSAGE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "current_custom_criteria_message",
+        "<yellow>你的队伍的自定义词条：{name}"
+    ))
+    val SELF_SET_CUSTOM_CRITERIA_MESSAGE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "self_set_custom_criteria_message",
+        "<yellow>已将自定义词条设置为：{name}"
+    ))
+    val OTHER_SET_CUSTOM_CRITERIA_MESSAGE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "other_set_custom_criteria_message",
+        "<yellow>{player}将自定义词条设置为：{name}"
+    ))
+    val NOT_SET_CUSTOM_CRITERIA_MESSAGE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "not_set_custom_criteria_message",
+        "<red>你的队伍尚未设置自定义词条"
+    ))
+    val SELF_REMOVE_CUSTOM_CRITERIA_MESSAGE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "self_remove_custom_criteria_message",
+        "<yellow>已取消自己队伍定义的自定义词条"
+    ))
+    val OTHER_REMOVE_CUSTOM_CRITERIA_MESSAGE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "other_remove_custom_criteria_message",
+        "<yellow>{player}取消了你的队伍定义的自定义词条"
+    ))
+    val ENTER_PREPARE_MESSAGE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "enter_prepare_message",
+        "<yellow>请使用手上的物品<green><bold>选择队伍</bold><yellow>，然后设置<green><bold>自定义词条"
     ))
 
     val MODIFY_CUSTOM_CRITERIA_TITLE: TextConfigData = CONFIG.defineConfig(TextConfigData(
@@ -92,11 +120,24 @@ object Configs {
         "<white>确认"
     ))
 
+    val COMMAND_GAME_NOT_START: StringConfigData = CONFIG.defineConfig(StringConfigData(
+        "criteria_command.failed.game_not_start",
+        "游戏尚未开始"
+    ))
+    val COMMAND_INVALID_PLAYER: StringConfigData = CONFIG.defineConfig(StringConfigData(
+        "criteria_command.failed.invalid_player",
+        "玩家%s已淘汰或者是旁观者"
+    ))
+    val COMMAND_GUESS_SELF_CRITERIA: StringConfigData = CONFIG.defineConfig(StringConfigData(
+        "criteria_command.failed.guess_self_criteria",
+        "不允许自己标记自己队伍猜中了词条"
+    ))
+
+    // 物品
     private fun parseMaterial(id: String): Material {
         return Material.matchMaterial(id) ?: throw IllegalArgumentException("Unknown item: $id")
     }
 
-    // 物品
     val JOIN_TEAM_ITEM: ParserMapConfigData<NamedTextColor, Material> = CONFIG.defineConfig(ParserMapConfigData(
         "join_team_item",
         TEAM_COLORS.inverse().mapValues { Material.STONE },
