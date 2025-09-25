@@ -31,8 +31,8 @@ object CriteriaCommand {
     const val COMMAND_NAME = "criteria"
 
     fun register(registrar: Commands) {
-        val builder = Commands.literal(COMMAND_NAME)
-        builder.then(Commands.literal("trigger")
+        val argumentBuilder = Commands.literal(COMMAND_NAME)
+        argumentBuilder.then(Commands.literal("trigger")
             .then(Commands.argument("team", TeamIdArgumentType())
                 .executes { ctx ->
                     if (!GameStateManager.isRunning()) throw GAME_NOT_START.create()
@@ -82,7 +82,7 @@ object CriteriaCommand {
         ).then(Commands.literal("grant")
             .then(Commands.argument("team", TeamIdArgumentType())
                 .then(Commands.argument("criteria", StringArgumentType.greedyString())
-                    .suggests { ctx, builder ->
+                    .suggests { _, builder ->
                         // 自动补全所有 Criteria 的 displayName
                         CriteriaManager.allCriteria
                             .map { it.displayName.plainText() }
@@ -109,7 +109,7 @@ object CriteriaCommand {
                 })
             )
         )
-        registrar.register(builder.build())
+        registrar.register(argumentBuilder.build())
     }
 
     class TeamIdArgumentType : CustomArgumentType<TeamData, String> {
@@ -130,6 +130,8 @@ object CriteriaCommand {
 
     fun Component.plainText(): String =
         PlainTextComponentSerializer.plainText().serialize(this)
+
+
 
 
     private val GAME_NOT_START = SimpleCommandExceptionType(Component.text(Configs.COMMAND_GAME_NOT_START.get()).toMessage())

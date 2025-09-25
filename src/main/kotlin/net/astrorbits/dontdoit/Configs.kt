@@ -238,7 +238,7 @@ object Configs {
     ))
     val SIDEBAR_ENTRY_NUMBER: TextConfigData = CONFIG.defineConfig(TextConfigData(
         "sidebar.entry.number",
-        "<white><shadow:#a0000000>{criteria}"
+        "<yellow><shadow:#a0000000>{criteria}"
     ))
     val SIDEBAR_ENTRY_NUMBER_WINNER: TextConfigData = CONFIG.defineConfig(TextConfigData(
         "sidebar.entry.number_winner",

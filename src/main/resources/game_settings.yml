@@ -1,13 +1,13 @@
 # ==== 游戏文本 ====
 team_name:
-  red: "<bold><red><shadow:#a0000000>红队</shadow></red></bold>"
-  gold: "<bold><gold><shadow:#a0000000>橙队</shadow></gold></bold>"
-  yellow: "<bold><yellow><shadow:#a0000000>黄队</shadow></yellow></bold>"
-  green: "<bold><green><shadow:#a0000000>绿队</shadow></green></bold>"
-  aqua: "<bold><aqua><shadow:#a0000000>蓝队</shadow></aqua></bold>"
-  dark_aqua: "<bold><dark_aqua><shadow:#a0000000>青队</shadow></dark_aqua></bold>"
-  light_purple: "<bold><light_purple><shadow:#a0000000>粉队</shadow></light_purple></bold>"
-  dark_purple: "<bold><dark_purple><shadow:#a0000000>紫队</shadow></dark_purple></bold>"
+  red: "<bold><red><shadow:#000000a0>红队</shadow></red></bold>"
+  gold: "<bold><gold><shadow:#000000a0>橙队</shadow></gold></bold>"
+  yellow: "<bold><yellow><shadow:#000000a0>黄队</shadow></yellow></bold>"
+  green: "<bold><green><shadow:#000000a0>绿队</shadow></green></bold>"
+  aqua: "<bold><aqua><shadow:#000000a0>蓝队</shadow></aqua></bold>"
+  dark_aqua: "<bold><dark_aqua><shadow:#000000a0>青队</shadow></dark_aqua></bold>"
+  light_purple: "<bold><light_purple><shadow:#000000a0>粉队</shadow></light_purple></bold>"
+  dark_purple: "<bold><dark_purple><shadow:#000000a0>紫队</shadow></dark_purple></bold>"
 
 change_team_item_name: "<italic:false><aqua>[<key:key.use>]<yellow>切换队伍"
 modify_custom_criteria_item_name: "<italic:false><aqua>[<key:key.use>]<yellow>设置自定义词条"
@@ -75,14 +75,14 @@ eliminated_message:
 
 # 侧边栏
 sidebar:
-  title: "<shadow:#a0000000><gradient:#ff0000:#EF903E>※ <bold>禁止事项</bold> ※"
+  title: "<shadow:#000000a0><gradient:#ff0000:#EF903E>※ <bold>禁止事项</bold> ※"
   entry:
-    name: "{team_name}<white><shadow:#a0aa0000>[<red>❤</red><white>{life_count:%02d}]"
-    number: "<yellow><shadow:#a0000000>{criteria}"
-    number_winner: "<gold><shadow:#a0000000>获胜者"
+    name: "{team_name}<white><shadow:#aa0000a0>[<red>❤</red><white>{life_count:%02d}]"
+    number: "<yellow><shadow:#000000a0>{criteria}"
+    number_winner: "<gold><shadow:#000000a0>获胜者"
   entry_dead:
-    name: "<strikethrough>{team_name}<gray><shadow:#a0000000>[💔00]"
-    number: "<gray><shadow:#a0000000>已淘汰"
+    name: "<strikethrough>{team_name}<gray><shadow:#000000a0>[💔00]"
+    number: "<gray><shadow:#000000a0>已淘汰"
 
 # 设置自定义词条界面的文本
 modify_custom_criteria:
