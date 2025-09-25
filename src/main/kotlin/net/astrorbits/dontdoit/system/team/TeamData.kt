@@ -68,7 +68,7 @@ class TeamData(val color: NamedTextColor) {
                     Component.empty().append(
                         Configs.HOLDING_CUSTOM_CRITERIA_MESSAGE.get().format(
                             TEAM_NAME_PLACEHOLDER to teamName,
-                            CRITERIA_DISPLAY_NAME_PLACEHOLDER to criteria?.displayName?.color(color)
+                            CRITERIA_DISPLAY_NAME_PLACEHOLDER to criteria?.displayText?.color(color)
                         )
                     ).appendNewline().append(
                         Configs.HOLDING_CUSTOM_CRITERIA_CLICK_MESSAGE.get()
@@ -87,12 +87,12 @@ class TeamData(val color: NamedTextColor) {
             if (oldCriteria != null) {
                 Bukkit.broadcast(Configs.AUTO_CHANGE_CRITERIA_ANNOUNCE.get().format(
                     TEAM_NAME_PLACEHOLDER to teamName,
-                    CRITERIA_DISPLAY_NAME_PLACEHOLDER to criteria!!.displayName.color(color)
+                    CRITERIA_DISPLAY_NAME_PLACEHOLDER to criteria!!.displayText.color(color)
                 ))
                 broadcastTitle(Title.title(
                     Configs.AUTO_CHANGE_CRITERIA_TITLE.get().color(color),
                     Configs.AUTO_CHANGE_CRITERIA_SUBTITLE.get().format(
-                        CRITERIA_DISPLAY_NAME_PLACEHOLDER to criteria!!.displayName.color(color)
+                        CRITERIA_DISPLAY_NAME_PLACEHOLDER to criteria!!.displayText.color(color)
                     ),
                     5, 50, 10
                 ))
@@ -104,7 +104,7 @@ class TeamData(val color: NamedTextColor) {
 
     init {
         val teamName = Configs.getTeamName(color)
-        val team = Bukkit.getScoreboardManager().mainScoreboard.registerNewTeam(TeamManager.TEAM_COLORS.inverse()[color]!!)
+        val team = sidebarDisplay.scoreboard.registerNewTeam(TeamManager.TEAM_COLORS.inverse()[color]!!)
         team.color(color)
         team.displayName(teamName)
         team.prefix(Component.text("[").color(color).append(teamName).append("]"))
@@ -119,8 +119,8 @@ class TeamData(val color: NamedTextColor) {
 
     fun setPlayerDisplayName(player: Player) {
         val displayName = Component.empty().append(team.prefix()).append(Component.text(player.name).color(color))
-        //player.displayName(displayName)
-        //player.playerListName(displayName)
+        player.displayName(displayName)
+        player.playerListName(displayName)
     }
 
     fun leave(player: Player) {
@@ -210,18 +210,18 @@ class TeamData(val color: NamedTextColor) {
             broadcastTitle(Title.title(
                 Configs.CRITERIA_TRIGGERED_TITLE.get().format(
                     WHO_TRIGGERED_PLACEHOLDER to whoTriggered,
-                    CRITERIA_DISPLAY_NAME_PLACEHOLDER to oldCriteria?.displayName?.color(color)
+                    CRITERIA_DISPLAY_NAME_PLACEHOLDER to oldCriteria?.displayText?.color(color)
                 ),
                 Configs.CRITERIA_TRIGGERED_SUBTITLE.get().format(
                     WHO_TRIGGERED_PLACEHOLDER to whoTriggered,
-                    CRITERIA_DISPLAY_NAME_PLACEHOLDER to oldCriteria?.displayName?.color(color)
+                    CRITERIA_DISPLAY_NAME_PLACEHOLDER to oldCriteria?.displayText?.color(color)
                 ),
                 0, 50, 10
             ))
         }
         Bukkit.broadcast(Configs.CRITERIA_TRIGGERED_ANNOUNCE.get().format(
             WHO_TRIGGERED_PLACEHOLDER to whoTriggered,
-            CRITERIA_DISPLAY_NAME_PLACEHOLDER to oldCriteria?.displayName?.color(color)
+            CRITERIA_DISPLAY_NAME_PLACEHOLDER to oldCriteria?.displayText?.color(color)
         ))
         for (p in members) {
             p.world.playSound(
@@ -274,13 +274,13 @@ class TeamData(val color: NamedTextColor) {
             Bukkit.broadcast(Configs.GUESS_SUCCESS_ANNOUNCE.get().format(
                 PLAYER_NAME_PLACEHOLDER to player.displayName(),
                 LIFE_COUNT_PLACEHOLDER to DynamicSettings.guessSuccessAddLife,
-                CRITERIA_DISPLAY_NAME_PLACEHOLDER to oldCriteria?.displayName?.color(color)
+                CRITERIA_DISPLAY_NAME_PLACEHOLDER to oldCriteria?.displayText?.color(color)
             ))
             broadcastTitle(Title.title(
                 Configs.GUESS_SUCCESS_TITLE.get().color(color),
                 Configs.GUESS_SUCCESS_SUBTITLE.get().format(
                     LIFE_COUNT_PLACEHOLDER to DynamicSettings.guessSuccessAddLife,
-                    CRITERIA_DISPLAY_NAME_PLACEHOLDER to oldCriteria?.displayName?.color(color)
+                    CRITERIA_DISPLAY_NAME_PLACEHOLDER to oldCriteria?.displayText?.color(color)
                 ),
                 5, 50, 10
             ))
@@ -302,13 +302,13 @@ class TeamData(val color: NamedTextColor) {
             Bukkit.broadcast(Configs.GUESS_FAILED_ANNOUNCE.get().format(
                 PLAYER_NAME_PLACEHOLDER to player.displayName(),
                 LIFE_COUNT_PLACEHOLDER to DynamicSettings.guessFailedReduceLife,
-                CRITERIA_DISPLAY_NAME_PLACEHOLDER to oldCriteria?.displayName?.color(color)
+                CRITERIA_DISPLAY_NAME_PLACEHOLDER to oldCriteria?.displayText?.color(color)
             ))
             broadcastTitle(Title.title(
                 Configs.GUESS_FAILED_TITLE.get().color(color),
                 Configs.GUESS_FAILED_SUBTITLE.get().format(
                     LIFE_COUNT_PLACEHOLDER to DynamicSettings.guessFailedReduceLife,
-                    CRITERIA_DISPLAY_NAME_PLACEHOLDER to oldCriteria?.displayName?.color(color)
+                    CRITERIA_DISPLAY_NAME_PLACEHOLDER to oldCriteria?.displayText?.color(color)
                 ),
                 5, 50, 10
             ))

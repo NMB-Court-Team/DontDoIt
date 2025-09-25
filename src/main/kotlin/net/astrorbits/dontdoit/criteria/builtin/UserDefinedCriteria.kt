@@ -7,7 +7,6 @@ import net.astrorbits.dontdoit.criteria.helper.CriteriaType
 import net.astrorbits.dontdoit.criteria.helper.TriggerDifficulty
 import net.astrorbits.dontdoit.system.team.TeamData
 import net.astrorbits.dontdoit.system.team.TeamManager
-import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 
 class UserDefinedCriteria(val teamColor: NamedTextColor) : Criteria(), BuiltinCriteria {
@@ -17,11 +16,11 @@ class UserDefinedCriteria(val teamColor: NamedTextColor) : Criteria(), BuiltinCr
 
     init {
         triggerDifficulty = TriggerDifficulty.HARD
-        displayName = Component.empty()
+        displayName = ""
     }
 
     fun setName(name: String) {
-        displayName = Component.text("${Configs.CUSTOM_CRITERIA_NAME_PREFIX.get()}$name")
+        displayName = Configs.CUSTOM_CRITERIA_NAME_PREFIX.get() + name
     }
 
     override fun readData(data: Map<String, String>) { }

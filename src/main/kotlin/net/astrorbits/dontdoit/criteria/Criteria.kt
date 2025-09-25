@@ -24,7 +24,9 @@ import java.util.*
 abstract class Criteria {
     abstract val type: CriteriaType
     var triggerDifficulty: TriggerDifficulty = TriggerDifficulty.NORMAL
-    lateinit var displayName: Component
+    lateinit var displayName: String
+    val displayText: Component
+        get() = Component.text(displayName)
     val holders: ReferenceArrayList<TeamData> = ReferenceArrayList()
 
     /**
@@ -82,7 +84,7 @@ abstract class Criteria {
      */
     open fun readData(data: Map<String, String>) {
         data.setField(TRIGGER_DIFFICULTY_KEY, true) { triggerDifficulty = TriggerDifficulty.valueOf(it.uppercase()) }
-        data.setField(NAME_KEY) { displayName = TextHelper.parseMiniMessage(it) }
+        data.setField(NAME_KEY) { displayName = it }
     }
 
     protected fun Map<String, String>.setField(key: String, ignoreIfAbsent: Boolean = false, fieldSetter: (String) -> Unit) {

@@ -14,6 +14,7 @@ import net.astrorbits.lib.text.SimpleTextBuilder
 import net.astrorbits.lib.text.TextHelper.format
 import net.astrorbits.lib.text.TitleHelper
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.title.Title
 import org.bukkit.Bukkit
 import org.bukkit.Difficulty
@@ -102,6 +103,9 @@ object GameStateManager {
     fun tick() {
         if (isWaiting()) {
             Preparation.tick()
+        }
+        for (player in Bukkit.getOnlinePlayers()) {
+            player.isGlowing = TeamManager.getTeam(player) != null
         }
     }
 

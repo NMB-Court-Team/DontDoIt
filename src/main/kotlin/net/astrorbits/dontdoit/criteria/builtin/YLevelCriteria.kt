@@ -17,17 +17,17 @@ class YLevelCriteria : Criteria(), BuiltinCriteria {
 
     init {
         triggerDifficulty = TriggerDifficulty.VERY_EASY
-        displayName = Component.empty()
+        displayName = ""
     }
 
     fun setBorder(border: Int, belowBorder: Boolean) {
         this.border = border
         this.belowBorder = belowBorder
         displayName = if (belowBorder) {
-            Component.text("Y坐标小于$border")
+            Configs.Y_LEVEL_CRITERIA_BELOW
         } else {
-            Component.text("Y坐标大于$border")
-        }
+            Configs.Y_LEVEL_CRITERIA_ABOVE
+        }.get().format(border)
     }
 
     override fun tick(teamData: TeamData) {

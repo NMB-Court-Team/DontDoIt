@@ -316,6 +316,17 @@ object Configs {
     ))
     //endregion
 
+    //region Y坐标准则
+    val Y_LEVEL_CRITERIA_BELOW: StringConfigData = CONFIG.defineConfig(StringConfigData(
+        "y_level_criteria.below",
+        "Y坐标小于%d"
+    ))
+    val Y_LEVEL_CRITERIA_ABOVE: StringConfigData = CONFIG.defineConfig(StringConfigData(
+        "y_level_criteria.above",
+        "Y坐标大于%d"
+    ))
+    //endregion
+
     //region 物品
     private fun parseMaterial(id: String): Material {
         return Material.matchMaterial(id) ?: throw IllegalArgumentException("Unknown item: $id")

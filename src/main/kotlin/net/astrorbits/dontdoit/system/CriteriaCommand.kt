@@ -85,7 +85,7 @@ object CriteriaCommand {
                     .suggests { _, builder ->
                         // 自动补全所有 Criteria 的 displayName
                         CriteriaManager.allCriteria
-                            .map { it.displayName.plainText() }
+                            .map { it.displayName }
                             .forEach { builder.suggest(it) }
                         builder.buildFuture()
                     }
@@ -96,9 +96,7 @@ object CriteriaCommand {
                     if (team == null || team.isEliminated) throw INVALID_TEAM_NAME.create(team.teamId)
 
                     val displayName = StringArgumentType.getString(ctx, "criteria")
-                    val criteria = CriteriaManager.allCriteria
-                        .firstOrNull { it.displayName.plainText() == displayName }
-                        ?: throw INVALID_CRITERIA_NAME.create(displayName)
+                    val criteria = CriteriaManager.allCriteria.firstOrNull { it.displayName == displayName } ?: throw INVALID_CRITERIA_NAME.create(displayName)
 
                     // 替换前解绑
                     team.criteria?.onUnbind(team, CriteriaChangeReason.MANUAL)
@@ -127,12 +125,6 @@ object CriteriaCommand {
             return CommandHelper.suggestMatching(TeamManager.getInUseTeams().keys, builder)
         }
     }
-
-    fun Component.plainText(): String =
-        PlainTextComponentSerializer.plainText().serialize(this)
-
-
-
 
     private val GAME_NOT_START = SimpleCommandExceptionType(Component.text(Configs.COMMAND_GAME_NOT_START.get()).toMessage())
     private val GUESS_NOT_ENABLED = SimpleCommandExceptionType(Component.text(Configs.COMMAND_GUESS_NOT_ENABLED.get()).toMessage())

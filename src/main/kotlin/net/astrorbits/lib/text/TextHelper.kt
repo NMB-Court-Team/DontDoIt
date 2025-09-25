@@ -15,6 +15,7 @@ import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Entity
@@ -246,6 +247,8 @@ object TextHelper {
             }
         }
     }
+
+    fun Component.plainText(): String = PlainTextComponentSerializer.plainText().serialize(this)
 
     fun parseMiniMessage(message: String): Component {
         return MiniMessage.miniMessage().deserialize(message)

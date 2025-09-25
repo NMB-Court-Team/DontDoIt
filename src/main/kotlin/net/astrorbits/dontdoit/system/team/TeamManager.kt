@@ -23,6 +23,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.scoreboard.Team
 
 object TeamManager : Listener {
     val TEAM_COLORS: BiMap<String, NamedTextColor> = setOf(
@@ -62,16 +63,18 @@ object TeamManager : Listener {
     fun joinTeam(player: Player, color: NamedTextColor) {
         leaveTeam(player)
         getTeam(color).join(player)
+        TeamInfoSynchronizer.syncTeamInfos(teams)
     }
 
     fun leaveTeam(player: Player) {
         getTeam(player)?.leave(player)
+        TeamInfoSynchronizer.syncTeamInfos(teams)
     }
 
     fun setSpectatorDisplayName(player: Player) {
         val displayName = Component.text(player.name).gray()
-        //player.displayName(displayName)
-        //player.playerListName(displayName)
+        player.displayName(displayName)
+        player.playerListName(displayName)
     }
 
     /** 更新计分板显示 */
@@ -124,6 +127,7 @@ object TeamManager : Listener {
         } else {
             team.setPlayerDisplayName(player)
         }
+        TeamInfoSynchronizer.syncTeamInfos(teams)
     }
 
     private val guessHintAnnounceTimer: Timer = object : Timer(DontDoIt.instance) {

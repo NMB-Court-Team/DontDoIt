@@ -107,6 +107,11 @@ criteria_command:
     guess_self_criteria: "不允许自己标记自己猜中了词条"
     guess_in_cooldown: "玩家%s所在队伍正在猜词条冷却中（剩余时间：%d）"
 
+# Y坐标准则
+y_level_criteria:
+  below: "Y坐标小于%d"
+  above: "Y坐标大于%d"
+
 # 物品
 join_team_item:
   red: red_wool

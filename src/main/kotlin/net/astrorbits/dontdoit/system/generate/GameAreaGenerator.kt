@@ -139,8 +139,10 @@ object GameAreaGenerator : Listener {
     }
 
     fun onEnterPreparation() {
-        world?.difficulty = Difficulty.PEACEFUL
-        world?.worldBorder?.reset()
+        for (world in Bukkit.getWorlds()) {
+            world.difficulty = Difficulty.PEACEFUL
+            world.worldBorder.reset()
+        }
         world = null
         center = null
         groundYLevel = null
