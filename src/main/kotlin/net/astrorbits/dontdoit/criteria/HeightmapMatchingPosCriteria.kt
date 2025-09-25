@@ -2,7 +2,6 @@ package net.astrorbits.dontdoit.criteria
 
 import net.astrorbits.dontdoit.criteria.helper.CriteriaType
 import net.astrorbits.dontdoit.system.team.TeamData
-import net.astrorbits.lib.math.vector.Vec3d
 import org.bukkit.HeightMap
 
 class HeightmapMatchingPosCriteria : Criteria() {
@@ -24,10 +23,7 @@ class HeightmapMatchingPosCriteria : Criteria() {
 
     override fun tick(teamData: TeamData) {
         for (player in teamData.members) {
-            val world = player.world
-            val pos = Vec3d.fromLocation(player.location)
-            val highestPos = pos.setY(world.getHighestBlockYAt(player.location).toDouble())
-            if ((if (reversed) -1 else 1) * (highestPos.squaredDistanceTo(pos) - POS_MATCHING_DISTANCE) <= 0) {
+            if ((player.eyeLocation.y >= player.location.toHighestLocation(heightMap).y) xor reversed) {
                 trigger(player)
                 break
             }
@@ -37,6 +33,5 @@ class HeightmapMatchingPosCriteria : Criteria() {
     companion object {
         const val HEIGHTMAP_KEY = "heightmap"
         const val REVERSED_KEY = "reversed"
-        const val POS_MATCHING_DISTANCE = 0.2 * 0.2
     }
 }
