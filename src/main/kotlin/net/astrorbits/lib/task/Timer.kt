@@ -79,11 +79,11 @@ abstract class Timer {
 
     fun stop() {
         if (timerTask != null) {
-            onStop()
-            if (!(timerTask == null || timerTask!!.isCancelled)) {
+            if (!timerTask!!.isCancelled) {
                 timerTask!!.cancel()
                 timerTask = null
             }
+            onStop()
         }
     }
 

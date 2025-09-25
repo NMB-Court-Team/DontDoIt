@@ -185,7 +185,11 @@ object CriteriaManager {
         criteriaConfig.close()
     }
 
-    fun getRandomCriteria(): Criteria {
+    fun onEnterPreparation() {
+        triggerCountStat.clear()
+    }
+
+    fun getRandomCriteria(teamData: TeamData): Criteria {
         //TODO 要加上仓检机制
         return allCriteria.random() // 等概率抽取
     }

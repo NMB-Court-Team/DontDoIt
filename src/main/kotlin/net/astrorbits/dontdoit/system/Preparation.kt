@@ -255,6 +255,7 @@ object Preparation : Listener {
         itemMeta.displayName(Configs.START_GAME_ITEM_NAME.get())
         itemMeta.setMaxStackSize(1)
         itemMeta.itemModel = Configs.START_GAME_ITEM.get().key
+        itemMeta.setEnchantmentGlintOverride(true)
         itemMeta.persistentDataContainer.set(PREPARE_GAME_ITEM_PDC_KEY, PersistentDataType.BOOLEAN, true)
         itemMeta.persistentDataContainer.set(START_GAME_PDC_KEY, PersistentDataType.BOOLEAN, true)
         item.setItemMeta(itemMeta)

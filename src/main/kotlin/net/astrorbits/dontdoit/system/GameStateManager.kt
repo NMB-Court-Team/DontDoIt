@@ -94,6 +94,7 @@ object GameStateManager {
         Preparation.onEnterPreparation()
         TeamManager.onEnterPreparation()
         GameAreaGenerator.onEnterPreparation()
+        CriteriaManager.onEnterPreparation()
 
         Bukkit.broadcast(Configs.RESET_GAME_MESSAGE.get())
     }

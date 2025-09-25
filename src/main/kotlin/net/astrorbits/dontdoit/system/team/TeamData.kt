@@ -81,7 +81,7 @@ class TeamData(val color: NamedTextColor) {
         override fun onStop() {
             val oldCriteria = criteria
             criteria?.onUnbind(this@TeamData, CriteriaChangeReason.AUTO)
-            criteria = CriteriaManager.getRandomCriteria()
+            criteria = CriteriaManager.getRandomCriteria(this@TeamData)
             criteria!!.onBind(this@TeamData, CriteriaChangeReason.AUTO)
 
             if (oldCriteria != null) {
@@ -104,7 +104,7 @@ class TeamData(val color: NamedTextColor) {
 
     init {
         val teamName = Configs.getTeamName(color)
-        val team = sidebarDisplay.scoreboard.registerNewTeam(TeamManager.TEAM_COLORS.inverse()[color]!!)
+        val team = Bukkit.getScoreboardManager().mainScoreboard.registerNewTeam(TeamManager.TEAM_COLORS.inverse()[color]!!)
         team.color(color)
         team.displayName(teamName)
         team.prefix(Component.text("[").color(color).append(teamName).append("]"))
@@ -119,8 +119,8 @@ class TeamData(val color: NamedTextColor) {
 
     fun setPlayerDisplayName(player: Player) {
         val displayName = Component.empty().append(team.prefix()).append(Component.text(player.name).color(color))
-        player.displayName(displayName)
-        player.playerListName(displayName)
+        //player.displayName(displayName)
+        //player.playerListName(displayName)
     }
 
     fun leave(player: Player) {
@@ -133,7 +133,7 @@ class TeamData(val color: NamedTextColor) {
         isInUse = true
         lifeCount = DynamicSettings.lifeCount
         criteria?.onUnbind(this, CriteriaChangeReason.GAME_STAGE_CHANGE)
-        criteria = CriteriaManager.getRandomCriteria()
+        criteria = CriteriaManager.getRandomCriteria(this)
         criteria!!.onBind(this, CriteriaChangeReason.GAME_STAGE_CHANGE)
         sidebarDisplay.show()
         mainTimer.start()
@@ -205,7 +205,7 @@ class TeamData(val color: NamedTextColor) {
         if (isEliminated) {
              criteria = null
         } else {
-            criteria = CriteriaManager.getRandomCriteria()
+            criteria = CriteriaManager.getRandomCriteria(this)
             criteria!!.onBind(this, CriteriaChangeReason.TRIGGERED)
             broadcastTitle(Title.title(
                 Configs.CRITERIA_TRIGGERED_TITLE.get().format(
@@ -286,7 +286,7 @@ class TeamData(val color: NamedTextColor) {
             ))
 
             criteria?.onUnbind(this, CriteriaChangeReason.GUESS_SUCCESS)
-            criteria = CriteriaManager.getRandomCriteria()
+            criteria = CriteriaManager.getRandomCriteria(this)
             criteria!!.onBind(this, CriteriaChangeReason.GUESS_SUCCESS)
         } else {
             reduceLife(DynamicSettings.guessFailedReduceLife)
@@ -314,7 +314,7 @@ class TeamData(val color: NamedTextColor) {
             ))
 
             criteria?.onUnbind(this, CriteriaChangeReason.GUESS_FAILED)
-            criteria = CriteriaManager.getRandomCriteria()
+            criteria = CriteriaManager.getRandomCriteria(this)
             criteria!!.onBind(this, CriteriaChangeReason.GUESS_FAILED)
         }
 

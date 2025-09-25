@@ -73,7 +73,7 @@ object CriteriaCommand {
                     if (team == null || team.isEliminated) throw INVALID_TEAM_NAME.create(team.teamId)
 
                     team.criteria?.onUnbind(team, CriteriaChangeReason.MANUAL)
-                    team.criteria = CriteriaManager.getRandomCriteria()
+                    team.criteria = CriteriaManager.getRandomCriteria(team)
                     team.criteria!!.onBind(team, CriteriaChangeReason.MANUAL)
 
                     return@executes 1

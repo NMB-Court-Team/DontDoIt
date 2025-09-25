@@ -70,8 +70,8 @@ object TeamManager : Listener {
 
     fun setSpectatorDisplayName(player: Player) {
         val displayName = Component.text(player.name).gray()
-        player.displayName(displayName)
-        player.playerListName(displayName)
+        //player.displayName(displayName)
+        //player.playerListName(displayName)
     }
 
     /** 更新计分板显示 */
