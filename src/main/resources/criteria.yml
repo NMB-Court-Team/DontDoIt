@@ -54,16 +54,16 @@ criteria:
     - name: 拾起煤炭
       difficulty: normal
       item: coal
-    - name: 捡起腐肉
+    - name: 拾起腐肉
       difficulty: normal
       item: rotten_flesh
-    - name: 捡起安山岩
+    - name: 拾起安山岩
       difficulty: normal
       item: andesite
-    - name: 捡起圆石
+    - name: 拾起圆石
       difficulty: normal
       item: cobblestone
-    - name: 捡起钻石
+    - name: 拾起钻石
       difficulty: hard
       item: diamond
   # 在空中掉落超过distance格时触发

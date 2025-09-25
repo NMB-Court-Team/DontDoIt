@@ -12,9 +12,11 @@ import net.astrorbits.dontdoit.Configs.getJoinTeamItemMaterial
 import net.astrorbits.dontdoit.DontDoIt
 import net.astrorbits.dontdoit.DynamicSettings
 import net.astrorbits.dontdoit.system.team.TeamData
+import net.astrorbits.dontdoit.system.team.TeamInfoSynchronizer
 import net.astrorbits.dontdoit.system.team.TeamManager
 import net.astrorbits.lib.item.ItemHelper.getBoolPdc
 import net.astrorbits.lib.item.ItemHelper.getStringPdc
+import net.astrorbits.lib.item.ItemHelper.removeIfMatch
 import net.astrorbits.lib.math.Duration
 import net.astrorbits.lib.task.TaskBuilder
 import net.astrorbits.lib.task.TaskType
@@ -26,12 +28,14 @@ import net.kyori.adventure.text.event.ClickCallback
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
+import org.bukkit.GameRule
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerDropItemEvent
+import org.bukkit.event.player.PlayerGameModeChangeEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
@@ -43,6 +47,10 @@ object Preparation : Listener {
     fun onEnterPreparation() {
         for (player in Bukkit.getOnlinePlayers()) {
             setPrepared(player)
+        }
+        Bukkit.getWorlds().forEach { world ->
+            world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false)
+            world.time = 1000
         }
     }
 
@@ -69,10 +77,18 @@ object Preparation : Listener {
         putStartGameItem(player)
     }
 
+    fun removePrepareGameItems(player: Player) {
+        val inventory = player.inventory
+        inventory.removeIfMatch(TEAM_ITEM_SLOT) { it.isPrepareGameItem() }
+        inventory.removeIfMatch(MODIFY_CUSTOM_CRITERIA_ITEM_SLOT) { it.isPrepareGameItem() }
+        inventory.removeIfMatch(START_GAME_ITEM_SLOT) { it.isPrepareGameItem() }
+    }
+
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
         if (!GameStateManager.isWaiting()) return
         setPrepared(event.player)
+        TeamInfoSynchronizer.syncTeamInfos(TeamManager.teams)
     }
 
     @EventHandler
@@ -98,6 +114,17 @@ object Preparation : Listener {
         if (event.offHandItem.isPrepareGameItem()) {
             event.isCancelled = true
         }
+    }
+
+    @EventHandler
+    fun onGameModeChange(event: PlayerGameModeChangeEvent) {
+        if (!GameStateManager.isWaiting()) return
+        val player = event.player
+        TaskBuilder(DontDoIt.instance, TaskType.Delayed(Duration.ticks(1.0)))
+            .setTask {
+                player.allowFlight = true
+                player.isInvulnerable = true
+            }.runTask()
     }
 
     const val TEAM_NAME_PLACEHOLDER = "team_name"
@@ -321,6 +348,7 @@ object Preparation : Listener {
     val customCriteriaNames: MutableMap<NamedTextColor, String> = mutableMapOf()
 
     private const val CUSTOM_CRITERIA_NAME_DIALOG_KEY = "name"
+    const val CUSTOM_CRITERIA_NAME_LENGTH = 20
 
     @Suppress("UnstableApiUsage")
     private fun createModifyCustomCriteriaDialog(player: Player): Dialog? {
@@ -333,7 +361,7 @@ object Preparation : Listener {
                 })
                 .inputs(listOf(DialogInput.text(CUSTOM_CRITERIA_NAME_DIALOG_KEY, Configs.MODIFY_CUSTOM_CRITERIA_TEXT_BOX_TITLE.get())
                     .initial(name)
-                    .maxLength(10)
+                    .maxLength(CUSTOM_CRITERIA_NAME_LENGTH)
                     .width(150)
                     .build()
                 ))

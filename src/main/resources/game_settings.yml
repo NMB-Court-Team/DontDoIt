@@ -77,7 +77,7 @@ eliminated_message:
 sidebar:
   title: "<shadow:#000000a0><gradient:#ff0000:#EF903E>※ <bold>禁止事项</bold> ※"
   entry:
-    name: "{team_name}<white><shadow:#aa0000a0>[<red>❤</red><white>{life_count:%02d}]"
+    name: "{team_name}<white><shadow:#aa0000a0>[<red><shadow:#aa0000a0>❤<white><shadow:#aa0000a0>{life_count:%02d}]"
     number: "<yellow><shadow:#000000a0>{criteria}"
     number_winner: "<gold><shadow:#000000a0>获胜者"
   entry_dead:
@@ -105,7 +105,11 @@ criteria_command:
     not_custom_criteria: "队伍%s当前的词条不是自定义词条"
     invalid_team_name: "队伍%s不存在或已淘汰"
     guess_self_criteria: "不允许自己标记自己猜中了词条"
-    guess_in_cooldown: "玩家%s所在队伍正在猜词条冷却中（剩余时间：%d）"
+    guess_in_cooldown: "玩家%s所在队伍正在猜词条冷却中（剩余时间：%d秒）"
+  success:
+    reset_game: "<yellow>已重置游戏"
+    set_life: "<yellow>已设置 {team_name} 的生命值为 {life_count}"
+    get_team_criteria: "{team_name} 的词条是 {criteria}"
 
 # Y坐标准则
 y_level_criteria:
@@ -183,3 +187,5 @@ allow_guess_criteria: true
 guess_success_add_life: 1
 # 猜错词条减少的规则数
 guess_failed_reduce_life: 2
+# 游戏进行时的难度，只能是peaceful, easy, normal, hard
+ingame_difficulty: easy

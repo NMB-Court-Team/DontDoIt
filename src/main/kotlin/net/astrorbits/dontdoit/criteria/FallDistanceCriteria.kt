@@ -2,6 +2,10 @@ package net.astrorbits.dontdoit.criteria
 
 import net.astrorbits.dontdoit.criteria.helper.CriteriaType
 import net.astrorbits.dontdoit.system.team.TeamData
+import org.bukkit.damage.DamageType
+import org.bukkit.entity.Player
+import org.bukkit.event.EventHandler
+import org.bukkit.event.entity.EntityDamageEvent
 import kotlin.properties.Delegates
 
 class FallDistanceCriteria : Criteria() {
@@ -19,6 +23,16 @@ class FallDistanceCriteria : Criteria() {
                 trigger(player)
                 break
             }
+        }
+    }
+
+    @EventHandler
+    fun onPlayerDamaged(event: EntityDamageEvent) {
+        if (event.damageSource.damageType != DamageType.FALL) return
+        val player = event.entity as? Player ?: return
+        if (player.fallDistance >= distance) {
+            trigger(player)
+            return
         }
     }
 

@@ -11,6 +11,7 @@ import net.astrorbits.dontdoit.system.team.TeamData.Companion.LIFE_COUNT_PLACEHO
 import net.astrorbits.dontdoit.system.team.TeamData.Companion.PLAYER_NAME_PLACEHOLDER
 import net.astrorbits.dontdoit.system.team.TeamData.Companion.TEAM_NAME_PLACEHOLDER
 import net.astrorbits.lib.collection.CollectionHelper.toBiMap
+import net.astrorbits.lib.item.ItemHelper.getBoolPdc
 import net.astrorbits.lib.scoreboard.SidebarDisplay
 import net.astrorbits.lib.task.Timer
 import net.astrorbits.lib.text.TextHelper.format
@@ -23,6 +24,8 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataType
 import org.bukkit.scoreboard.Team
 
 object TeamManager : Listener {
@@ -193,12 +196,15 @@ object TeamManager : Listener {
         return teamData.guess(player, guessed)
     }
 
+    val TRIGGERED_DIAMOND_PDC_KEY = DontDoIt.id("triggered_diamond")
+
     @EventHandler
     fun onPickUpItem(event: EntityPickupItemEvent) {
         if (!GameStateManager.isRunning() || !DynamicSettings.diamondBehaviorEnabled) return
         val player = event.entity as? Player ?: return
         val item = event.item.itemStack
-        if (item.type != Material.DIAMOND) return
+        if (item.type != Material.DIAMOND || item.isTriggeredDiamond()) return
+        item.editMeta { it.persistentDataContainer.set(TRIGGERED_DIAMOND_PDC_KEY, PersistentDataType.BOOLEAN, true) }
 
         val team = getTeam(player) ?: return
         if (!team.isInUse || team.isEliminated) return
@@ -228,5 +234,9 @@ object TeamManager : Listener {
             0.5, 0.5, 0.5,
             1.0, null, true
         )
+    }
+
+    private fun ItemStack.isTriggeredDiamond(): Boolean {
+        return this.getBoolPdc(TRIGGERED_DIAMOND_PDC_KEY) ?: false
     }
 }

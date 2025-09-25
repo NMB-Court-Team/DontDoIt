@@ -32,7 +32,7 @@ class HoldingItemCriteria : Criteria(), ItemInspectCandidate {
         for (player in teamData.members) {
             val mainhandStack = player.inventory.itemInMainHand
             val offhandStack = player.inventory.itemInOffHand
-            if (mainhandStack.type in mainhandItem && offhandStack.type in offhandItem) {
+            if ((isMainhandWildcard || mainhandStack.type in mainhandItem) && (isOffhandWildcard || offhandStack.type in offhandItem)) {
                 trigger(player)
                 break
             }

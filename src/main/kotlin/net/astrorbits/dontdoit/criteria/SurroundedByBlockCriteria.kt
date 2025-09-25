@@ -32,8 +32,8 @@ class SurroundedByBlockCriteria : Criteria(), Listener, BlockInspectCandidate {
     override fun tick(teamData: TeamData) {
         for (player in teamData.members) {
             val surroundingBlocks = getSurroundingBlocks(player)
-            if ((surroundingBlocks.all { it.type in blockTypes } && !reversed) ||
-                (surroundingBlocks.none { it.type in blockTypes } && reversed)
+            if (((surroundingBlocks.all { it.type in blockTypes } || isWildcard) && !reversed) ||
+                ((surroundingBlocks.none { it.type in blockTypes } && !isWildcard) && reversed)
             ) {
                 trigger(player)
                 break

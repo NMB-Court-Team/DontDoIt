@@ -28,7 +28,7 @@ class HeightmapMatchingPosCriteria : Criteria() {
                 break
             }
         }
-    }
+    }  //TODO 判定有点问题？ 头顶无方块遮挡(heightMap = WORLD_SURFACE, reversed = false)不触发
 
     companion object {
         const val HEIGHTMAP_KEY = "heightmap"

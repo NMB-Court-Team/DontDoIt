@@ -9,6 +9,7 @@ import net.astrorbits.lib.text.TextHelper.bold
 import net.astrorbits.lib.text.TextHelper.shadowColor
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.Difficulty
 import org.bukkit.Material
 
 object Configs {
@@ -314,6 +315,18 @@ object Configs {
         "criteria_command.failed.invalid_criteria_name",
         "无效的词条名称"
     ))
+    val COMMAND_RESET_GAME: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "criteria_command.success.reset_game",
+        "<yellow>已重置游戏"
+    ))
+    val COMMAND_SET_LIFE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "criteria_command.success.set_life",
+        "<yellow>已设置 {team_name} 的生命值为 {life_count}"
+    ))
+    val COMMAND_GET_TEAM_CRITERIA: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "criteria_command.success.get_team_criteria",
+        "{team_name} 的词条是 {criteria}"
+    ))
     //endregion
 
     //region Y坐标准则
@@ -426,6 +439,10 @@ object Configs {
     val GUESS_FAILED_REDUCE_LIFE: IntConfigData = CONFIG.defineConfig(IntConfigData(
         "guess_failed_reduce_life",
         2
+    ))
+    val INGAME_DIFFICULTY: EnumConfigData<Difficulty> = CONFIG.defineConfig(EnumConfigData(
+        "ingame_difficulty",
+        Difficulty.EASY
     ))
     //endregion
 

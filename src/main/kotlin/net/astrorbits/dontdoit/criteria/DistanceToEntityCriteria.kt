@@ -14,7 +14,6 @@ class DistanceToEntityCriteria : Criteria(), Listener, EntityInspectCandidate {
     var distanceRangeSquared: DoubleRange = DoubleRange.INFINITY
     var rangeReversed: Boolean = false
 
-
     override fun getCandidateEntityTypes(): Set<EntityType> {
         return entityTypes
     }

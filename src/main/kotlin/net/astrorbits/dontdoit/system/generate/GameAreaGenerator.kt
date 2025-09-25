@@ -49,7 +49,7 @@ object GameAreaGenerator : Listener {
         }
 
         this.world = world
-        world.difficulty = Difficulty.NORMAL
+        world.difficulty = DynamicSettings.ingameDifficulty
         center = centerLoc
         groundYLevel = generateCenter.y
 
@@ -84,6 +84,9 @@ object GameAreaGenerator : Listener {
             coalOreGeneration.generate(depth, count, stones, level)
             ironOreGeneration.generate(depth, count, stones, level)
             diamondOreGeneration.generate(depth, count, stones, level)
+            for (pos in stones) {
+                level.setBlock(BlockPos(pos.x, pos.y, pos.z), (Material.STONE.createBlockData() as CraftBlockData).state, Block.UPDATE_CLIENTS)
+            }
         }
 
         // 统计方块

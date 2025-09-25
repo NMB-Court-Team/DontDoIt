@@ -29,6 +29,7 @@ class RespawnTimeCriteria : Criteria(), Listener {
     override fun tick(teamData: TeamData) {
         if (waitTimeMode != WaitTimeMode.STAY) return
         for (player in teamData.members) {
+            if (!player.isDead) continue
             val uuid = player.uniqueId
             val deathTick = playerDeathTick[uuid] ?: continue
             val currentTick = Bukkit.getCurrentTick()

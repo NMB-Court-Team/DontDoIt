@@ -15,6 +15,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickCallback
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
+import org.bukkit.Difficulty
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import kotlin.math.floor
@@ -49,6 +50,7 @@ object DynamicSettings {
     var allowGuessCriteria: Boolean = Configs.ALLOW_GUESS_CRITERIA.get()
     var guessSuccessAddLife: Int = Configs.GUESS_SUCCESS_ADD_LIFE.get()
     var guessFailedReduceLife: Int = Configs.GUESS_FAILED_REDUCE_LIFE.get()
+    var ingameDifficulty: Difficulty = Configs.INGAME_DIFFICULTY.get()
 
     @Suppress("UnstableApiUsage")
     fun openLifeDialog(player: Player) {

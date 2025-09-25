@@ -3,6 +3,7 @@ package net.astrorbits.dontdoit.system
 import com.mojang.brigadier.StringReader
 import com.mojang.brigadier.arguments.ArgumentType
 import com.mojang.brigadier.arguments.BoolArgumentType
+import com.mojang.brigadier.arguments.IntegerArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType
@@ -19,11 +20,16 @@ import net.astrorbits.dontdoit.DynamicSettings
 import net.astrorbits.dontdoit.criteria.helper.CriteriaType
 import net.astrorbits.dontdoit.criteria.system.CriteriaManager
 import net.astrorbits.dontdoit.system.team.TeamData
+import net.astrorbits.dontdoit.system.team.TeamData.Companion.CRITERIA_DISPLAY_NAME_PLACEHOLDER
+import net.astrorbits.dontdoit.system.team.TeamData.Companion.LIFE_COUNT_PLACEHOLDER
+import net.astrorbits.dontdoit.system.team.TeamData.Companion.TEAM_NAME_PLACEHOLDER
 import net.astrorbits.dontdoit.system.team.TeamManager
 import net.astrorbits.lib.command.CommandHelper
+import net.astrorbits.lib.text.TextHelper.format
 import net.astrorbits.lib.text.TextHelper.toMessage
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
+import net.kyori.adventure.title.Title
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import java.util.concurrent.CompletableFuture
 
@@ -39,6 +45,16 @@ object CriteriaCommand {
                     val team = ctx.getArgument("team", TeamData::class.java)
                     if (team == null || team.isEliminated) throw INVALID_TEAM_NAME.create(team.teamId)
                     if (team.criteria?.type != CriteriaType.USER_DEFINED) throw NOT_CUSTOM_CRITERIA.create(team.teamId)
+                    team.criteria!!.trigger(team)
+                    return@executes 1
+                }
+            )
+        ).then(Commands.literal("trigger-forced")
+            .then(Commands.argument("team", TeamIdArgumentType())
+                .executes { ctx ->
+                    if (!GameStateManager.isRunning()) throw GAME_NOT_START.create()
+                    val team = ctx.getArgument("team", TeamData::class.java)
+                    if (team == null || team.isEliminated) throw INVALID_TEAM_NAME.create(team.teamId)
                     team.criteria!!.trigger(team)
                     return@executes 1
                 }
@@ -60,22 +76,38 @@ object CriteriaCommand {
                         if (cooldown != null) {
                             throw GUESS_IN_COOLDOWN.create(player.name, cooldown)
                         }
+
                         return@executes 1
                     }
                 )
             )
         ).then(Commands.literal("change")
             .then(Commands.argument("team", TeamIdArgumentType())
-                .requires { it.sender is Player && it.sender.isOp }
+                .requires { it.sender.isOp }
                 .executes { ctx ->
                     if (!GameStateManager.isRunning()) throw GAME_NOT_START.create()
                     val team = ctx.getArgument("team", TeamData::class.java)
                     if (team == null || team.isEliminated) throw INVALID_TEAM_NAME.create(team.teamId)
 
+                    val oldCriteria = team.criteria
                     team.criteria?.onUnbind(team, CriteriaChangeReason.MANUAL)
                     team.criteria = CriteriaManager.getRandomCriteria(team)
                     team.criteria!!.onBind(team, CriteriaChangeReason.MANUAL)
 
+                    if (oldCriteria != null) {
+                        Bukkit.broadcast(Configs.AUTO_CHANGE_CRITERIA_ANNOUNCE.get().format(
+                            TEAM_NAME_PLACEHOLDER to team.teamName,
+                            CRITERIA_DISPLAY_NAME_PLACEHOLDER to oldCriteria.displayText.color(team.color)
+                        ))
+                        team.broadcastTitle(
+                            Title.title(
+                                Configs.AUTO_CHANGE_CRITERIA_TITLE.get().color(team.color),
+                                Configs.AUTO_CHANGE_CRITERIA_SUBTITLE.get().format(
+                                    CRITERIA_DISPLAY_NAME_PLACEHOLDER to oldCriteria.displayText.color(team.color)
+                                ),
+                                5, 50, 10
+                            ))
+                    }
                     return@executes 1
                 }
             )
@@ -89,7 +121,7 @@ object CriteriaCommand {
                             .forEach { builder.suggest(it) }
                         builder.buildFuture()
                     }
-                .requires { it.sender is Player && it.sender.isOp }
+                .requires { it.sender.isOp }
                 .executes { ctx ->
                     if (!GameStateManager.isRunning()) throw GAME_NOT_START.create()
                     val team = ctx.getArgument("team", TeamData::class.java)
@@ -98,15 +130,75 @@ object CriteriaCommand {
                     val displayName = StringArgumentType.getString(ctx, "criteria")
                     val criteria = CriteriaManager.allCriteria.firstOrNull { it.displayName == displayName } ?: throw INVALID_CRITERIA_NAME.create(displayName)
 
+                    val oldCriteria = team.criteria
                     // 替换前解绑
                     team.criteria?.onUnbind(team, CriteriaChangeReason.MANUAL)
                     team.criteria = criteria
                     team.criteria!!.onBind(team, CriteriaChangeReason.MANUAL)
 
+                    if (oldCriteria != null) {
+                        Bukkit.broadcast(Configs.AUTO_CHANGE_CRITERIA_ANNOUNCE.get().format(
+                            TEAM_NAME_PLACEHOLDER to team.teamName,
+                            CRITERIA_DISPLAY_NAME_PLACEHOLDER to oldCriteria.displayText.color(team.color)
+                        ))
+                        team.broadcastTitle(
+                            Title.title(
+                            Configs.AUTO_CHANGE_CRITERIA_TITLE.get().color(team.color),
+                            Configs.AUTO_CHANGE_CRITERIA_SUBTITLE.get().format(
+                                CRITERIA_DISPLAY_NAME_PLACEHOLDER to oldCriteria.displayText.color(team.color)
+                            ),
+                            5, 50, 10
+                        ))
+                    }
                     return@executes 1
                 })
             )
+        ).then(Commands.literal("reset")
+            .executes { ctx ->
+                GameStateManager.reset()
+                Bukkit.broadcast(Configs.COMMAND_RESET_GAME.get())
+                return@executes 1
+            }
+        ).then(Commands.literal("set-life")
+            .then(Commands.argument("team", TeamIdArgumentType())
+                .then(Commands.argument("life", IntegerArgumentType.integer(0))
+                    .requires { it.sender.isOp }
+                    .executes { ctx ->
+                        if (!GameStateManager.isRunning()) throw GAME_NOT_START.create()
+                        val team = ctx.getArgument("team", TeamData::class.java)
+                        val life = IntegerArgumentType.getInteger(ctx, "life").coerceAtMost(DynamicSettings.lifeCount)
+                        team.setLife(life)
+
+                        Bukkit.broadcast(Configs.COMMAND_SET_LIFE.get().format(
+                            TEAM_NAME_PLACEHOLDER to team.teamName,
+                            LIFE_COUNT_PLACEHOLDER to life
+                        ))
+
+                        return@executes 1
+                    }
+                )
+            )
+        ).then(Commands.literal("get")
+            .then(Commands.argument("team", TeamIdArgumentType())
+                .requires { it.sender.isOp }
+                .then(Commands.literal("criteria")
+                    .executes { ctx ->
+                        if (!GameStateManager.isRunning()) throw GAME_NOT_START.create()
+                        val team = ctx.getArgument("team", TeamData::class.java)
+                        if (!team.isInUse || team.isEliminated) throw INVALID_TEAM_NAME.create(team.teamId)
+
+                        val criteria = team.criteria
+                        ctx.source.sender.sendMessage(Configs.COMMAND_GET_TEAM_CRITERIA.get().format(
+                            TEAM_NAME_PLACEHOLDER to team.teamName,
+                            CRITERIA_DISPLAY_NAME_PLACEHOLDER to criteria?.displayText?.color(team.color)
+                        ))
+
+                        return@executes 1
+                    }
+                )
+            )
         )
+
         registrar.register(argumentBuilder.build())
     }
 

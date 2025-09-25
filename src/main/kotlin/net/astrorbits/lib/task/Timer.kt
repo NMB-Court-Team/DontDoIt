@@ -65,8 +65,14 @@ abstract class Timer {
 
     abstract fun onStop()
 
+    private var requestedStartAfterStop: Boolean = false
+
+    fun requestStartAfterStop() {
+        requestedStartAfterStop = true
+    }
+
     fun start() {
-        if (timerTask != null || (_currentTime == 0 && timerType === TimerType.COUNTDOWN)) {
+        if (timerTask != null || (_currentTime == 0 && timerType == TimerType.COUNTDOWN)) {
             return
         }
         onStart()
@@ -79,11 +85,15 @@ abstract class Timer {
 
     fun stop() {
         if (timerTask != null) {
+            onStop()
             if (!timerTask!!.isCancelled) {
                 timerTask!!.cancel()
                 timerTask = null
             }
-            onStop()
+        }
+        if (requestedStartAfterStop) {
+            resetAndStart()
+            requestedStartAfterStop = false
         }
     }
 
@@ -101,7 +111,7 @@ abstract class Timer {
      * 不执行[onStart]
      */
     fun startDirectly() {
-        if (timerTask == null || (_currentTime == 0 && timerType === TimerType.COUNTDOWN)) {
+        if (timerTask == null || (_currentTime == 0 && timerType == TimerType.COUNTDOWN)) {
             return
         }
         timerTask = object : BukkitRunnable() {

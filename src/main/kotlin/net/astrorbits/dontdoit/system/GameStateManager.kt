@@ -6,7 +6,9 @@ import net.astrorbits.dontdoit.criteria.system.CriteriaManager
 import net.astrorbits.dontdoit.system.generate.GameAreaGenerator
 import net.astrorbits.dontdoit.system.team.TeamData.Companion.PLAYER_NAME_PLACEHOLDER
 import net.astrorbits.dontdoit.system.team.TeamData.Companion.TEAM_NAME_PLACEHOLDER
+import net.astrorbits.dontdoit.system.team.TeamInfoSynchronizer
 import net.astrorbits.dontdoit.system.team.TeamManager
+import net.astrorbits.lib.item.ItemHelper.removeIfMatch
 import net.astrorbits.lib.math.vector.Vec3d
 import net.astrorbits.lib.task.TaskBuilder
 import net.astrorbits.lib.task.TaskType
@@ -18,7 +20,9 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.title.Title
 import org.bukkit.Bukkit
 import org.bukkit.Difficulty
+import org.bukkit.GameRule
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitTask
 
 object GameStateManager {
@@ -50,8 +54,13 @@ object GameStateManager {
         Bukkit.getOnlinePlayers().forEach { player ->
             player.isInvulnerable = false
             player.allowFlight = false
-            player.inventory.clear()
+            Preparation.removePrepareGameItems(player)
         }
+        Bukkit.getWorlds().forEach { world ->
+            world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, true)
+        }
+
+        TeamInfoSynchronizer.syncTeamInfos(TeamManager.teams)
     }
 
     const val TRIGGER_COUNT_PLACEHOLDER = "count"
@@ -78,13 +87,14 @@ object GameStateManager {
         builder.append(Configs.TRIGGER_COUNT_HEAD.get())
         for (team in TeamManager.getInUseTeams().values) {
             for (player in team.members) {
+                builder.appendNewline()
                 builder.append(Configs.TRIGGER_COUNT_BODY.get().format(
                     PLAYER_NAME_PLACEHOLDER to player.displayName(),
                     TRIGGER_COUNT_PLACEHOLDER to (CriteriaManager.triggerCountStat[player.uniqueId] ?: 0)
                 ))
             }
         }
-        val triggerCountMessage = builder.append(Configs.TRIGGER_COUNT_TAIL.get()).build()
+        val triggerCountMessage = builder.appendNewline().append(Configs.TRIGGER_COUNT_TAIL.get()).build()
         Bukkit.broadcast(triggerCountMessage)
 
         TeamManager.onGameEnd()

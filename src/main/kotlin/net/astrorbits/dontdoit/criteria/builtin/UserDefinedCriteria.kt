@@ -26,6 +26,6 @@ class UserDefinedCriteria(val teamColor: NamedTextColor) : Criteria(), BuiltinCr
     override fun readData(data: Map<String, String>) { }
 
     override fun shouldUse(): Boolean {
-        return super.shouldUse() && teamData.isInUse
+        return super.shouldUse() && teamData.isInUse && displayName.trim().isNotBlank()
     }
 }

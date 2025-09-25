@@ -16,7 +16,7 @@ class InventoryContainingItemCriteria : Criteria(), ItemInspectCandidate {
 
     override fun tick(teamData: TeamData) {
         for (player in teamData.members) {
-            if (player.inventory.contents.any { it?.type in itemTypes }) {
+            if (player.inventory.contents.any { it?.type in itemTypes } || isWildcard) {
                 trigger(player)
                 break
             }

@@ -10,6 +10,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageByEntityEvent
+import org.bukkit.event.entity.EntityDamageEvent
 
 class HurtByEntityCriteria : Criteria(), Listener, EntityInspectCandidate, DamageTypeInspectCandidate {
     override val type: CriteriaType = CriteriaType.HURT_BY_ENTITY
@@ -43,11 +44,11 @@ class HurtByEntityCriteria : Criteria(), Listener, EntityInspectCandidate, Damag
     }
 
     @EventHandler
-    fun onDamageByEntity(event: EntityDamageByEntityEvent) {
+    fun onDamageByEntity(event: EntityDamageEvent) {
         val player = event.entity as? Player ?: return
-        val entity = event.damager
+        val entity = event.damageSource.causingEntity
         val damageType = event.damageSource.damageType
-        if ((isEntityTypeWildcard || entity.type in entityTypes) &&
+        if ((isEntityTypeWildcard || entity?.type in entityTypes) &&
             (isDamageTypeWildcard || damageType in damageTypes) &&
             ((event.damage in damageAmountRange) xor rangeReversed)
         ) {

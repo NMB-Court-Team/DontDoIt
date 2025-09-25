@@ -9,6 +9,7 @@ import net.astrorbits.dontdoit.criteria.system.CriteriaManager
 import net.astrorbits.dontdoit.system.CriteriaChangeReason
 import net.astrorbits.dontdoit.system.GameState
 import net.astrorbits.dontdoit.system.GameStateManager
+import net.astrorbits.dontdoit.system.generate.GameAreaGenerator
 import net.astrorbits.lib.StringHelper.isUuid
 import net.astrorbits.lib.math.Duration
 import net.astrorbits.lib.scoreboard.SidebarDisplay
@@ -26,6 +27,7 @@ import org.bukkit.Particle
 import org.bukkit.SoundCategory
 import org.bukkit.entity.Player
 import org.bukkit.scoreboard.Team
+import kotlin.math.ceil
 
 class TeamData(val color: NamedTextColor) {
     val team: Team
@@ -56,7 +58,7 @@ class TeamData(val color: NamedTextColor) {
 
         override fun onTick() {
             members.forEach { it.sendActionBar(Configs.INGAME_ACTIONBAR.get().format(
-                CHANGE_CRITERIA_TIME_LEFT_PLACEHOLDER to currentTime.seconds.toInt(),
+                CHANGE_CRITERIA_TIME_LEFT_PLACEHOLDER to ceil(currentTime.seconds).toInt(),
                 LIFE_COUNT_PLACEHOLDER to lifeCount
             )) }
             criteria?.tick(this@TeamData)
@@ -87,18 +89,18 @@ class TeamData(val color: NamedTextColor) {
             if (oldCriteria != null) {
                 Bukkit.broadcast(Configs.AUTO_CHANGE_CRITERIA_ANNOUNCE.get().format(
                     TEAM_NAME_PLACEHOLDER to teamName,
-                    CRITERIA_DISPLAY_NAME_PLACEHOLDER to criteria!!.displayText.color(color)
+                    CRITERIA_DISPLAY_NAME_PLACEHOLDER to oldCriteria.displayText.color(color)
                 ))
                 broadcastTitle(Title.title(
                     Configs.AUTO_CHANGE_CRITERIA_TITLE.get().color(color),
                     Configs.AUTO_CHANGE_CRITERIA_SUBTITLE.get().format(
-                        CRITERIA_DISPLAY_NAME_PLACEHOLDER to criteria!!.displayText.color(color)
+                        CRITERIA_DISPLAY_NAME_PLACEHOLDER to oldCriteria.displayText.color(color)
                     ),
                     5, 50, 10
                 ))
             }
 
-            start()
+            requestStartAfterStop()
         }
     }
 
@@ -190,8 +192,25 @@ class TeamData(val color: NamedTextColor) {
     fun reduceLife(amount: Int = 1) {
         lifeCount -= amount
         if (lifeCount <= 0) {
-            eliminated()
+            eliminate()
             lifeCount = 0
+        }
+        TeamManager.updateSidebars()
+    }
+
+    fun setLife(life: Int) {
+        val prevEliminated = isEliminated
+        lifeCount = life
+        if (prevEliminated && !isEliminated) {
+            for (player in members) {
+                player.teleport(GameAreaGenerator.center ?: player.respawnLocation ?: player.world.spawnLocation)
+                player.gameMode = GameMode.SURVIVAL
+            }
+            criteria = CriteriaManager.getRandomCriteria(this)
+            criteria!!.onBind(this, CriteriaChangeReason.GAME_STAGE_CHANGE)
+            mainTimer.start()
+        } else if (!prevEliminated && isEliminated) {
+            eliminate()
         }
         TeamManager.updateSidebars()
     }
@@ -201,7 +220,6 @@ class TeamData(val color: NamedTextColor) {
         val whoTriggered: Component = player?.displayName() ?: teamName
 
         criteria?.onUnbind(this, CriteriaChangeReason.TRIGGERED)
-        reduceLife(1)
         if (isEliminated) {
              criteria = null
         } else {
@@ -238,6 +256,7 @@ class TeamData(val color: NamedTextColor) {
                 0.0, null, true
             )
         }
+        reduceLife(1)
         mainTimer.resetAndStart()
     }
 
@@ -323,7 +342,7 @@ class TeamData(val color: NamedTextColor) {
         return null
     }
 
-    fun eliminated() {
+    fun eliminate() {
         criteria?.onUnbind(this, CriteriaChangeReason.GAME_STAGE_CHANGE)
         criteria = null
         members.forEach { player ->

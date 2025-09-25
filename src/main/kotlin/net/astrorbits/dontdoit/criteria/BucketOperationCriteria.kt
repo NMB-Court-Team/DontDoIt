@@ -39,7 +39,7 @@ class BucketOperationCriteria : Criteria(), Listener, BlockInspectCandidate {
 
     @EventHandler
     fun onBucketPoured(event: PlayerBucketEmptyEvent) {
-        if (operationType == BucketOperationType.POUR && event.block.type == fluid) {
+        if (operationType == BucketOperationType.POUR && event.bucket in BUCKETS[fluid]!!) {
             trigger(event.player)
         }
     }
@@ -49,5 +49,18 @@ class BucketOperationCriteria : Criteria(), Listener, BlockInspectCandidate {
         const val OPERATION_TYPE_KEY = "type"
 
         val AVAILABLE_FLUIDS: Set<Material> = setOf(Material.WATER, Material.LAVA, Material.POWDER_SNOW)
+        val BUCKETS: Map<Material, Set<Material>> = mapOf(
+            Material.WATER to setOf(
+                Material.WATER_BUCKET,
+                Material.COD_BUCKET,
+                Material.SALMON_BUCKET,
+                Material.TROPICAL_FISH_BUCKET,
+                Material.PUFFERFISH_BUCKET,
+                Material.AXOLOTL_BUCKET,
+                Material.TADPOLE_BUCKET
+            ),
+            Material.LAVA to setOf(Material.LAVA),
+            Material.POWDER_SNOW to setOf(Material.POWDER_SNOW_BUCKET)
+        )
     }
 }
