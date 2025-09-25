@@ -22,7 +22,11 @@ enum class CriteriaChangeReason {
      * - 游戏开始时分配初始词条
      * - 游戏结束时取消词条
      */
-    GAME_STAGE_CHANGE;
+    GAME_STAGE_CHANGE,
+    /**
+     * 手动切换词条
+     */
+    MANUAL;
 
     fun isGuess(): Boolean = this == GUESS_SUCCESS || this == GUESS_FAILED
 }

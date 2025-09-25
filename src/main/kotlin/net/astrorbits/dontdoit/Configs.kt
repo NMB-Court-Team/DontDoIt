@@ -310,6 +310,10 @@ object Configs {
         "criteria_command.failed.guess_in_cooldown",
         "玩家%s所在队伍正在猜词条冷却中（剩余时间：%d）"
     ))
+    val COMMAND_INVALID_CRITERIA_NAME: StringConfigData = CONFIG.defineConfig(StringConfigData(
+        "criteria_command.failed.invalid_criteria_name",
+        "无效的词条名称"
+    ))
     //endregion
 
     //region 物品

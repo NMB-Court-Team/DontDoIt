@@ -8,7 +8,6 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityDeathEvent
 
 class KillEntityCriteria : Criteria(), Listener, EntityInspectCandidate, DamageTypeInspectCandidate {
@@ -40,7 +39,7 @@ class KillEntityCriteria : Criteria(), Listener, EntityInspectCandidate, DamageT
 
     @EventHandler
     fun onEntityDamage(event: EntityDeathEvent) {
-        val player = event.damageSource.causingEntity as? Player ?: return
+        val player = event.damageSource.directEntity as? Player ?: return
         val entity = event.entity
         val damageType = event.damageSource.damageType
         if ((isEntityTypeWildcard || entity.type in entityTypes) &&

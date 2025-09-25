@@ -17,11 +17,13 @@ import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSele
 import net.astrorbits.dontdoit.Configs
 import net.astrorbits.dontdoit.DynamicSettings
 import net.astrorbits.dontdoit.criteria.helper.CriteriaType
+import net.astrorbits.dontdoit.criteria.system.CriteriaManager
 import net.astrorbits.dontdoit.system.team.TeamData
 import net.astrorbits.dontdoit.system.team.TeamManager
 import net.astrorbits.lib.command.CommandHelper
 import net.astrorbits.lib.text.TextHelper.toMessage
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.entity.Player
 import java.util.concurrent.CompletableFuture
 
@@ -61,8 +63,51 @@ object CriteriaCommand {
                     }
                 )
             )
-        )
+        ).then(Commands.literal("change")
+            .then(Commands.argument("team", TeamIdArgumentType())
+                .requires { it.sender is Player && it.sender.isOp }
+                .executes { ctx ->
+                    if (!GameStateManager.isRunning()) throw GAME_NOT_START.create()
+                    val team = ctx.getArgument("team", TeamData::class.java)
+                    if (team == null || team.isEliminated) throw INVALID_TEAM_NAME.create(team.teamId)
 
+                    team.criteria?.onUnbind(team, CriteriaChangeReason.MANUAL)
+                    team.criteria = CriteriaManager.getRandomCriteria()
+                    team.criteria!!.onBind(team, CriteriaChangeReason.MANUAL)
+
+                    return@executes 1
+                }
+            )
+        ).then(Commands.literal("grant")
+            .then(Commands.argument("team", TeamIdArgumentType())
+                .then(Commands.argument("criteria", StringArgumentType.greedyString())
+                    .suggests { ctx, builder ->
+                        // 自动补全所有 Criteria 的 displayName
+                        CriteriaManager.allCriteria
+                            .map { it.displayName.plainText() }
+                            .forEach { builder.suggest(it) }
+                        builder.buildFuture()
+                    }
+                .requires { it.sender is Player && it.sender.isOp }
+                .executes { ctx ->
+                    if (!GameStateManager.isRunning()) throw GAME_NOT_START.create()
+                    val team = ctx.getArgument("team", TeamData::class.java)
+                    if (team == null || team.isEliminated) throw INVALID_TEAM_NAME.create(team.teamId)
+
+                    val displayName = StringArgumentType.getString(ctx, "criteria")
+                    val criteria = CriteriaManager.allCriteria
+                        .firstOrNull { it.displayName.plainText() == displayName }
+                        ?: throw INVALID_CRITERIA_NAME.create(displayName)
+
+                    // 替换前解绑
+                    team.criteria?.onUnbind(team, CriteriaChangeReason.MANUAL)
+                    team.criteria = criteria
+                    team.criteria!!.onBind(team, CriteriaChangeReason.MANUAL)
+
+                    return@executes 1
+                })
+            )
+        )
         registrar.register(builder.build())
     }
 
@@ -82,6 +127,10 @@ object CriteriaCommand {
         }
     }
 
+    fun Component.plainText(): String =
+        PlainTextComponentSerializer.plainText().serialize(this)
+
+
     private val GAME_NOT_START = SimpleCommandExceptionType(Component.text(Configs.COMMAND_GAME_NOT_START.get()).toMessage())
     private val GUESS_NOT_ENABLED = SimpleCommandExceptionType(Component.text(Configs.COMMAND_GUESS_NOT_ENABLED.get()).toMessage())
     private val INVALID_PLAYER = DynamicCommandExceptionType { player -> Component.text(Configs.COMMAND_INVALID_PLAYER.get().format(player)).toMessage() }
@@ -89,4 +138,6 @@ object CriteriaCommand {
     private val INVALID_TEAM_NAME = DynamicCommandExceptionType { teamId -> Component.text(Configs.COMMAND_INVALID_TEAM_NAME.get().format(teamId)).toMessage() }
     private val GUESS_SELF_CRITERIA = SimpleCommandExceptionType(Component.text(Configs.COMMAND_GUESS_SELF_CRITERIA.get()).toMessage())
     private val GUESS_IN_COOLDOWN = Dynamic2CommandExceptionType { player, time -> Component.text(Configs.COMMAND_GUESS_IN_COOLDOWN.get().format(player, time)).toMessage() }
+    private val INVALID_CRITERIA_NAME = DynamicCommandExceptionType { criteriaName -> Component.text(Configs.COMMAND_INVALID_CRITERIA_NAME.get().format(criteriaName)).toMessage() }
+
 }

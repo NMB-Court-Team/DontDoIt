@@ -239,22 +239,22 @@ criteria:
     - name: 血量高于10点
       difficulty: very_easy
       # 血量范围，可以是浮点数
-      amount: 10..
+      amount: ..10
       #反转范围 ">=10" <-reverse-> "<10"
       reversed: true
     - name: 血量低于10点
       difficulty: very_easy
-      amount: ..10
+      amount: 10..
       reversed: true
   # 饥饿值在hunger给定的范围内时触发
   food_level:
     - name: 饱食度大于18点
       difficulty: very_easy
-      amount: 18..
+      amount: ..18
       reversed: true
     - name: 饱食度小于18点
       difficulty: very_easy
-      amount: ..18
+      amount: 18..
       reversed: true
   # 玩家的头的上方和前后左右，以及脚的下方和前后左右均为block方块时触发
   surrounded_by_block:
