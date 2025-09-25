@@ -162,7 +162,7 @@ object CriteriaManager {
         val criteria = Object2ReferenceOpenHashMap<YLevelType, YLevelCriteria>()
         for (type in YLevelType.entries) {
             val c = YLevelCriteria()
-            c.setBorder(Int.MIN_VALUE, type.belowBorder)
+            c.setBorder(Int.MIN_VALUE, type)
             criteria[type] = c
         }
         _allCriteria.addAll(criteria.values)
@@ -177,7 +177,7 @@ object CriteriaManager {
 
     fun updateYLevelCriteria(groundYLevel: Int) {
         for ((type, criteria) in yLevelCriteria) {
-            criteria.setBorder(groundYLevel + type.groundOffset, type.belowBorder)
+            criteria.setBorder(groundYLevel, type)
         }
     }
 
@@ -189,7 +189,7 @@ object CriteriaManager {
         triggerCountStat.clear()
     }
 
-    fun getRandomCriteria(teamData: TeamData): Criteria {
+    fun getRandomCriteria(teamData: TeamData, oldCriteria: Criteria? = null): Criteria {
         //TODO 要加上仓检机制
         return allCriteria.random() // 等概率抽取
     }

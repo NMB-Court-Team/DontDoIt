@@ -108,6 +108,7 @@ criteria:
   hurt_by_entity:
     - name: 受到伤害
       difficulty: very_easy
+      # 伤害来源实体，可以设置为"/"来代表无来源伤害
       entity: "*"
       damage_type: "*"
       amount: ..
@@ -125,20 +126,22 @@ criteria:
   killed_by_entity:
     - name: 死亡
       difficulty: very_easy
+      # 伤害来源实体，可以设置为"/"来代表无来源伤害
       entity: "*"
       damage_type: "*"
   # 跳跃时触发
   jump:
     - name: 蹦跶
       difficulty: trigger_definitely
-  # 拿着item与方块交互时触发
-  interact_with_block_item:
+  # 拿着item与block方块交互时触发
+  interact_block_with_item:
     - name: 打开工作台
       difficulty: easy
       block: crafting_table
       item: "*"
     - name: 打开熔炉
       difficulty: normal
+      block: furnace
       item: "*"
     - name: 手持石镐打开工作台
       difficulty: hard

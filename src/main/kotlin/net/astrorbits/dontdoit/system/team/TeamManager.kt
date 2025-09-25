@@ -26,7 +26,6 @@ import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
-import org.bukkit.scoreboard.Team
 
 object TeamManager : Listener {
     val TEAM_COLORS: BiMap<String, NamedTextColor> = setOf(
@@ -227,6 +226,15 @@ object TeamManager : Listener {
             SoundCategory.BLOCKS,
             1f, 1f
         )
+        Bukkit.getOnlinePlayers().forEach { p ->
+            if (p.uniqueId != player.uniqueId && getTeam(p) != null) {
+                p.playSound(
+                    p.location,
+                    "minecraft:block.note_block.bass",
+                    1f, 0.5f
+                )
+            }
+        }
         player.world.spawnParticle(
             Particle.WAX_OFF,
             player.location.x, player.location.y + 1, player.location.z,

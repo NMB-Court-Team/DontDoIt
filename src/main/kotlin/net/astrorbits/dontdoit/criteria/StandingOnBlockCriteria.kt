@@ -27,14 +27,17 @@ class StandingOnBlockCriteria : Criteria(), Listener, BlockInspectCandidate {
         data.setBoolField(REVERSED_KEY, true) { reversed = it }
     }
 
+    @Suppress("DEPRECATION")
     override fun tick(teamData: TeamData) {
         for (player in teamData.members) {
-            @Suppress("DEPRECATION")
             if (isWildcard && reversed && !player.isOnGround) {
                 trigger(player)
                 break
             }
-            @Suppress("DEPRECATION")
+            if (isWildcard && !reversed && player.isOnGround) {
+                trigger(player)
+                break
+            }
             if (player.isOnGround) {  //TODO 滞空(block = *, reversed = true)的判定有问题，会无视条件立刻触发
                 val world = player.world
                 val groundPos = player.location.clone().add(0.0, -0.1, 0.0)
@@ -42,7 +45,7 @@ class StandingOnBlockCriteria : Criteria(), Listener, BlockInspectCandidate {
                 val blockPos = Vec3d.fromLocation(groundPos).floor()
                 if (block.isEmpty ||
                     !block.isCollidable ||
-                    (!reversed && !isWildcard && block.type !in blockTypes) ||
+                    (!reversed && block.type !in blockTypes) ||
                     (reversed && block.type in blockTypes)
                 ) continue
 

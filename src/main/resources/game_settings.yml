@@ -106,15 +106,18 @@ criteria_command:
     invalid_team_name: "队伍%s不存在或已淘汰"
     guess_self_criteria: "不允许自己标记自己猜中了词条"
     guess_in_cooldown: "玩家%s所在队伍正在猜词条冷却中（剩余时间：%d秒）"
+    change_settings_when_not_waiting: "游戏开始后到游戏重置之前不允许修改设置"
   success:
     reset_game: "<yellow>已重置游戏"
-    set_life: "<yellow>已设置 {team_name} 的生命值为 {life_count}"
+    set_life: "<yellow>已设置 {team_name} 的生命值为 <red>{life_count}"
     get_team_criteria: "{team_name} 的词条是 {criteria}"
 
 # Y坐标准则
 y_level_criteria:
-  below: "Y坐标小于%d"
-  above: "Y坐标大于%d"
+  below: "Y坐标小于%d（%s）"
+  above: "Y坐标大于%d（%s）"
+  ground: "地面"
+  on_air: "空中"
 
 # 物品
 join_team_item:
@@ -160,14 +163,17 @@ bedrock_depth: 11
 
 # ==== 游戏玩法相关的配置项 ====
 # 是否启用有关Y高度的词条
-y_level_criteria_enabled: false
+y_level_criteria_enabled: true
+y_level_offset:
+  ground: 1
+  on_air: 14
 # 自动切换词条的时间，必须是整数（单位：秒）
 auto_change_criteria_time: 120
 
 
 # ==== 可在游戏内动态配置的项 ====
 # 游戏区域大小
-game_area_size: 65
+game_area_size: 63
 # 最大规则数量（队伍血量）
 life_count: 15
 # 常规模式下，获取钻石时的行为，可以是reduce_others_life或add_self_life

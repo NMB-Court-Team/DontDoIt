@@ -1,47 +1,23 @@
 package net.astrorbits.dontdoit
 
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType
-import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.dialog.Dialog
-import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import io.papermc.paper.registry.data.dialog.ActionButton
 import io.papermc.paper.registry.data.dialog.DialogBase
 import io.papermc.paper.registry.data.dialog.action.DialogAction
 import io.papermc.paper.registry.data.dialog.input.DialogInput
 import io.papermc.paper.registry.data.dialog.type.DialogType
 import net.astrorbits.dontdoit.system.DiamondBehavior
-import net.astrorbits.lib.text.TextHelper.toMessage
+import net.astrorbits.lib.dialog.DialogHelper
+import net.astrorbits.lib.range.IntRange
+import net.astrorbits.lib.text.LegacyText
+import net.astrorbits.lib.text.TextHelper.gold
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.event.ClickCallback
-import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.TextColor
+import net.kyori.adventure.text.event.ClickCallback.Options
 import org.bukkit.Difficulty
-import org.bukkit.entity.Player
-import org.bukkit.plugin.java.JavaPlugin
-import kotlin.math.floor
 
 object DynamicSettings {
-    private const val COMMAND_NAME = "settings"
-    private var isDialogOpen: Boolean = false
-    private val DIALOG_IS_OPEN = SimpleCommandExceptionType(Component.text("配置界面被其他人占用，无法打开").toMessage())
-
-    fun init(plugin: JavaPlugin) {
-        val node = Commands.literal(COMMAND_NAME).requires { it.sender is Player && it.sender.isOp }
-            .executes { ctx ->
-                if (isDialogOpen) throw DIALOG_IS_OPEN.create()
-                val player = ctx.source.sender as Player
-                openLifeDialog(player)
-                isDialogOpen = true
-                return@executes 1
-            }.build()
-        plugin.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS.newHandler { event ->
-            val registrar = event.registrar()
-            registrar.register(node)
-        })
-
-    }
-
     var gameAreaSize: Int = Configs.GAME_AREA_SIZE.get()
+    var ingameDifficulty: Difficulty = Configs.INGAME_DIFFICULTY.get()
     var lifeCount: Int = Configs.LIFE_COUNT.get()
     var diamondBehavior: DiamondBehavior = Configs.DIAMOND_BEHAVIOR.get()
     var diamondBehaviorEnabled: Boolean = Configs.DIAMOND_BEHAVIOR_ENABLED.get()
@@ -50,55 +26,132 @@ object DynamicSettings {
     var allowGuessCriteria: Boolean = Configs.ALLOW_GUESS_CRITERIA.get()
     var guessSuccessAddLife: Int = Configs.GUESS_SUCCESS_ADD_LIFE.get()
     var guessFailedReduceLife: Int = Configs.GUESS_FAILED_REDUCE_LIFE.get()
-    var ingameDifficulty: Difficulty = Configs.INGAME_DIFFICULTY.get()
 
+    // 打开界面：执行命令/criteria settings
     @Suppress("UnstableApiUsage")
-    fun openLifeDialog(player: Player) {
-        val dialog = Dialog.create { builder ->
-            builder.empty()
-                .base(
-                    DialogBase.builder(Component.text("设置队伍生命"))
-                        .inputs(
-                            listOf(
-                                DialogInput.numberRange(
-                                    "life_count", // 输入字段 ID
-                                    Component.text("队伍生命", NamedTextColor.LIGHT_PURPLE),
-                                    1f, 99f // min, max
-                                )
-                                    .step(1f) // 步长
-                                    .initial(lifeCount.toFloat()) // 初始值
-                                    .labelFormat("%s: %s") // 格式化文本
-                                    .width(300)
-                                    .build()
-                            )
-                        )
-                        .build()
-                )
-                .type(
-                    DialogType.confirmation(
-                        ActionButton.create(
-                            Component.text("确认✔", TextColor.color(0xAEFFC1)),
-                            Component.text("保存设置"),
-                            100,
-                            DialogAction.customClick( { context, player ->
-                                val value = context.getFloat("life_count")?: 0.0
-                                lifeCount = floor(value.toDouble()).toInt()
-                                player.sendMessage(Component.text("队伍生命已设置为 $lifeCount"))
-                                isDialogOpen = false
-                            }, ClickCallback.Options.builder().build())
-                        ),
-                        ActionButton.create(
-                            Component.text("取消❌", TextColor.color(0xFFA0B1)),
-                            Component.text("放弃更改"),
-                            100,
-                            DialogAction.customClick( { _, _ ->
-                                isDialogOpen = false
-                            }, ClickCallback.Options.builder().build())
-                        )
-                    )
-                )
+    fun createDynamicSettingsDialog(): Dialog {
+        return Dialog.create { factory ->
+            factory.empty().base(DialogBase.builder(LegacyText.toComponent("§b§l修改游戏设置"))
+                .afterAction(DialogBase.DialogAfterAction.CLOSE)
+                .canCloseWithEscape(true)
+                .inputs(listOf(
+                    DialogInput.numberRange(
+                        "game_area_size",
+                        LegacyText.toComponent("§e游戏区域大小"),
+                        GAME_AREA_SIZE_RANGE.min.toFloat(),
+                        GAME_AREA_SIZE_RANGE.max.toFloat()
+                    ).step(2f)
+                        .initial(gameAreaSize.toFloat())
+                        .build(),
+                    DialogInput.singleOption(
+                        "ingame_difficulty",
+                        LegacyText.toComponent("§e游戏期间的Minecraft游戏难度"),
+                        DialogHelper.createOptionEntries(Difficulty.entries, ingameDifficulty) { Component.translatable("options.difficulty.${it.name.lowercase()}").gold() },
+                    ).labelVisible(true)
+                        .build(),
+                    DialogInput.numberRange(
+                        "life_count",
+                        LegacyText.toComponent("§e规则数量上限（生命值上限）"),
+                        LIFE_COUNT_RANGE.min.toFloat(),
+                        LIFE_COUNT_RANGE.max.toFloat()
+                    ).step(1f)
+                        .initial(lifeCount.toFloat())
+                        .build(),
+                    DialogInput.singleOption(
+                        "diamond_behavior",
+                        LegacyText.toComponent("§e钻石行为"),
+                        DialogHelper.createOptionEntries(DiamondBehavior.entries, diamondBehavior) {
+                            when (it) {
+                                DiamondBehavior.ADD_SELF_LIFE -> LegacyText.toComponent("§6获取钻石时自己队伍回复1点规则数量")
+                                DiamondBehavior.REDUCE_OTHERS_LIFE -> LegacyText.toComponent("§6获取钻石时其他队伍减少1点规则数量")
+                            }
+                        }
+                    ).labelVisible(true)
+                        .build(),
+                    DialogInput.bool(
+                        "diamond_behavior_enabled",
+                        LegacyText.toComponent("§e是否启用钻石行为"),
+                        diamondBehaviorEnabled,
+                        "是", "否"
+                    ),
+                    DialogInput.numberRange(
+                        "diamond_behavior_disabled_threshold",
+                        LegacyText.toComponent("§e钻石行为禁用阈值（其他队伍规则数量小于等于该值时禁用钻石行为）"),
+                        DIAMOND_BEHAVIOR_DISABLED_THRESHOLD.min.toFloat(),
+                        DIAMOND_BEHAVIOR_DISABLED_THRESHOLD.max.toFloat()
+                    ).step(1f)
+                        .initial(diamondBehaviorDisabledThreshold.toFloat())
+                        .labelFormat("§e钻石行为禁用阈值: %2\$s")
+                        .build(),
+                    DialogInput.bool(
+                        "allow_unbalanced_teams",
+                        LegacyText.toComponent("§e是否允许各队伍人数不平衡"),
+                        allowUnbalancedTeams,
+                        "是", "否"
+                    ),
+                    DialogInput.bool(
+                        "allow_guess_criteria",
+                        LegacyText.toComponent("§e是否开启猜词条玩法"),
+                        allowGuessCriteria,
+                        "是", "否"
+                    ),
+                    DialogInput.numberRange(
+                        "guess_success_add_life",
+                        LegacyText.toComponent("§e猜对词条时回复的规则数量"),
+                        GUESS_SUCCESS_ADD_LIFE_RANGE.min.toFloat(),
+                        GUESS_SUCCESS_ADD_LIFE_RANGE.max.toFloat()
+                    ).step(1f)
+                        .initial(guessSuccessAddLife.toFloat())
+                        .build(),
+                    DialogInput.numberRange(
+                        "guess_failed_reduce_life",
+                        LegacyText.toComponent("§e猜错词条时减少的规则数量"),
+                        GUESS_FAILED_REDUCE_LIFE_RANGE.min.toFloat(),
+                        GUESS_FAILED_REDUCE_LIFE_RANGE.max.toFloat()
+                    ).step(1f)
+                        .initial(guessFailedReduceLife.toFloat())
+                        .build(),
+                ))
+                .build()
+            ).type(DialogType.confirmation(
+                ActionButton.builder(LegacyText.toComponent("保存修改"))
+                    .action(DialogAction.customClick(
+                        { responseView, audience ->
+                            val gameAreaSize = responseView.getFloat("game_area_size")
+                            val ingameDifficulty = responseView.getText("ingame_difficulty")
+                            val lifeCount = responseView.getFloat("life_count")
+                            val diamondBehavior = responseView.getText("diamond_behavior")
+                            val diamondBehaviorEnabled = responseView.getBoolean("diamond_behavior_enabled")
+                            val diamondBehaviorDisabledThreshold = responseView.getFloat("diamond_behavior_disabled_threshold")
+                            val allowUnbalancedTeams = responseView.getBoolean("allow_unbalanced_teams")
+                            val allowGuessCriteria = responseView.getBoolean("allow_guess_criteria")
+                            val guessSuccessAddLife = responseView.getFloat("guess_success_add_life")
+                            val guessFailedReduceLife = responseView.getFloat("guess_failed_reduce_life")
+                            if (gameAreaSize != null) this.gameAreaSize = gameAreaSize.toInt()
+                            if (ingameDifficulty != null) this.ingameDifficulty = Difficulty.valueOf(ingameDifficulty.uppercase())
+                            if (lifeCount != null) this.lifeCount = lifeCount.toInt()
+                            if (diamondBehavior != null) this.diamondBehavior = DiamondBehavior.valueOf(diamondBehavior.uppercase())
+                            if (diamondBehaviorEnabled != null) this.diamondBehaviorEnabled = diamondBehaviorEnabled
+                            if (diamondBehaviorDisabledThreshold != null) this.diamondBehaviorDisabledThreshold = diamondBehaviorDisabledThreshold.toInt()
+                            if (allowUnbalancedTeams != null) this.allowUnbalancedTeams = allowUnbalancedTeams
+                            if (allowGuessCriteria != null) this.allowGuessCriteria = allowGuessCriteria
+                            if (guessSuccessAddLife != null) this.guessSuccessAddLife = guessSuccessAddLife.toInt()
+                            if (guessFailedReduceLife != null) this.guessFailedReduceLife = guessFailedReduceLife.toInt()
+                            audience.sendMessage(LegacyText.toComponent("§e已保存对游戏设置的修改"))
+                        },
+                        Options.builder().build()
+                    )).build(),
+                ActionButton.builder(LegacyText.toComponent("放弃修改")).build()
+            ))
         }
+    }  //TODO 牛魔的这里有19个文本要写进配置，我受不了了
 
-        player.showDialog(dialog)
-    }
+    //TODO 把这个写进lib.dialog里面写成一个比较系统性的游戏内动态配置
+    //  然后这个还缺一个保存到服务器的操作，每次重启服务器都会丢失之前设置的配置
+
+    val GAME_AREA_SIZE_RANGE: IntRange = IntRange(31, 255)
+    val LIFE_COUNT_RANGE: IntRange = IntRange(1, 99)
+    val DIAMOND_BEHAVIOR_DISABLED_THRESHOLD: IntRange = IntRange(0, 99)
+    val GUESS_SUCCESS_ADD_LIFE_RANGE: IntRange = IntRange(0, 99)
+    val GUESS_FAILED_REDUCE_LIFE_RANGE: IntRange = IntRange(0, 99)
 }

@@ -7,6 +7,8 @@ import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockPlaceEvent
+import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.inventory.ItemStack
 
 class InteractBlockWithItemCriteria : Criteria(), Listener, BlockInspectCandidate, ItemInspectCandidate {
     override val type = CriteriaType.INTERACT_BLOCK_WITH_ITEM
@@ -36,9 +38,9 @@ class InteractBlockWithItemCriteria : Criteria(), Listener, BlockInspectCandidat
     }
 
     @EventHandler
-    fun onPlaceBlock(event: BlockPlaceEvent) {
-        val block = event.block
-        val item = event.itemInHand
+    fun onPlaceBlock(event: PlayerInteractEvent) {
+        val block = event.clickedBlock ?: return
+        val item = event.item ?: ItemStack.empty()
         if ((isBlockWildcard || block.type in blockTypes) &&
             (isItemWildcard || (item.type in itemTypes))
         ) {

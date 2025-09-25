@@ -9,6 +9,7 @@ class InventoryContainingItemCriteria : Criteria(), ItemInspectCandidate {
     override val type: CriteriaType = CriteriaType.INVENTORY_CONTAINING_ITEM
     lateinit var itemTypes: Set<Material>
     var isWildcard: Boolean = false
+    var reversed: Boolean = false
 
     override fun getCandidateItemTypes(): Set<Material> {
         return itemTypes
@@ -16,7 +17,7 @@ class InventoryContainingItemCriteria : Criteria(), ItemInspectCandidate {
 
     override fun tick(teamData: TeamData) {
         for (player in teamData.members) {
-            if (player.inventory.contents.any { it?.type in itemTypes } || isWildcard) {
+            if ((player.inventory.contents.any { it?.type in itemTypes } || isWildcard) xor reversed) {
                 trigger(player)
                 break
             }
@@ -29,9 +30,11 @@ class InventoryContainingItemCriteria : Criteria(), ItemInspectCandidate {
             this.itemTypes = itemTypes
             this.isWildcard = isWildcard
         }
+        data.setBoolField(REVERSED_KEY, true) { reversed = it }
     }
 
     companion object {
         const val ITEM_TYPES_KEY = "item"
+        const val REVERSED_KEY = "reversed"
     }
 }

@@ -51,6 +51,7 @@ object CriteriaCommand {
             )
         ).then(Commands.literal("trigger-forced")
             .then(Commands.argument("team", TeamIdArgumentType())
+                .requires { it.sender.isOp }
                 .executes { ctx ->
                     if (!GameStateManager.isRunning()) throw GAME_NOT_START.create()
                     val team = ctx.getArgument("team", TeamData::class.java)
@@ -91,7 +92,7 @@ object CriteriaCommand {
 
                     val oldCriteria = team.criteria
                     team.criteria?.onUnbind(team, CriteriaChangeReason.MANUAL)
-                    team.criteria = CriteriaManager.getRandomCriteria(team)
+                    team.criteria = CriteriaManager.getRandomCriteria(team, oldCriteria)
                     team.criteria!!.onBind(team, CriteriaChangeReason.MANUAL)
 
                     if (oldCriteria != null) {
@@ -154,7 +155,7 @@ object CriteriaCommand {
                 })
             )
         ).then(Commands.literal("reset")
-            .executes { ctx ->
+            .executes { _ ->
                 GameStateManager.reset()
                 Bukkit.broadcast(Configs.COMMAND_RESET_GAME.get())
                 return@executes 1
@@ -197,6 +198,14 @@ object CriteriaCommand {
                     }
                 )
             )
+        ).then(Commands.literal("settings")
+            .requires { it.sender is Player && it.sender.isOp }
+            .executes { ctx ->
+                if (GameStateManager.isRunning()) throw CHANGE_SETTINGS_WHEN_NOT_WAITING.create()
+                val player = ctx.source.sender as Player
+                player.showDialog(DynamicSettings.createDynamicSettingsDialog())
+                return@executes 1
+            }
         )
 
         registrar.register(argumentBuilder.build())
@@ -226,5 +235,5 @@ object CriteriaCommand {
     private val GUESS_SELF_CRITERIA = SimpleCommandExceptionType(Component.text(Configs.COMMAND_GUESS_SELF_CRITERIA.get()).toMessage())
     private val GUESS_IN_COOLDOWN = Dynamic2CommandExceptionType { player, time -> Component.text(Configs.COMMAND_GUESS_IN_COOLDOWN.get().format(player, time)).toMessage() }
     private val INVALID_CRITERIA_NAME = DynamicCommandExceptionType { criteriaName -> Component.text(Configs.COMMAND_INVALID_CRITERIA_NAME.get().format(criteriaName)).toMessage() }
-
+    private val CHANGE_SETTINGS_WHEN_NOT_WAITING = SimpleCommandExceptionType(Component.text(Configs.COMMAND_CHANGE_SETTINGS_WHEN_NOT_WAITING.get()).toMessage())
 }

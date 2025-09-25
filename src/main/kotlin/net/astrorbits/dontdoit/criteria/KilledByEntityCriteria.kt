@@ -11,13 +11,13 @@ import org.bukkit.event.entity.PlayerDeathEvent
 
 class KilledByEntityCriteria : Criteria(), Listener, EntityInspectCandidate, DamageTypeInspectCandidate {
     override val type = CriteriaType.KILLED_BY_ENTITY
-    lateinit var entityTypes: Set<EntityType>
+    lateinit var entityTypes: Set<EntityType?>
     var isEntityTypeWildcard: Boolean = false
     lateinit var damageTypes: Set<DamageType>
     var isDamageTypeWildcard: Boolean = false
 
     override fun getCandidateEntityTypes(): Set<EntityType> {
-        return entityTypes
+        return entityTypes.filterNotNull().toSet()
     }
 
     override fun getCandidateDamageTypes(): Set<DamageType> {
@@ -26,7 +26,7 @@ class KilledByEntityCriteria : Criteria(), Listener, EntityInspectCandidate, Dam
 
     override fun readData(data: Map<String, String>) {
         super.readData(data)
-        data.setEntityTypes(ENTITY_TYPES_KEY) { entityTypes, isWildcard ->
+        data.setEntityTypesAllowSourceless(ENTITY_TYPES_KEY) { entityTypes, isWildcard ->
             this.entityTypes = entityTypes
             this.isEntityTypeWildcard = isWildcard
         }
@@ -39,9 +39,9 @@ class KilledByEntityCriteria : Criteria(), Listener, EntityInspectCandidate, Dam
     @EventHandler
     fun onPlayerDeath(event: PlayerDeathEvent) {
         val player = event.player
-        val entity = event.damageSource.causingEntity ?: return
+        val entity = event.damageSource.causingEntity
         val damageType = event.damageSource.damageType
-        if ((isEntityTypeWildcard || entity.type in entityTypes) &&
+        if ((isEntityTypeWildcard || entity?.type in entityTypes) &&
             (isDamageTypeWildcard || damageType in damageTypes)
         ) {
             trigger(player)

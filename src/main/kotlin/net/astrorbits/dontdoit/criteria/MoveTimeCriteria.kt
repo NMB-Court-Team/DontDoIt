@@ -17,7 +17,7 @@ class MoveTimeCriteria : Criteria(), Listener {
     var reversed: Boolean = false
 
     val startInStateTick: MutableMap<UUID, Int> = mutableMapOf()
-    val prevInState: MutableMap<UUID, Boolean> = mutableMapOf()
+    val prevInState: MutableMap<UUID, Boolean> = mutableMapOf()  //TODO 有bug!
 
     override fun readData(data: Map<String, String>) {
         super.readData(data)

@@ -13,6 +13,8 @@ import net.astrorbits.dontdoit.system.generate.GameAreaGenerator
 import net.astrorbits.lib.StringHelper.isUuid
 import net.astrorbits.lib.math.Duration
 import net.astrorbits.lib.scoreboard.SidebarDisplay
+import net.astrorbits.lib.task.TaskBuilder
+import net.astrorbits.lib.task.TaskType
 import net.astrorbits.lib.task.Timer
 import net.astrorbits.lib.task.TimerType
 import net.astrorbits.lib.text.TextHelper.append
@@ -83,7 +85,7 @@ class TeamData(val color: NamedTextColor) {
         override fun onStop() {
             val oldCriteria = criteria
             criteria?.onUnbind(this@TeamData, CriteriaChangeReason.AUTO)
-            criteria = CriteriaManager.getRandomCriteria(this@TeamData)
+            criteria = CriteriaManager.getRandomCriteria(this@TeamData, oldCriteria)
             criteria!!.onBind(this@TeamData, CriteriaChangeReason.AUTO)
 
             if (oldCriteria != null) {
@@ -186,6 +188,7 @@ class TeamData(val color: NamedTextColor) {
 
     fun addLife(amount: Int = 1) {
         lifeCount += amount
+        lifeCount.coerceAtMost(DynamicSettings.lifeCount)
         TeamManager.updateSidebars()
     }
 
@@ -223,7 +226,7 @@ class TeamData(val color: NamedTextColor) {
         if (isEliminated) {
              criteria = null
         } else {
-            criteria = CriteriaManager.getRandomCriteria(this)
+            criteria = CriteriaManager.getRandomCriteria(this, oldCriteria)
             criteria!!.onBind(this, CriteriaChangeReason.TRIGGERED)
             broadcastTitle(Title.title(
                 Configs.CRITERIA_TRIGGERED_TITLE.get().format(
@@ -241,21 +244,25 @@ class TeamData(val color: NamedTextColor) {
             WHO_TRIGGERED_PLACEHOLDER to whoTriggered,
             CRITERIA_DISPLAY_NAME_PLACEHOLDER to oldCriteria?.displayText?.color(color)
         ))
-        for (p in members) {
-            p.world.playSound(
-                p.location,
-                "minecraft:entity.ender_eye.death",
-                SoundCategory.BLOCKS,
-                1f, 1f
-            )
-            p.world.spawnParticle(
-                Particle.ASH,
-                p.location.x, p.location.y + 1, p.location.z,
-                2000,
-                0.5, 0.5, 0.5,
-                0.0, null, true
-            )
-        }
+        TaskBuilder(DontDoIt.instance, TaskType.Delayed(Duration.ticks(1.0)))
+            .setTask {
+                for (p in members) {
+                    p.world.playSound(
+                        p.location,
+                        "minecraft:entity.ender_eye.death",
+                        SoundCategory.BLOCKS,
+                        1f, 1f
+                    )
+                    p.world.spawnParticle(
+                        Particle.ASH,
+                        p.location.x, p.location.y + 1, p.location.z,
+                        2000,
+                        0.5, 0.5, 0.5,
+                        0.0, null, true
+                    )
+                }
+            }.runTask()
+
         reduceLife(1)
         mainTimer.resetAndStart()
     }
@@ -305,7 +312,7 @@ class TeamData(val color: NamedTextColor) {
             ))
 
             criteria?.onUnbind(this, CriteriaChangeReason.GUESS_SUCCESS)
-            criteria = CriteriaManager.getRandomCriteria(this)
+            criteria = CriteriaManager.getRandomCriteria(this, oldCriteria)
             criteria!!.onBind(this, CriteriaChangeReason.GUESS_SUCCESS)
         } else {
             reduceLife(DynamicSettings.guessFailedReduceLife)
@@ -333,7 +340,7 @@ class TeamData(val color: NamedTextColor) {
             ))
 
             criteria?.onUnbind(this, CriteriaChangeReason.GUESS_FAILED)
-            criteria = CriteriaManager.getRandomCriteria(this)
+            criteria = CriteriaManager.getRandomCriteria(this, oldCriteria)
             criteria!!.onBind(this, CriteriaChangeReason.GUESS_FAILED)
         }
 

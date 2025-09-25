@@ -9,12 +9,11 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
 
 class HurtByEntityCriteria : Criteria(), Listener, EntityInspectCandidate, DamageTypeInspectCandidate {
     override val type: CriteriaType = CriteriaType.HURT_BY_ENTITY
-    lateinit var entityTypes: Set<EntityType>
+    lateinit var entityTypes: Set<EntityType?>
     var isEntityTypeWildcard: Boolean = false
     lateinit var damageTypes: Set<DamageType>
     var isDamageTypeWildcard: Boolean = false
@@ -22,7 +21,7 @@ class HurtByEntityCriteria : Criteria(), Listener, EntityInspectCandidate, Damag
     var rangeReversed: Boolean = false
 
     override fun getCandidateEntityTypes(): Set<EntityType> {
-        return entityTypes
+        return entityTypes.filterNotNull().toSet()
     }
 
     override fun getCandidateDamageTypes(): Set<DamageType> {
@@ -31,7 +30,7 @@ class HurtByEntityCriteria : Criteria(), Listener, EntityInspectCandidate, Damag
 
     override fun readData(data: Map<String, String>) {
         super.readData(data)
-        data.setEntityTypes(ENTITY_TYPES_KEY) { entityTypes, isWildcard ->
+        data.setEntityTypesAllowSourceless(ENTITY_TYPES_KEY) { entityTypes, isWildcard ->
             this.entityTypes = entityTypes
             this.isEntityTypeWildcard = isWildcard
         }

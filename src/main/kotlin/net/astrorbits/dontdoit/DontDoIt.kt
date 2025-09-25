@@ -19,7 +19,6 @@ class DontDoIt : JavaPlugin() {
 
         Configs.init()
         CriteriaManager.init(this)
-        DynamicSettings.init(this)
         GameStateManager.reset()
 
         Preparation.register(this)

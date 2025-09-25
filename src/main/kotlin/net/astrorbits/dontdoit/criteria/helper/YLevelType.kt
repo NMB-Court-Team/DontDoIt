@@ -1,8 +1,10 @@
 package net.astrorbits.dontdoit.criteria.helper
 
-enum class YLevelType(val groundOffset: Int, val belowBorder: Boolean) {
-    ABOVE_HIGH_ALTITUDE(10, false),
-    BELOW_HIGH_ALTITUDE(10, true),
-    ABOVE_GROUND(0, false),
-    BELOW_GROUND(0, true)
+import net.astrorbits.dontdoit.Configs
+
+enum class YLevelType(val groundOffsetGetter: () -> Int, val belowBorder: Boolean, val typeNameGetter: () -> String) {
+    ABOVE_ON_AIR({ Configs.Y_LEVEL_OFFSET_ON_AIR.get() }, false, { Configs.Y_LEVEL_CRITERIA_ON_AIR.get() }),
+    BELOW_ON_AIR({ Configs.Y_LEVEL_OFFSET_ON_AIR.get() }, true, { Configs.Y_LEVEL_CRITERIA_ON_AIR.get() }),
+    ABOVE_GROUND({ Configs.Y_LEVEL_OFFSET_GROUND.get() }, false, { Configs.Y_LEVEL_CRITERIA_GROUND.get() }),
+    BELOW_GROUND({ Configs.Y_LEVEL_OFFSET_GROUND.get() }, true, { Configs.Y_LEVEL_CRITERIA_GROUND.get() });
 }

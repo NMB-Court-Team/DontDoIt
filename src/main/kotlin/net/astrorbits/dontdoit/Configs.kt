@@ -315,6 +315,11 @@ object Configs {
         "criteria_command.failed.invalid_criteria_name",
         "无效的词条名称"
     ))
+    val COMMAND_CHANGE_SETTINGS_WHEN_NOT_WAITING: StringConfigData = CONFIG.defineConfig(StringConfigData(
+        "criteria_command.failed.change_settings_when_not_waiting",
+        "游戏开始后到游戏重置之前不允许修改设置"
+    ))
+
     val COMMAND_RESET_GAME: TextConfigData = CONFIG.defineConfig(TextConfigData(
         "criteria_command.success.reset_game",
         "<yellow>已重置游戏"
@@ -332,11 +337,19 @@ object Configs {
     //region Y坐标准则
     val Y_LEVEL_CRITERIA_BELOW: StringConfigData = CONFIG.defineConfig(StringConfigData(
         "y_level_criteria.below",
-        "Y坐标小于%d"
+        "Y坐标小于%d（%s）"
     ))
     val Y_LEVEL_CRITERIA_ABOVE: StringConfigData = CONFIG.defineConfig(StringConfigData(
         "y_level_criteria.above",
-        "Y坐标大于%d"
+        "Y坐标大于%d（%s）"
+    ))
+    val Y_LEVEL_CRITERIA_GROUND: StringConfigData = CONFIG.defineConfig(StringConfigData(
+        "y_level_criteria.ground",
+        "地面"
+    ))
+    val Y_LEVEL_CRITERIA_ON_AIR: StringConfigData = CONFIG.defineConfig(StringConfigData(
+        "y_level_criteria.on_air",
+        "空中"
     ))
     //endregion
 
@@ -397,6 +410,14 @@ object Configs {
         "y_level_criteria_enabled",
         false
     ))
+    val Y_LEVEL_OFFSET_GROUND: IntConfigData = CONFIG.defineConfig(IntConfigData(
+        "y_level_offset.ground",
+        0
+    ))
+    val Y_LEVEL_OFFSET_ON_AIR: IntConfigData = CONFIG.defineConfig(IntConfigData(
+        "y_level_offset.on_air",
+        14
+    ))
     val AUTO_CHANGE_CRITERIA_TIME: IntConfigData = CONFIG.defineConfig(IntConfigData(
         "auto_change_criteria_time",
         120
@@ -406,11 +427,11 @@ object Configs {
     //region 全局设置默认值
     val GAME_AREA_SIZE: IntConfigData = CONFIG.defineConfig(IntConfigData(
         "game_area_size",
-        65
+        63
     ))
     val LIFE_COUNT: IntConfigData = CONFIG.defineConfig(IntConfigData(
         "life_count",
-        10
+        15
     ))
     val DIAMOND_BEHAVIOR: EnumConfigData<DiamondBehavior> = CONFIG.defineConfig(EnumConfigData(
         "diamond_behavior",

@@ -18,6 +18,8 @@ import org.bukkit.event.player.PlayerJoinEvent
 import kotlin.math.floor
 
 object GameAreaGenerator : Listener {
+    private val LOGGER = DontDoIt.LOGGER
+
     var world: World? = null
     var center: Location? = null
     var groundYLevel: Int? = null
@@ -38,26 +40,36 @@ object GameAreaGenerator : Listener {
     fun generate(generateCenter: Vec3i, world: World) {
         val level = (world as? CraftWorld)?.handle ?: throw IllegalArgumentException("Cannot convert org.bukkit.World to net.minecraft.server.level.ServerLevel")
 
-        val border = world.worldBorder
         val centerLoc = generateCenter.center().toLocation(world)
+        val centerSafeLoc = centerLoc.clone().apply { y = world.getHighestBlockYAt(centerLoc, HeightMap.MOTION_BLOCKING) + 1.0 }
+
+
+        val border = world.worldBorder
         border.center = centerLoc
         border.warningDistance = 0
         val size = DynamicSettings.gameAreaSize + 1 - DynamicSettings.gameAreaSize % 2 // 取比gameAreaSize大的最小奇数
         border.size = size.toDouble()
-        for (player in Bukkit.getOnlinePlayers()) {
-            player.respawnLocation = centerLoc
-        }
-
-        this.world = world
-        world.difficulty = DynamicSettings.ingameDifficulty
-        center = centerLoc
-        groundYLevel = generateCenter.y
 
         val radius = floor(size / 2.0).toInt()
         val minX = generateCenter.x - radius
         val minZ = generateCenter.z - radius
         val maxX = generateCenter.x + radius
         val maxZ = generateCenter.z + radius
+        for (player in Bukkit.getOnlinePlayers()) {
+            val playerLoc = player.location.clone()
+            player.respawnLocation = centerSafeLoc
+            val playerNewLoc = playerLoc.clone().apply {
+                x = x.coerceIn(minX + 0.5, maxX - 0.5)
+                z = z.coerceIn(minZ + 0.5, maxZ - 0.5)
+                y = world.getHighestBlockYAt(Location(world, x, y, z), HeightMap.MOTION_BLOCKING) + 1.0
+            }
+            player.teleport(playerNewLoc)
+        }
+
+        this.world = world
+        world.difficulty = DynamicSettings.ingameDifficulty
+        center = centerLoc
+        groundYLevel = generateCenter.y
 
         val bedrockDepth = Configs.BEDROCK_DEPTH.get()
         val bedrockY = generateCenter.y - bedrockDepth

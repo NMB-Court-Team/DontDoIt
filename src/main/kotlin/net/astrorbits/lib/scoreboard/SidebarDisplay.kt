@@ -12,6 +12,7 @@ import org.bukkit.scoreboard.DisplaySlot
 import org.bukkit.scoreboard.Objective
 import org.bukkit.scoreboard.Score
 import org.bukkit.scoreboard.Scoreboard
+import kotlin.math.max
 
 /**
  * 对所有需要被显示的玩家显示的内容都一样的侧边栏
@@ -55,15 +56,19 @@ class SidebarDisplay {
             }
         }
         set(value) {
-            lineCount = value.size - 1
-            for ((i, entry) in value.withIndex()) {
-                val (name, number) = entry
-                val score = objective.getScore(scoreName(i))
-                score.score = value.size - i
-                score.customName(name)
-                score.numberFormat(NumberFormat.fixed(number))
+            for (i in 0 until max(lineCount, value.size)) {
+                if (i >= value.size) {
+                    objective.getScore(scoreName(i)).resetScore()
+                } else {
+                    val (name, number) = value[i]
+                    val score = objective.getScore(scoreName(i))
+                    score.score = value.size - i
+                    score.customName(name)
+                    score.numberFormat(NumberFormat.fixed(number))
+                }
             }
             field = value
+            lineCount = value.size - 1
         }
 
     fun hide() {

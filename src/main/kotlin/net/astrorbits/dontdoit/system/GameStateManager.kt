@@ -21,6 +21,7 @@ import net.kyori.adventure.title.Title
 import org.bukkit.Bukkit
 import org.bukkit.Difficulty
 import org.bukkit.GameRule
+import org.bukkit.SoundCategory
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitTask
@@ -55,6 +56,13 @@ object GameStateManager {
             player.isInvulnerable = false
             player.allowFlight = false
             Preparation.removePrepareGameItems(player)
+            player.playSound(
+                player.location,
+                "minecraft:entity.wither.spawn",
+                SoundCategory.BLOCKS,
+                0.3f, 2.0f
+            )
+            player.closeDialog()
         }
         Bukkit.getWorlds().forEach { world ->
             world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, true)

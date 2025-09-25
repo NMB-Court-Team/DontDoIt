@@ -5,6 +5,7 @@ import net.astrorbits.dontdoit.criteria.Criteria
 import net.astrorbits.dontdoit.criteria.helper.BuiltinCriteria
 import net.astrorbits.dontdoit.criteria.helper.CriteriaType
 import net.astrorbits.dontdoit.criteria.helper.TriggerDifficulty
+import net.astrorbits.dontdoit.criteria.helper.YLevelType
 import net.astrorbits.dontdoit.system.team.TeamData
 import net.kyori.adventure.text.Component
 
@@ -20,14 +21,14 @@ class YLevelCriteria : Criteria(), BuiltinCriteria {
         displayName = ""
     }
 
-    fun setBorder(border: Int, belowBorder: Boolean) {
-        this.border = border
-        this.belowBorder = belowBorder
+    fun setBorder(groundYLevel: Int, type: YLevelType) {
+        this.border = groundYLevel + type.groundOffsetGetter()
+        this.belowBorder = type.belowBorder
         displayName = if (belowBorder) {
             Configs.Y_LEVEL_CRITERIA_BELOW
         } else {
             Configs.Y_LEVEL_CRITERIA_ABOVE
-        }.get().format(border)
+        }.get().format(border, type.typeNameGetter())
     }
 
     override fun tick(teamData: TeamData) {

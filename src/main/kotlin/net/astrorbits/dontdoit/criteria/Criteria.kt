@@ -12,7 +12,6 @@ import net.astrorbits.lib.Identifier
 import net.astrorbits.lib.range.DoubleRange
 import net.astrorbits.lib.range.FloatRange
 import net.astrorbits.lib.range.IntRange
-import net.astrorbits.lib.text.TextHelper
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -316,6 +315,43 @@ abstract class Criteria {
         for ((entity, isTag, isReversed) in entries) {
             if (isReversed && result.isEmpty()) {
                 result.addAll(EntityType.entries)
+            }
+            val entityId = Identifier.of(entity)
+            if (!entityId.isVanilla()) throw InvalidCriteriaException(this@Criteria, "Non-vanilla entities are not supported")
+            val entities = HashSet<EntityType>()
+            if (isTag) {
+                val tagKey = entityId.toKey()
+                val tag = RegistryAccess.registryAccess().getRegistry(RegistryKey.ENTITY_TYPE).tags.firstOrNull { it.tagKey().key() == tagKey }
+                    ?: throw InvalidCriteriaException(this@Criteria, "Invalid entity tag: $entity")
+                entities.addAll(tag.values().map { EntityType.fromName(it.value())!! })
+            } else {
+                val entityType = EntityType.fromName(entityId.path) ?: throw InvalidCriteriaException(this@Criteria, "Invalid entity: $entity")
+                entities.add(entityType)
+            }
+            if (isReversed) {
+                result.removeAll(entities)
+            } else {
+                result.addAll(entities)
+            }
+        }
+        fieldSetter(result, entries.isWildcard)
+    }
+
+    protected fun Map<String, String>.setEntityTypesAllowSourceless(
+        key: String,
+        absentBehavior: AbsentBehavior = AbsentBehavior.WILDCARD,
+        fieldSetter: (entityTypes: Set<EntityType?>, isWildcard: Boolean) -> Unit
+    ) {
+        val entries = getCsvEntries(key, absentBehavior)
+
+        val result = HashSet<EntityType?>()
+        for ((entity, isTag, isReversed) in entries) {
+            if (isReversed && result.isEmpty()) {
+                result.addAll(EntityType.entries)
+            }
+            if (entity == "/") {
+                result.add(null)
+                continue
             }
             val entityId = Identifier.of(entity)
             if (!entityId.isVanilla()) throw InvalidCriteriaException(this@Criteria, "Non-vanilla entities are not supported")
