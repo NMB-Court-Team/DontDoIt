@@ -48,8 +48,8 @@ class TeamData(val color: NamedTextColor) {
     val sidebarDisplay: SidebarDisplay = SidebarDisplay(Configs.SIDEBAR_TITLE.get())
     var criteria: Criteria? = null
         set(value) {
-            TeamManager.updateSidebars()
             field = value
+            TeamManager.updateSidebars()
         }
     val mainTimer: Timer = object : Timer(DontDoIt.instance, Duration.seconds(Configs.AUTO_CHANGE_CRITERIA_TIME.get().toDouble()), TimerType.COUNTDOWN) {
         override fun onStart() { }

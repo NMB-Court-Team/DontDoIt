@@ -51,9 +51,10 @@ object CriteriaCommand {
                         if (!DynamicSettings.allowGuessCriteria) throw GUESS_NOT_ENABLED.create()
                         if (!GameStateManager.isRunning()) throw GAME_NOT_START.create()
                         val player = ctx.getArgument("player", PlayerSelectorArgumentResolver::class.java).resolve(ctx.source)[0]
+                        val senderTeam = TeamManager.getTeam(ctx.source.sender as Player)
                         val team = TeamManager.getTeam(player)
                         if (team == null || team.isEliminated) throw INVALID_PLAYER.create(player.name)
-                        if (player in team) throw GUESS_SELF_CRITERIA.create()
+                        if (senderTeam == null || player in senderTeam) throw GUESS_SELF_CRITERIA.create()
                         val guessed = BoolArgumentType.getBool(ctx, "guessed")
                         val cooldown = TeamManager.guess(player, team, guessed)
                         if (cooldown != null) {
