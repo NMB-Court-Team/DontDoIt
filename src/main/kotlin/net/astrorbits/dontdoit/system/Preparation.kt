@@ -21,7 +21,6 @@ import net.astrorbits.lib.math.Duration
 import net.astrorbits.lib.task.TaskBuilder
 import net.astrorbits.lib.task.TaskType
 import net.astrorbits.lib.text.TextHelper.format
-import net.astrorbits.lib.text.TextHelper.gray
 import net.astrorbits.lib.text.TextHelper.red
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickCallback
@@ -111,7 +110,7 @@ object Preparation : Listener {
     @EventHandler
     fun onItemSwap(event: PlayerSwapHandItemsEvent) {
         if (!GameStateManager.isWaiting()) return
-        if (event.offHandItem.isPrepareGameItem()) {
+        if (event.mainHandItem.isPrepareGameItem() || event.offHandItem.isPrepareGameItem()) {
             event.isCancelled = true
         }
     }

@@ -7,6 +7,7 @@ import org.bukkit.plugin.Plugin
 /**
  * 完全照抄`net.minecraft.util.Identifier`
  */
+@ConsistentCopyVisibility
 data class Identifier private constructor(val namespace: String, val path: String) : Comparable<Identifier> {
     override fun toString(): String {
         return "$namespace:$path"

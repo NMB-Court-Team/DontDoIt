@@ -30,15 +30,17 @@ class StandingOnBlockCriteria : Criteria(), Listener, BlockInspectCandidate {
     @Suppress("DEPRECATION")
     override fun tick(teamData: TeamData) {
         for (player in teamData.members) {
-            if (isWildcard && reversed && !player.isOnGround) {
+            if (isWildcard && reversed) {
+                if(player.isOnGround) continue
                 trigger(player)
                 break
             }
-            if (isWildcard && !reversed && player.isOnGround) {
+            if (isWildcard) {
+                if(!player.isOnGround) continue
                 trigger(player)
                 break
             }
-            if (player.isOnGround) {  //TODO 滞空(block = *, reversed = true)的判定有问题，会无视条件立刻触发
+            if (player.isOnGround) {
                 val world = player.world
                 val groundPos = player.location.clone().add(0.0, -0.1, 0.0)
                 val block = world.getBlockAt(groundPos)

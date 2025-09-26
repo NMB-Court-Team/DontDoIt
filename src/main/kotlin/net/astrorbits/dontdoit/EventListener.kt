@@ -5,7 +5,6 @@ import net.astrorbits.dontdoit.system.GameStateManager
 import net.astrorbits.dontdoit.system.team.TeamManager
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.server.ServerLoadEvent
 
 object EventListener : Listener {
