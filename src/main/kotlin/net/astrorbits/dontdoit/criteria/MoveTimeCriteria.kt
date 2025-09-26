@@ -16,43 +16,52 @@ class MoveTimeCriteria : Criteria(), Listener {
     var moveTime: Int by Delegates.notNull()
     var reversed: Boolean = false
 
-    val startInStateTick: MutableMap<UUID, Int> = mutableMapOf()
-    val prevInState: MutableMap<UUID, Boolean> = mutableMapOf()  //TODO 有bug!
+    private val startTick: MutableMap<UUID, Int> = mutableMapOf()
+    private val lastState: MutableMap<UUID, Boolean> = mutableMapOf()
 
     override fun readData(data: Map<String, String>) {
         super.readData(data)
         data.setField(MOVE_TYPE_KEY) { moveType = MoveType.valueOf(it) }
         data.setIntField(MOVE_TIME_KEY) { moveTime = it }
         data.setBoolField(REVERSED_KEY, true) { reversed = it }
-        if (moveType === MoveType.Jump && !reversed) throw InvalidCriteriaException(this, "Definition 'type: jump' with 'reversed: false' is not supported")
+
+        if (moveType == MoveType.Jump && !reversed) {
+            throw InvalidCriteriaException(this, "Jump 不能设置 reversed = false")
+        }
     }
 
     override fun onUnbind(teamData: TeamData, reason: CriteriaChangeReason) {
         super.onUnbind(teamData, reason)
         for (player in teamData.members) {
-            val uuid = player.uniqueId
-            startInStateTick.remove(uuid)
-            prevInState.remove(uuid)
+            startTick.remove(player.uniqueId)
+            lastState.remove(player.uniqueId)
         }
     }
 
     override fun tick(teamData: TeamData) {
         for (player in teamData.members) {
             val uuid = player.uniqueId
-            // 更新状态
-            val prevInState = this.prevInState.computeIfAbsent(uuid) { reversed }
-            val currentInState = isInState(player)
-            if (!prevInState && currentInState) {
-                startInStateTick[uuid] = Bukkit.getCurrentTick()
-            } else if (prevInState && !currentInState) {
-                startInStateTick.remove(uuid)
+            val currentState = isInState(player)
+            val prevState = lastState[uuid]
+
+            // 初始化
+            if (prevState == null) {
+                lastState[uuid] = currentState
+                if (currentState) startTick[uuid] = Bukkit.getCurrentTick()
+                continue
             }
-            this.prevInState[uuid] = currentInState
+
+            // 状态变化
+            if (!prevState && currentState) {
+                startTick[uuid] = Bukkit.getCurrentTick()
+            } else if (prevState && !currentState) {
+                startTick.remove(uuid)
+            }
+            lastState[uuid] = currentState
 
             // 检查时间
-            val startTick = startInStateTick[uuid] ?: continue
-            val currentTick = Bukkit.getCurrentTick()
-            if (currentTick - startTick > moveTime) {
+            val start = startTick[uuid] ?: continue
+            if (Bukkit.getCurrentTick() - start >= moveTime) {
                 trigger(player)
                 break
             }
@@ -69,9 +78,3 @@ class MoveTimeCriteria : Criteria(), Listener {
         const val REVERSED_KEY = "reversed"
     }
 }
-
-// isSprinting, reversed -> isInState
-// true, false -> true
-// true, true -> false
-// false, false -> false
-// false, true -> true

@@ -7,9 +7,11 @@ import net.astrorbits.lib.math.Rotation
 import net.astrorbits.lib.math.vector.Vec3d
 import net.astrorbits.lib.task.TaskBuilder
 import net.astrorbits.lib.task.TaskType
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.UUID
@@ -20,17 +22,15 @@ sealed class MoveType {
      */
     abstract fun isMoving(player: Player): Boolean
 
-    data object Move : MoveType() {
-        val prevTickPos: MutableMap<UUID, Vec3d> = mutableMapOf()
-
+    data object Move : MoveType(), Listener {
+        val lastMoveTime: MutableMap<UUID, Int> = mutableMapOf()
         override fun isMoving(player: Player): Boolean {
-            val prevPos = prevTickPos[player.uniqueId]
-            val currentPos = Vec3d.fromLocation(player.location)
-            prevTickPos[player.uniqueId] = currentPos
-            if (prevPos == null) {
-                return false
-            }
-            return !prevPos.fuzzyEqual(currentPos, EPSILON_DOUBLE)
+            return Bukkit.getCurrentTick() == (lastMoveTime[player.uniqueId]?: 0) + 1 //hmm...
+        }
+        @EventHandler
+        fun onPlayerMove(event: PlayerMoveEvent) {
+            if (!event.hasChangedPosition() && !event.hasExplicitlyChangedPosition()) return
+            lastMoveTime[event.player.uniqueId] = Bukkit.getCurrentTick()
         }
     }
 
@@ -110,7 +110,7 @@ sealed class MoveType {
         @EventHandler
         fun onPlayerQuit(event: PlayerQuitEvent) {
             val uuid = event.player.uniqueId
-            Move.prevTickPos.remove(uuid)
+            Move.lastMoveTime.remove(uuid)
             Jump.isJustJumped.remove(uuid)
             Rotate.prevTickRot.remove(uuid)
         }
@@ -122,6 +122,7 @@ sealed class MoveType {
 
         fun registerListener(plugin: JavaPlugin) {
             val pluginManager = plugin.server.pluginManager
+            pluginManager.registerEvents(Move, plugin)
             pluginManager.registerEvents(Jump, plugin)
             pluginManager.registerEvents(GarbageCleaner, plugin)
         }
