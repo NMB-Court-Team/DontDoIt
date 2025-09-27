@@ -190,8 +190,14 @@ object CriteriaManager {
     }
 
     fun getRandomCriteria(teamData: TeamData, oldCriteria: Criteria? = null): Criteria {
+        val weightMap = allCriteria.associateWith { 1.0 }
+        val otherTeams = TeamManager.getInUseTeams().values.filter { it !== teamData }
+
+
+
+
+
         //TODO 要加上仓检机制
         return allCriteria.random() // 等概率抽取
     }
 }
-

@@ -28,18 +28,18 @@ class CriteriaHoldTimeCriteria : Criteria() {
         bindTick[teamData.color] = Bukkit.getCurrentTick()
     }
 
-    override fun onUnbind(teamData: TeamData, reason: CriteriaChangeReason) {
+    override fun onUnbind(teamData: TeamData, reason: CriteriaChangeReason): Boolean {
         if (waitTimeMode == WaitTimeMode.DELAY && (reason == CriteriaChangeReason.AUTO || reason.isGuess())) {
             val bindTick = bindTick[teamData.color]
             if (bindTick != null) {
                 val currentTick = Bukkit.getCurrentTick()
                 if (((currentTick - bindTick) in changeTimeTicksRange) xor rangeReversed) {
                     trigger(teamData)
-                    return
+                    return false
                 }
             }
         }
-        super.onUnbind(teamData, reason)
+        return super.onUnbind(teamData, reason)
     }
 
     override fun tick(teamData: TeamData) {

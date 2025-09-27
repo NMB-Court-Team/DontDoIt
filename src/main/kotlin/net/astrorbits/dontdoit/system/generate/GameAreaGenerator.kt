@@ -4,6 +4,7 @@ import net.astrorbits.dontdoit.Configs
 import net.astrorbits.dontdoit.DontDoIt
 import net.astrorbits.dontdoit.DynamicSettings
 import net.astrorbits.lib.NMSWarning
+import net.astrorbits.lib.math.vector.BlockBox
 import net.astrorbits.lib.math.vector.Vec3i
 import net.astrorbits.lib.task.TaskBuilder
 import net.astrorbits.lib.task.TaskHelper
@@ -21,9 +22,9 @@ object GameAreaGenerator : Listener {
     private val LOGGER = DontDoIt.LOGGER
 
     var world: World? = null
+    var centerVec3i: Vec3i? = null
     var center: Location? = null
     var groundYLevel: Int? = null
-    var materialsInArea: Set<Material> = setOf()
 
     val STONE_LIKE_BLOCKS: Set<Material> = setOf(
         Material.STONE, Material.ANDESITE, Material.GRANITE, Material.DIORITE, Material.INFESTED_STONE, Material.INFESTED_COBBLESTONE,
@@ -47,10 +48,10 @@ object GameAreaGenerator : Listener {
         val border = world.worldBorder
         border.center = centerLoc
         border.warningDistance = 0
-        val size = DynamicSettings.gameAreaSize + 1 - DynamicSettings.gameAreaSize % 2 // 取比gameAreaSize大的最小奇数
+        val size = calcSize() // 取比gameAreaSize大的最小奇数
         border.size = size.toDouble()
 
-        val radius = floor(size / 2.0).toInt()
+        val radius = calcRadius()
         val minX = generateCenter.x - radius
         val minZ = generateCenter.z - radius
         val maxX = generateCenter.x + radius
@@ -68,6 +69,7 @@ object GameAreaGenerator : Listener {
 
         this.world = world
         world.difficulty = DynamicSettings.ingameDifficulty
+        centerVec3i = generateCenter
         center = centerLoc
         groundYLevel = generateCenter.y
 
@@ -100,9 +102,21 @@ object GameAreaGenerator : Listener {
                 level.setBlock(BlockPos(pos.x, pos.y, pos.z), (Material.STONE.createBlockData() as CraftBlockData).state, Block.UPDATE_CLIENTS)
             }
         }
+    }
 
-        // 统计方块
-        collectAllBlockMaterialsAsync(world, Vec3i(minX, bedrockY, minZ), Vec3i(maxX, bedrockY + COLLECT_Y_RANGE, maxZ))
+    fun calcSize(): Int = DynamicSettings.gameAreaSize + 1 - DynamicSettings.gameAreaSize % 2
+    fun calcRadius(): Int = floor(calcSize() / 2.0).toInt()
+    fun getPosRange(): BlockBox? {
+        if (centerVec3i == null) return null
+        val center = centerVec3i!!
+        val radius = calcRadius()
+        val minX = center.x - radius
+        val minZ = center.z - radius
+        val maxX = center.x + radius
+        val maxZ = center.z + radius
+        val minY = center.y - Configs.BEDROCK_DEPTH.get()
+        val maxY = center.y + COLLECT_Y_RANGE
+        return BlockBox(minX, minY, minZ, maxX, maxY, maxZ)
     }
 
     // GPT给出的在异步线程遍历世界上的方块的方案
@@ -148,7 +162,7 @@ object GameAreaGenerator : Listener {
                 }
 
                 TaskHelper.runForceSync(DontDoIt.instance) {
-                    materialsInArea = materials
+                    //materialsInArea = materials
                 }
             }.runTask()
     }
@@ -161,7 +175,6 @@ object GameAreaGenerator : Listener {
         world = null
         center = null
         groundYLevel = null
-        materialsInArea = setOf()
     }
 
     @EventHandler

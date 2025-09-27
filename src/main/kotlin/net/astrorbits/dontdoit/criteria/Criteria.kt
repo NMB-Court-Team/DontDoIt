@@ -3,11 +3,14 @@ package net.astrorbits.dontdoit.criteria
 import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList
+import net.astrorbits.dontdoit.DynamicSettings
 import net.astrorbits.dontdoit.criteria.helper.TriggerDifficulty
 import net.astrorbits.dontdoit.criteria.system.CriteriaManager
 import net.astrorbits.dontdoit.criteria.helper.CriteriaType
+import net.astrorbits.dontdoit.criteria.inspect.InventoryInspectable
 import net.astrorbits.dontdoit.system.CriteriaChangeReason
 import net.astrorbits.dontdoit.system.team.TeamData
+import net.astrorbits.dontdoit.system.team.TeamManager
 import net.astrorbits.lib.Identifier
 import net.astrorbits.lib.range.DoubleRange
 import net.astrorbits.lib.range.FloatRange
@@ -48,11 +51,16 @@ abstract class Criteria {
      * 1. 此词条自动更换成了另一个词条
      * 2. 此词条被触发
      * 3. 游戏结束时取消所有玩家的词条，包括此词条
+     *
+     * **如果要在解除绑定时触发词条，一定要检查`reason`，并且`reason`不能是[CriteriaChangeReason.TRIGGERED]，否则会导致无限递归爆栈**
+     *
      * @param teamData 解除绑定了此词条的队伍
      * @param reason 切换词条的原因
+     * @return 是否成功解除绑定词条，若为`false`，则代表解除绑定失败，解除绑定的原因可能是触发了词条
      */
-    open fun onUnbind(teamData: TeamData, reason: CriteriaChangeReason) {
+    open fun onUnbind(teamData: TeamData, reason: CriteriaChangeReason): Boolean {
         holders.remove(teamData)
+        return true
     }
 
     /**
@@ -76,6 +84,22 @@ abstract class Criteria {
         if (teamData in holders) {
             CriteriaManager.trigger(this, teamData)
         }
+    }
+
+    // 初步修改权重，基于词条重复性、触发难度和队伍血量计算
+    fun initiallyModifyWeight(weight: Double, teamData: TeamData, oldCriteria: Criteria?): Double {
+        var result = weight
+        if (oldCriteria === this) {
+            result *= InventoryInspectable.CRITERIA_DUPLICATED_WITH_SELF_MULTIPLIER
+        }
+        val otherTeamsCriteria = TeamManager.getInUseTeams().values.filter { it !== teamData }.mapNotNull { it.criteria }
+        if (this in otherTeamsCriteria) {
+            result *= InventoryInspectable.CRITERIA_DUPLICATED_WITH_OTHER_MULTIPLIER
+        }
+        val lifePercentage = teamData.lifeCount.toDouble() / DynamicSettings.lifeCount.toDouble()
+        result *= InventoryInspectable.calcLifePercentageMultiplier(lifePercentage, triggerDifficulty)
+        result *= triggerDifficulty.weightMultiplier
+        return result
     }
 
     /**

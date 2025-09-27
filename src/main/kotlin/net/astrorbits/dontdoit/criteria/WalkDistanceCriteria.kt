@@ -26,14 +26,14 @@ class WalkDistanceCriteria : Criteria() {
         }
     }
 
-    override fun onUnbind(teamData: TeamData, reason: CriteriaChangeReason) {
-        super.onUnbind(teamData, reason)
+    override fun onUnbind(teamData: TeamData, reason: CriteriaChangeReason): Boolean {
         for (player in teamData.members) {
             val uuid = player.uniqueId
             playerOnBindWalkDistance.remove(uuid)
             playerOnBindWalkOnWaterDistance.remove(uuid)
             playerOnBindWalkUnderWaterDistance.remove(uuid)
         }
+        return super.onUnbind(teamData, reason)
     }
 
     override fun tick(teamData: TeamData) {

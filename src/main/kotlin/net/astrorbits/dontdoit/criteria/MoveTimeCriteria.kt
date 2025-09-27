@@ -30,12 +30,12 @@ class MoveTimeCriteria : Criteria(), Listener {
         }
     }
 
-    override fun onUnbind(teamData: TeamData, reason: CriteriaChangeReason) {
-        super.onUnbind(teamData, reason)
+    override fun onUnbind(teamData: TeamData, reason: CriteriaChangeReason): Boolean {
         for (player in teamData.members) {
             startTick.remove(player.uniqueId)
             lastState.remove(player.uniqueId)
         }
+        return super.onUnbind(teamData, reason)
     }
 
     override fun tick(teamData: TeamData) {

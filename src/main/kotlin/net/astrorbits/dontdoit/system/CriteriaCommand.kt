@@ -91,23 +91,24 @@ object CriteriaCommand {
                     if (team == null || team.isEliminated) throw INVALID_TEAM_NAME.create(team.teamId)
 
                     val oldCriteria = team.criteria
-                    team.criteria?.onUnbind(team, CriteriaChangeReason.MANUAL)
-                    team.criteria = CriteriaManager.getRandomCriteria(team, oldCriteria)
-                    team.criteria!!.onBind(team, CriteriaChangeReason.MANUAL)
+                    val unbindResult = team.criteria?.onUnbind(team, CriteriaChangeReason.MANUAL)
+                    if (unbindResult != false) {
+                        team.criteria = CriteriaManager.getRandomCriteria(team, oldCriteria)
+                        team.criteria!!.onBind(team, CriteriaChangeReason.MANUAL)
 
-                    if (oldCriteria != null) {
-                        Bukkit.broadcast(Configs.AUTO_CHANGE_CRITERIA_ANNOUNCE.get().format(
-                            TEAM_NAME_PLACEHOLDER to team.teamName,
-                            CRITERIA_DISPLAY_NAME_PLACEHOLDER to oldCriteria.displayText.color(team.color)
-                        ))
-                        team.broadcastTitle(
-                            Title.title(
+                        if (oldCriteria != null) {
+                            Bukkit.broadcast(Configs.AUTO_CHANGE_CRITERIA_ANNOUNCE.get().format(
+                                TEAM_NAME_PLACEHOLDER to team.teamName,
+                                CRITERIA_DISPLAY_NAME_PLACEHOLDER to oldCriteria.displayText.color(team.color)
+                            ))
+                            team.broadcastTitle(Title.title(
                                 Configs.AUTO_CHANGE_CRITERIA_TITLE.get().color(team.color),
                                 Configs.AUTO_CHANGE_CRITERIA_SUBTITLE.get().format(
                                     CRITERIA_DISPLAY_NAME_PLACEHOLDER to oldCriteria.displayText.color(team.color)
                                 ),
                                 5, 50, 10
                             ))
+                        }
                     }
                     return@executes 1
                 }
@@ -133,23 +134,24 @@ object CriteriaCommand {
 
                     val oldCriteria = team.criteria
                     // 替换前解绑
-                    team.criteria?.onUnbind(team, CriteriaChangeReason.MANUAL)
-                    team.criteria = criteria
-                    team.criteria!!.onBind(team, CriteriaChangeReason.MANUAL)
+                    val unbindResult = team.criteria?.onUnbind(team, CriteriaChangeReason.MANUAL)
+                    if (unbindResult != false) {
+                        team.criteria = criteria
+                        team.criteria!!.onBind(team, CriteriaChangeReason.MANUAL)
 
-                    if (oldCriteria != null) {
-                        Bukkit.broadcast(Configs.AUTO_CHANGE_CRITERIA_ANNOUNCE.get().format(
-                            TEAM_NAME_PLACEHOLDER to team.teamName,
-                            CRITERIA_DISPLAY_NAME_PLACEHOLDER to oldCriteria.displayText.color(team.color)
-                        ))
-                        team.broadcastTitle(
-                            Title.title(
-                            Configs.AUTO_CHANGE_CRITERIA_TITLE.get().color(team.color),
-                            Configs.AUTO_CHANGE_CRITERIA_SUBTITLE.get().format(
+                        if (oldCriteria != null) {
+                            Bukkit.broadcast(Configs.AUTO_CHANGE_CRITERIA_ANNOUNCE.get().format(
+                                TEAM_NAME_PLACEHOLDER to team.teamName,
                                 CRITERIA_DISPLAY_NAME_PLACEHOLDER to oldCriteria.displayText.color(team.color)
-                            ),
-                            5, 50, 10
-                        ))
+                            ))
+                            team.broadcastTitle(Title.title(
+                                Configs.AUTO_CHANGE_CRITERIA_TITLE.get().color(team.color),
+                                Configs.AUTO_CHANGE_CRITERIA_SUBTITLE.get().format(
+                                    CRITERIA_DISPLAY_NAME_PLACEHOLDER to oldCriteria.displayText.color(team.color)
+                                ),
+                                5, 50, 10
+                            ))
+                        }
                     }
                     return@executes 1
                 })

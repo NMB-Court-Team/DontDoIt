@@ -213,6 +213,9 @@ class Box(val min: Vec3d, val max: Vec3d) {
             && pos.x() <= max.x && pos.y() <= max.y && pos.z() <= max.z
     }
 
+    operator fun component1(): Vec3d = min
+    operator fun component2(): Vec3d = max
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Box) return false

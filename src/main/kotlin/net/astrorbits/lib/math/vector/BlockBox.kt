@@ -163,6 +163,9 @@ class BlockBox(val min: Vec3i, val max: Vec3i): Iterable<Vec3i> {
             && pos.x() <= max.x + 1 && pos.y() <= max.y + 1 && pos.z() <= max.z + 1
     }
 
+    operator fun component1(): Vec3i = min
+    operator fun component2(): Vec3i = max
+
     fun toList(): List<Vec3i> {
         val posList = ArrayList<Vec3i>(sizeX * sizeY * sizeZ)
         for (x in min.x..max.x) {
