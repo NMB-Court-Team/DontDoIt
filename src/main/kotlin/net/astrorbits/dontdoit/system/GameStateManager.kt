@@ -69,6 +69,7 @@ object GameStateManager {
         }
 
         TeamInfoSynchronizer.syncTeamInfos(TeamManager.teams)
+        CriteriaManager.onGameStart()
     }
 
     const val TRIGGER_COUNT_PLACEHOLDER = "count"
@@ -106,6 +107,7 @@ object GameStateManager {
         Bukkit.broadcast(triggerCountMessage)
 
         TeamManager.onGameEnd()
+        CriteriaManager.onGameEnd()
     }
 
     fun reset() {

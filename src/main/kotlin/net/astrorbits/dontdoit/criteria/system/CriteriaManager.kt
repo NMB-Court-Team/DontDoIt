@@ -10,14 +10,25 @@ import net.astrorbits.dontdoit.criteria.builtin.YLevelCriteria
 import net.astrorbits.dontdoit.criteria.helper.BuiltinCriteria
 import net.astrorbits.dontdoit.criteria.helper.MoveType
 import net.astrorbits.dontdoit.criteria.helper.YLevelType
+import net.astrorbits.dontdoit.criteria.inspect.InventoryInspectContext
+import net.astrorbits.dontdoit.criteria.inspect.InventoryInspectable
+import net.astrorbits.dontdoit.system.generate.GameAreaGenerator
 import net.astrorbits.dontdoit.system.team.TeamData
 import net.astrorbits.dontdoit.system.team.TeamManager
+import net.astrorbits.lib.collection.CollectionHelper
 import net.astrorbits.lib.config.Config
+import net.astrorbits.lib.math.Duration
+import net.astrorbits.lib.task.TaskBuilder
+import net.astrorbits.lib.task.TaskType
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
+import org.bukkit.scheduler.BukkitTask
+import java.util.Random
 import java.util.UUID
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Supplier
 
 object CriteriaManager {
@@ -189,15 +200,50 @@ object CriteriaManager {
         triggerCountStat.clear()
     }
 
+    fun onGameStart() {
+        criteriaContextCalcTask = TaskBuilder(DontDoIt.instance, TaskType.Repeat(CONTEXT_CALC_INTERVAL))
+            .setTask {
+                val world = GameAreaGenerator.world ?: return@setTask
+                val teams = TeamManager.getInUseTeams().values
+                for (teamData in teams) {
+                    val otherTeams = teams.filter { it !== teamData }
+                    val teamColor = teamData.color
+                    InventoryInspectContext.calcContextAsync(world, teamData, otherTeams)
+                        .handle { ctx, e ->
+                            if (e != null) {
+                                LOGGER.error("Error when calculating inventory inspect context: ", e)
+                                null
+                            } else ctx
+                        }.thenAccept { ctx ->
+                            if (ctx != null) {
+                                criteriaContext[teamColor] = ctx
+                            }
+                        }
+                }
+            }.runTask()
+    }
+
+    fun onGameEnd() {
+        criteriaContextCalcTask?.cancel()
+        criteriaContextCalcTask = null
+    }
+
+    private val random = Random()
+    val CONTEXT_CALC_INTERVAL = Duration.seconds(15.0)
+    var criteriaContextCalcTask: BukkitTask? = null
+    const val INITIAL_WEIGHT = 1.0
+
+    val criteriaContext: ConcurrentHashMap<NamedTextColor, InventoryInspectContext> = ConcurrentHashMap()
+
     fun getRandomCriteria(teamData: TeamData, oldCriteria: Criteria? = null): Criteria {
-        val weightMap = allCriteria.associateWith { 1.0 }
-        val otherTeams = TeamManager.getInUseTeams().values.filter { it !== teamData }
-
-
-
-
-
-        //TODO 要加上仓检机制
-        return allCriteria.random() // 等概率抽取
+        val context = criteriaContext[teamData.color] ?: InventoryInspectContext.EMPTY
+        val adjustedWeightMap = allCriteria.associateWith { criteria ->
+            var adjustedWeight = criteria.initiallyModifyWeight(INITIAL_WEIGHT, teamData, oldCriteria)
+            if (criteria is InventoryInspectable) {
+                adjustedWeight = criteria.modifyWeight(adjustedWeight, context)
+            }
+            return@associateWith adjustedWeight
+        }
+        return CollectionHelper.selectByDoubleWeight(adjustedWeightMap, random)
     }
 }

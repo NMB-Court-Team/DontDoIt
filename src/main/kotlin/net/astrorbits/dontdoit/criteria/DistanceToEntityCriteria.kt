@@ -18,6 +18,10 @@ class DistanceToEntityCriteria : Criteria(), Listener, EntityInspectCandidate {
         return entityTypes
     }
 
+    override fun canMatchAnyEntity(): Boolean {
+        return isWildcard
+    }
+
     override fun readData(data: Map<String, String>) {
         super.readData(data)
         data.setEntityTypes(ENTITY_TYPES_KEY) { entityTypes, isWildcard ->

@@ -18,6 +18,10 @@ class BucketOperationCriteria : Criteria(), Listener, BlockInspectCandidate {
         return setOf(fluid)
     }
 
+    override fun canMatchAnyBlock(): Boolean {
+        return false
+    }
+
     override fun readData(data: Map<String, String>) {
         super.readData(data)
         data.setField(FLUID_KEY) {

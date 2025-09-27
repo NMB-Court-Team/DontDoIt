@@ -16,6 +16,10 @@ class BreakBlockCriteria : Criteria(), Listener, BlockInspectCandidate {
         return blockTypes
     }
 
+    override fun canMatchAnyBlock(): Boolean {
+        return isWildcard
+    }
+
     override fun readData(data: Map<String, String>) {
         super.readData(data)
         data.setBlockTypes(BLOCK_TYPES_KEY) { blockTypes, isWildcard ->

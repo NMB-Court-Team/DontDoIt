@@ -3,6 +3,7 @@ package net.astrorbits.dontdoit.criteria
 import net.astrorbits.dontdoit.criteria.helper.CriteriaType
 import net.astrorbits.dontdoit.criteria.inspect.DamageTypeInspectCandidate
 import net.astrorbits.dontdoit.criteria.inspect.EntityInspectCandidate
+import net.astrorbits.dontdoit.criteria.inspect.SourcedDamageInspector
 import org.bukkit.damage.DamageType
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
@@ -10,7 +11,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDeathEvent
 
-class KillEntityCriteria : Criteria(), Listener, EntityInspectCandidate, DamageTypeInspectCandidate {
+class KillEntityCriteria : Criteria(), Listener, SourcedDamageInspector {
     override val type = CriteriaType.KILL_ENTITY
     lateinit var entityTypes: Set<EntityType>
     var isEntityTypeWildcard: Boolean = false
@@ -21,8 +22,16 @@ class KillEntityCriteria : Criteria(), Listener, EntityInspectCandidate, DamageT
         return entityTypes
     }
 
+    override fun canMatchAnyEntity(): Boolean {
+        return isEntityTypeWildcard
+    }
+
     override fun getCandidateDamageTypes(): Set<DamageType> {
         return damageTypes
+    }
+
+    override fun canMatchAnyDamageType(): Boolean {
+        return isDamageTypeWildcard
     }
 
     override fun readData(data: Map<String, String>) {
