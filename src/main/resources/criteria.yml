@@ -160,7 +160,7 @@ criteria:
       mainhand: "#pickaxes"
     - name: 用斧子攻击生物
       difficulty: normal
-      entity: *
+      entity: "*"
       mainhand: "#axes"
     - name: 空手打人
       difficulty: normal

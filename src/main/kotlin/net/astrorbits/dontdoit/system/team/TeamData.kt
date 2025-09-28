@@ -111,6 +111,7 @@ class TeamData(val color: NamedTextColor) {
             }
 
             requestStartAfterStop()
+            LOGGER.info("Team $teamId auto changed criteria from ${oldCriteria?.displayName} to ${criteria!!.displayName}")
         }
     }
 
@@ -233,55 +234,54 @@ class TeamData(val color: NamedTextColor) {
         val oldCriteria = criteria
         val whoTriggered: Component = player?.displayName() ?: teamName
 
-        val unbindResult = criteria?.onUnbind(this, CriteriaChangeReason.TRIGGERED)
-        if (unbindResult != false) {
-            if (isEliminated) {
-                criteria = null
-            } else {
-                criteria = CriteriaManager.getRandomCriteria(this, oldCriteria)
-                criteria!!.onBind(this, CriteriaChangeReason.TRIGGERED)
-                broadcastTitle(
-                    Title.title(
-                        Configs.CRITERIA_TRIGGERED_TITLE.get().format(
-                            WHO_TRIGGERED_PLACEHOLDER to whoTriggered,
-                            CRITERIA_DISPLAY_NAME_PLACEHOLDER to oldCriteria?.displayText?.color(color)
-                        ),
-                        Configs.CRITERIA_TRIGGERED_SUBTITLE.get().format(
-                            WHO_TRIGGERED_PLACEHOLDER to whoTriggered,
-                            CRITERIA_DISPLAY_NAME_PLACEHOLDER to oldCriteria?.displayText?.color(color)
-                        ),
-                        0, 50, 10
-                    )
-                )
-            }
-            Bukkit.broadcast(
-                Configs.CRITERIA_TRIGGERED_ANNOUNCE.get().format(
-                    WHO_TRIGGERED_PLACEHOLDER to whoTriggered,
-                    CRITERIA_DISPLAY_NAME_PLACEHOLDER to oldCriteria?.displayText?.color(color)
+        criteria?.onUnbind(this, CriteriaChangeReason.TRIGGERED)
+        if (isEliminated) {
+            criteria = null
+        } else {
+            criteria = CriteriaManager.getRandomCriteria(this, oldCriteria)
+            criteria!!.onBind(this, CriteriaChangeReason.TRIGGERED)
+            broadcastTitle(
+                Title.title(
+                    Configs.CRITERIA_TRIGGERED_TITLE.get().format(
+                        WHO_TRIGGERED_PLACEHOLDER to whoTriggered,
+                        CRITERIA_DISPLAY_NAME_PLACEHOLDER to oldCriteria?.displayText?.color(color)
+                    ),
+                    Configs.CRITERIA_TRIGGERED_SUBTITLE.get().format(
+                        WHO_TRIGGERED_PLACEHOLDER to whoTriggered,
+                        CRITERIA_DISPLAY_NAME_PLACEHOLDER to oldCriteria?.displayText?.color(color)
+                    ),
+                    0, 50, 10
                 )
             )
-            TaskBuilder(DontDoIt.instance, TaskType.Delayed(Duration.ticks(1.0)))
-                .setTask {
-                    for (p in members) {
-                        p.world.playSound(
-                            p.location,
-                            "minecraft:entity.ender_eye.death",
-                            SoundCategory.BLOCKS,
-                            1f, 1f
-                        )
-                        p.world.spawnParticle(
-                            Particle.ASH,
-                            p.location.x, p.location.y + 1, p.location.z,
-                            2000,
-                            0.5, 0.5, 0.5,
-                            0.0, null, true
-                        )
-                    }
-                }.runTask()
-
-            reduceLife(1)
-            mainTimer.resetAndStart()
         }
+        Bukkit.broadcast(
+            Configs.CRITERIA_TRIGGERED_ANNOUNCE.get().format(
+                WHO_TRIGGERED_PLACEHOLDER to whoTriggered,
+                CRITERIA_DISPLAY_NAME_PLACEHOLDER to oldCriteria?.displayText?.color(color)
+            )
+        )
+        TaskBuilder(DontDoIt.instance, TaskType.Delayed(Duration.ticks(1.0)))
+            .setTask {
+                for (p in members) {
+                    p.world.playSound(
+                        p.location,
+                        "minecraft:entity.ender_eye.death",
+                        SoundCategory.BLOCKS,
+                        1f, 1f
+                    )
+                    p.world.spawnParticle(
+                        Particle.ASH,
+                        p.location.x, p.location.y + 1, p.location.z,
+                        2000,
+                        0.5, 0.5, 0.5,
+                        0.0, null, true
+                    )
+                }
+            }.runTask()
+
+        reduceLife(1)
+        mainTimer.resetAndStart()
+        LOGGER.info("Team $teamId triggered criteria ${oldCriteria?.displayName}, new criteria is ${criteria!!.displayName}, who triggered: {}", player?.name ?: teamId)
     }
 
     private val allowGuess: Boolean
@@ -367,6 +367,7 @@ class TeamData(val color: NamedTextColor) {
 
         guessCooldownTimer.start()
         mainTimer.resetAndStart()
+        LOGGER.info("Team $teamId guessed criteria ${oldCriteria?.displayName}, new criteria is ${criteria!!.displayName}, guess result: {}", if (guessed) "success" else "failed")
         return null
     }
 
@@ -392,6 +393,7 @@ class TeamData(val color: NamedTextColor) {
                 1f, 1f
             )
         }
+        LOGGER.info("Team $teamId is eliminated")
 
         TeamManager.tryEndGame()
     }
@@ -421,5 +423,7 @@ class TeamData(val color: NamedTextColor) {
 
         const val CUSTOM_CRITERIA_ANNOUNCE_COOLDOWN_SEC = 30
         const val CUSTOM_CRITERIA_ANNOUNCE_DELAY_SEC = 10
+
+        private val LOGGER = DontDoIt.LOGGER
     }
 }

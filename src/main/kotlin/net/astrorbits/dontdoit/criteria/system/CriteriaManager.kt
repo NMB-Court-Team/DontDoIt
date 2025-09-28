@@ -118,7 +118,7 @@ object CriteriaManager {
         register("health", ::HealthCriteria)
         register("rotation", ::RotationCriteria)
         register("food_level", ::FoodLevelCriteria)
-        register("selected_hotbar_slot", ::SelectedHotbarIndexCriteria)
+        register("selected_hotbar_slot", ::SelectedHotbarSlotCriteria)
         register("heightmap_matching_pos", ::HeightmapMatchingPosCriteria)
         register("life_count", ::LifeCountCriteria)
         register("walk_distance", ::WalkDistanceCriteria)
@@ -206,7 +206,7 @@ object CriteriaManager {
     fun onGameStart() {
         criteriaContextCalcTask = TaskBuilder(DontDoIt.instance, TaskType.Repeat(CONTEXT_CALC_INTERVAL))
             .setTask {
-                val world = GameAreaGenerator.world ?: return@setTask
+                val world = GameAreaGenerator.mainWorld ?: return@setTask
                 val teams = TeamManager.getInUseTeams().values
                 for (teamData in teams) {
                     val otherTeams = teams.filter { it !== teamData }
@@ -247,6 +247,13 @@ object CriteriaManager {
             }
             return@associateWith adjustedWeight
         }
-        return CollectionHelper.selectByDoubleWeight(adjustedWeightMap, random)
+        val criteria = CollectionHelper.selectByDoubleWeight(adjustedWeightMap, random)
+        LOGGER.info("Criteria weight map: ")
+        for (pair in adjustedWeightMap.toList().sortedBy { it.second }) {
+            LOGGER.info("{}: {}", pair.first.displayName, pair.second)
+        }
+        LOGGER.info("Selected random criteria for team ${teamData.teamId}: ${criteria.displayName}")
+
+        return criteria
     }
 }

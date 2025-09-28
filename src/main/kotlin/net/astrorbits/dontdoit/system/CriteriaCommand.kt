@@ -203,12 +203,21 @@ object CriteriaCommand {
             )
         ).then(Commands.literal("settings")
             .requires { it.sender is Player && it.sender.isOp }
-            .executes { ctx ->
-                if (GameStateManager.isRunning()) throw CHANGE_SETTINGS_WHEN_NOT_WAITING.create()
-                val player = ctx.source.sender as Player
-                player.showDialog(DynamicSettings.createDynamicSettingsDialog())
-                return@executes 1
-            }
+            .then(Commands.literal("reset")
+                .executes { ctx ->
+                    if (GameStateManager.isRunning()) throw CHANGE_SETTINGS_WHEN_NOT_WAITING.create()
+                    DynamicSettings.resetSettings()
+                    ctx.source.sender.sendMessage(Configs.COMMAND_RESET_SETTINGS.get())
+                    return@executes 1
+                }
+            ).then(Commands.literal("set")
+                .executes { ctx ->
+                    if (GameStateManager.isRunning()) throw CHANGE_SETTINGS_WHEN_NOT_WAITING.create()
+                    val player = ctx.source.sender as Player
+                    player.showDialog(DynamicSettings.createDynamicSettingsDialog())
+                    return@executes 1
+                }
+            )
         )
 
         registrar.register(argumentBuilder.build())

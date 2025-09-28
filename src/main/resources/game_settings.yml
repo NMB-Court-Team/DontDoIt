@@ -28,6 +28,7 @@ not_set_custom_criteria_message: "<yellow>你的队伍尚未设置自定义词�
 self_remove_custom_criteria_message: "<yellow>已取消自己队伍定义的自定义词条"
 other_remove_custom_criteria_message: "<yellow>{player}取消了你的队伍定义的自定义词条"
 enter_prepare_message: "<yellow>请使用手上的物品<green><bold>选择队伍</bold><yellow>，然后设置<green><bold>自定义词条"
+change_settings_hint_message: "<yellow>输入<light_purple><hover:show_text:'<aqua>点击执行'><click:run_command:/criteria settings set>/criteria settings set</click></hover><yellow>来修改游戏设置"
 
 # 游戏切换阶段的消息
 start_game_message: "<green><bold>游戏开始！"
@@ -111,13 +112,38 @@ criteria_command:
     reset_game: "<yellow>已重置游戏"
     set_life: "<yellow>已设置 {team_name} 的生命值为 <red>{life_count}"
     get_team_criteria: "{team_name} 的词条是 {criteria}"
+    reset_settings: "<yellow>已重置游戏设置"
+
+# 动态配置界面文本
+dynamic_settings:
+  title: "<aqua><bold>修改游戏设置"
+  yes: "是"
+  no: "否"
+  game_area_size: "<yellow>游戏区域大小"
+  ingame_difficulty: "<yellow>游戏期间的Minecraft游戏难度"
+  life_count: "<yellow>规则数量上限（生命值上限）"
+  diamond_behavior:
+    title: "<yellow>钻石行为"
+    add_self_life: "<white>获取钻石时自己队伍回复1点规则数量"
+    reduce_others_life: "<white>获取钻石时其他队伍减少1点规则数量"
+  diamond_behavior_enabled: "<yellow>是否启用钻石行为"
+  diamond_behavior_disabled_threshold: "<yellow>钻石行为禁用阈值（钻石行为是回血时该项设置无效）"
+  allow_unbalanced_teams: "<yellow>是否允许各队伍人数不平衡"
+  allow_guess_criteria: "<yellow>是否开启猜词条玩法"
+  guess_success_add_life: "<yellow>猜对词条时回复的规则数量"
+  guess_failed_reduce_life: "<yellow>猜错词条时减少的规则数量"
+  save:
+    title: "<white>保存修改"
+    start: "<yellow>正在保存对游戏设置的修改..."
+    success: "<yellow>游戏设置保存完毕"
+  discard: "<white>放弃修改"
 
 # Y坐标准则
 y_level_criteria:
-  below: "%s（Y<%d）"
-  above: "%s（Y>%d）"
-  ground: "位于地面"
-  on_air: "位于高处"
+  below: "位置低于%s（Y<%d）"
+  above: "位置高于%s（Y>%d）"
+  ground: "地面"
+  on_air: "高处"
 
 # 物品
 join_team_item:

@@ -53,7 +53,7 @@ abstract class Criteria {
      * 2. 此词条被触发
      * 3. 游戏结束时取消所有玩家的词条，包括此词条
      *
-     * **如果要在解除绑定时触发词条，一定要检查`reason`，并且`reason`不能是[CriteriaChangeReason.TRIGGERED]，否则会导致无限递归爆栈**
+     * **如果要在解除绑定时触发词条，一定要检查`reason`，并且`reason`不能是[CriteriaChangeReason.TRIGGERED]**
      *
      * @param teamData 解除绑定了此词条的队伍
      * @param reason 切换词条的原因

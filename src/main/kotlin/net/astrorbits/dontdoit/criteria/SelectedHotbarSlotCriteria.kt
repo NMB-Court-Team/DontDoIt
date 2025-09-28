@@ -13,13 +13,13 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerItemHeldEvent
 
-class SelectedHotbarIndexCriteria : Criteria(), Listener, ImmediatelyTriggerInspector {
-    override val type: CriteriaType = CriteriaType.SELECTED_HOTBAR_INDEX
+class SelectedHotbarSlotCriteria : Criteria(), Listener, ImmediatelyTriggerInspector {
+    override val type: CriteriaType = CriteriaType.SELECTED_HOTBAR_SLOT
     var index: Int = 0
 
     override fun readData(data: Map<String, String>) {
         super.readData(data)
-        data.setIntField(INDEX_KEY, false) { index = it - 1 }
+        data.setIntField(SLOT_KEY, false) { index = it - 1 }
         if (index !in 0..8) throw InvalidCriteriaException(this, "Invalid slot: ${index + 1}")
     }
 
@@ -47,6 +47,6 @@ class SelectedHotbarIndexCriteria : Criteria(), Listener, ImmediatelyTriggerInsp
     }
 
     companion object {
-        const val INDEX_KEY = "index"
+        const val SLOT_KEY = "slot"
     }
 }
