@@ -89,6 +89,11 @@ criteria:
     - name: 合成盾牌
       difficulty: hard
       item: shield
+  # 获得状态效果时触发
+  effect:
+    - name: 获得饥饿效果
+      difficulty: normal
+      effect: hunger
   # 一次性对entity造成amount点damage_type类型的伤害时触发
   hurt_entity:
     - name: 造成伤害
@@ -102,6 +107,13 @@ criteria:
       # <min>为空时代表小于等于<max>
       # <max>为空时代表大于等于<min>
       # 若都为空，则代表可以为任意值
+      amount: ..
+      reversed: false
+    - name: 镐击
+      difficulty: easy
+      entity: "*"
+      damage_type: "*"
+      mainhand: "#pickaxes"
       amount: ..
       reversed: false
   # 一次性收到来自entity的amount点damage_type类型的伤害时触发
@@ -155,8 +167,23 @@ criteria:
   # 放置block方块时触发
   place_block:
     - name: 放置方块
+      difficulty: trigger_definitely
+      block: "*"
+    - name: 放置木板
       difficulty: easy
-      block: '*'
+      block: "#planks"
+    - name: 放置30个方块
+      difficulty: easy
+      block: "*"
+      count: 30
+  # 踩踏互动时触发
+  physical_action:
+    - name: 踩压力板
+      difficulty: easy
+      block: "#pressure_plates"
+    - name: 践踏耕地
+      difficulty: easy
+      block: "farmland"
   # 站在或不站在block方块上时触发，具体取决于reversed
   standing_on_block:
     - name: 站在地上
@@ -185,6 +212,15 @@ criteria:
       block: "*"
       # 若为false，则站在block方块上时触发
       # 若为true，则不站在block方块上时触发
+      reversed: true
+  #处于方块内部时触发
+  in_block:
+    - name: 处于流体中
+      difficulty: easy
+      block: water, lava
+    - name: 不在空气中
+      difficulty: hard
+      block: air
       reversed: true
   # 玩家与entity之间的距离在distance给定的范围内时触发
   distance_to_entity:

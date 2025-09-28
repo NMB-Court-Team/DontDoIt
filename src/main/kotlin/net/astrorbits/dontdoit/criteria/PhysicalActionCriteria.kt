@@ -2,20 +2,16 @@ package net.astrorbits.dontdoit.criteria
 
 import net.astrorbits.dontdoit.criteria.helper.CriteriaType
 import net.astrorbits.dontdoit.criteria.inspect.BlockInspectCandidate
-import net.astrorbits.dontdoit.system.CriteriaChangeReason
-import net.astrorbits.dontdoit.system.team.TeamData
 import org.bukkit.Material
-import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.block.BlockPlaceEvent
+import org.bukkit.event.block.Action
+import org.bukkit.event.player.PlayerInteractEvent
 
-class PlaceBlockCriteria : Criteria(), Listener, BlockInspectCandidate {
-    override val type = CriteriaType.PLACE_BLOCK
+class PhysicalActionCriteria : Criteria(), Listener, BlockInspectCandidate {
+    override val type = CriteriaType.PHYSICAL_ACTION
     lateinit var blockTypes: Set<Material>
-    var count: Int = 1
     var isWildcard: Boolean = false
-    var placeCount = mutableMapOf<Player, Int>()
 
     override fun canMatchAnyBlock(): Boolean {
         return isWildcard
@@ -25,26 +21,18 @@ class PlaceBlockCriteria : Criteria(), Listener, BlockInspectCandidate {
         return blockTypes
     }
 
-    override fun onBind(teamData: TeamData, reason: CriteriaChangeReason) {
-        super.onBind(teamData, reason)
-        for ( player in teamData.members ){
-            placeCount[player] = 0
-        }
-    }
-
     override fun readData(data: Map<String, String>) {
         super.readData(data)
         data.setBlockTypes(BLOCK_TYPES_KEY) { blockTypes, isWildcard ->
             this.blockTypes = blockTypes
             this.isWildcard = isWildcard
         }
-        data.setIntField(COUNT_KEY, true) { count = it }
     }
 
     @EventHandler
-    fun onPlaceBlock(event: BlockPlaceEvent) {
-        if (isWildcard || event.block.type in blockTypes) {
-            if ((placeCount[event.player]?.inc() ?: 0) >= count){
+    fun onPhysicalAction(event: PlayerInteractEvent) {
+        if (event.action == Action.PHYSICAL){
+            if (isWildcard || event.clickedBlock?.type in blockTypes){
                 trigger(event.player)
             }
         }
@@ -52,6 +40,5 @@ class PlaceBlockCriteria : Criteria(), Listener, BlockInspectCandidate {
 
     companion object {
         const val BLOCK_TYPES_KEY = "block"
-        const val COUNT_KEY = "count"
     }
 }

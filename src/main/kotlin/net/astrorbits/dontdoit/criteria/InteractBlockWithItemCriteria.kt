@@ -6,7 +6,6 @@ import net.astrorbits.dontdoit.criteria.inspect.ItemInspectCandidate
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 
@@ -19,6 +18,10 @@ class InteractBlockWithItemCriteria : Criteria(), Listener, BlockInspectCandidat
 
     override fun getCandidateBlockTypes(): Set<Material> {
         return blockTypes
+    }
+
+    override fun canMatchAnyBlock(): Boolean {
+        return isBlockWildcard
     }
 
     override fun getCandidateItemTypes(): Set<Material> {

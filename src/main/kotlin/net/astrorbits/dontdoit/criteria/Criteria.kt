@@ -21,7 +21,8 @@ import org.bukkit.Material
 import org.bukkit.damage.DamageType
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
-import java.util.*
+import org.bukkit.potion.PotionEffectType
+import java.util.UUID
 
 abstract class Criteria {
     abstract val type: CriteriaType
@@ -130,7 +131,7 @@ abstract class Criteria {
         setField(key, ignoreIfAbsent) { content ->
             val value = try {
                 content.lowercase().toBooleanStrict()
-            } catch (e: IllegalArgumentException) {
+            } catch (_: IllegalArgumentException) {
                 throw InvalidCriteriaException(this@Criteria, "Invalid boolean value: $content")
             }
             fieldSetter(value)
@@ -141,7 +142,7 @@ abstract class Criteria {
         setField(key, ignoreIfAbsent) { content ->
             val value = try {
                 content.toInt()
-            } catch (e: NumberFormatException) {
+            } catch (_: NumberFormatException) {
                 throw InvalidCriteriaException(this@Criteria, "Invalid int value: $content")
             }
             fieldSetter(value)
@@ -152,7 +153,7 @@ abstract class Criteria {
         setField(key, ignoreIfAbsent) { content ->
             val value = try {
                 content.toFloat()
-            } catch (e: NumberFormatException) {
+            } catch (_: NumberFormatException) {
                 throw InvalidCriteriaException(this@Criteria, "Invalid float value: $content")
             }
             fieldSetter(value)
@@ -163,7 +164,7 @@ abstract class Criteria {
         setField(key, ignoreIfAbsent) { content ->
             val value = try {
                 content.toDouble()
-            } catch (e: NumberFormatException) {
+            } catch (_: NumberFormatException) {
                 throw InvalidCriteriaException(this@Criteria, "Invalid double value: $content")
             }
             fieldSetter(value)
@@ -174,7 +175,7 @@ abstract class Criteria {
         setField(key, ignoreIfAbsent) { content ->
             val value = try {
                 IntRange.parse(content)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 throw InvalidCriteriaException(this@Criteria, "Invalid int range: $content")
             }
             fieldSetter(value)
@@ -185,7 +186,7 @@ abstract class Criteria {
         setField(key, ignoreIfAbsent) { content ->
             val value = try {
                 FloatRange.parse(content)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 throw InvalidCriteriaException(this@Criteria, "Invalid float range: $content")
             }
             fieldSetter(value)
@@ -196,7 +197,7 @@ abstract class Criteria {
         setField(key, ignoreIfAbsent) { content ->
             val value = try {
                 DoubleRange.parse(content)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 throw InvalidCriteriaException(this@Criteria, "Invalid double range: $content")
             }
             fieldSetter(value)
@@ -433,20 +434,69 @@ abstract class Criteria {
         fieldSetter(result, entries.isWildcard)
     }
 
+    protected fun Map<String, String>.setPotionEffectTypes(
+        key: String,
+        absentBehavior: AbsentBehavior = AbsentBehavior.WILDCARD,
+        fieldSetter: (potionEffectTypes: Set<PotionEffectType>, isWildcard: Boolean) -> Unit
+    ) {
+        val entries = getCsvEntries(key, absentBehavior)
+
+        val result = HashSet<PotionEffectType>()
+        for ((potionEffectType, isTag, isReversed) in entries) {
+            if (isReversed && result.isEmpty()) {
+                result.addAll(ALL_POTION_EFFECT_TYPES)
+            }
+            val potionEffectTypeId = Identifier.of(potionEffectType)
+            if (!potionEffectTypeId.isVanilla()) throw InvalidCriteriaException(this@Criteria, "Non-vanilla effect name are not supported")
+            val potionEffectTypes = HashSet<PotionEffectType>()
+            val potionEffectTypeRegistry = RegistryAccess.registryAccess().getRegistry(RegistryKey.MOB_EFFECT)
+            if (isTag) {
+                val tagKey = potionEffectTypeId.toKey()
+                val tag = potionEffectTypeRegistry.tags.firstOrNull { it.tagKey().key() == tagKey }
+                    ?: throw InvalidCriteriaException(this@Criteria, "Invalid effect tag: $potionEffectType")
+                potionEffectTypes.addAll(tag.values().map { RegistryAccess.registryAccess().getRegistry(RegistryKey.MOB_EFFECT).getOrThrow(it) })
+            } else {
+                val loadedPotionEffectType = potionEffectTypeRegistry.get(potionEffectTypeId.toKey())
+                    ?: throw InvalidCriteriaException(this@Criteria, "Invalid effect name: $potionEffectType")
+                potionEffectTypes.add(loadedPotionEffectType)
+            }
+            if (isReversed) {
+                result.removeAll(potionEffectTypes)
+            } else {
+                result.addAll(potionEffectTypes)
+            }
+        }
+        fieldSetter(result, entries.isWildcard)
+    }
+
     companion object {
         const val NAME_KEY = "name"
         const val TRIGGER_DIFFICULTY_KEY = "difficulty"
 
         val ALL_DAMAGE_TYPES: Set<DamageType> = setOf(
-            DamageType.ARROW, DamageType.BAD_RESPAWN_POINT, DamageType.CACTUS, DamageType.CAMPFIRE, DamageType.CRAMMING, DamageType.DRAGON_BREATH,
-            DamageType.DROWN, DamageType.DRY_OUT, DamageType.ENDER_PEARL, DamageType.EXPLOSION, DamageType.FALL, DamageType.FALLING_ANVIL,
-            DamageType.FALLING_BLOCK, DamageType.FALLING_STALACTITE, DamageType.FIREBALL, DamageType.FIREWORKS, DamageType.FLY_INTO_WALL, DamageType.FREEZE,
-            DamageType.GENERIC, DamageType.GENERIC_KILL, DamageType.HOT_FLOOR, DamageType.IN_FIRE, DamageType.IN_WALL, DamageType.INDIRECT_MAGIC,
-            DamageType.LAVA, DamageType.LIGHTNING_BOLT, DamageType.MACE_SMASH, DamageType.MAGIC, DamageType.MOB_ATTACK, DamageType.MOB_ATTACK_NO_AGGRO,
+            DamageType.ARROW, DamageType.BAD_RESPAWN_POINT, DamageType.CACTUS, DamageType.CAMPFIRE, DamageType.CRAMMING,
+            DamageType.DRAGON_BREATH, DamageType.DROWN, DamageType.DRY_OUT, DamageType.ENDER_PEARL, DamageType.EXPLOSION,
+            DamageType.FALL, DamageType.FALLING_ANVIL, DamageType.FALLING_BLOCK, DamageType.FALLING_STALACTITE, DamageType.FIREBALL,
+            DamageType.FIREWORKS, DamageType.FLY_INTO_WALL, DamageType.FREEZE, DamageType.GENERIC, DamageType.GENERIC_KILL,
+            DamageType.HOT_FLOOR, DamageType.IN_FIRE, DamageType.IN_WALL, DamageType.INDIRECT_MAGIC, DamageType.LAVA,
+            DamageType.LIGHTNING_BOLT, DamageType.MACE_SMASH, DamageType.MAGIC, DamageType.MOB_ATTACK, DamageType.MOB_ATTACK_NO_AGGRO,
             DamageType.MOB_PROJECTILE, DamageType.ON_FIRE, DamageType.OUT_OF_WORLD, DamageType.OUTSIDE_BORDER, DamageType.PLAYER_ATTACK,
-            DamageType.PLAYER_EXPLOSION, DamageType.SONIC_BOOM, DamageType.SPIT, DamageType.STALAGMITE, DamageType.STARVE, DamageType.STING,
-            DamageType.SWEET_BERRY_BUSH, DamageType.THORNS, DamageType.THROWN, DamageType.TRIDENT, DamageType.UNATTRIBUTED_FIREBALL, DamageType.WIND_CHARGE,
-            DamageType.WITHER, DamageType.WITHER_SKULL
+            DamageType.PLAYER_EXPLOSION, DamageType.SONIC_BOOM, DamageType.SPIT, DamageType.STALAGMITE, DamageType.STARVE,
+            DamageType.STING, DamageType.SWEET_BERRY_BUSH, DamageType.THORNS, DamageType.THROWN, DamageType.TRIDENT,
+            DamageType.UNATTRIBUTED_FIREBALL, DamageType.WIND_CHARGE, DamageType.WITHER, DamageType.WITHER_SKULL
+        )
+
+        val ALL_POTION_EFFECT_TYPES: Set<PotionEffectType> = setOf(
+            PotionEffectType.WITHER, PotionEffectType.ABSORPTION, PotionEffectType.BAD_OMEN, PotionEffectType.BLINDNESS,
+            PotionEffectType.CONDUIT_POWER, PotionEffectType.DARKNESS, PotionEffectType.DOLPHINS_GRACE, PotionEffectType.FIRE_RESISTANCE,
+            PotionEffectType.GLOWING, PotionEffectType.HASTE, PotionEffectType.HEALTH_BOOST, PotionEffectType.HERO_OF_THE_VILLAGE,
+            PotionEffectType.HUNGER, PotionEffectType.INFESTED, PotionEffectType.INSTANT_DAMAGE, PotionEffectType.INSTANT_HEALTH,
+            PotionEffectType.INVISIBILITY, PotionEffectType.JUMP_BOOST, PotionEffectType.LEVITATION, PotionEffectType.LUCK,
+            PotionEffectType.MINING_FATIGUE, PotionEffectType.NAUSEA, PotionEffectType.NIGHT_VISION, PotionEffectType.OOZING,
+            PotionEffectType.POISON, PotionEffectType.RAID_OMEN, PotionEffectType.REGENERATION, PotionEffectType.RESISTANCE,
+            PotionEffectType.SATURATION, PotionEffectType.SLOWNESS, PotionEffectType.SLOW_FALLING, PotionEffectType.SPEED,
+            PotionEffectType.STRENGTH, PotionEffectType.TRIAL_OMEN, PotionEffectType.UNLUCK, PotionEffectType.WATER_BREATHING,
+            PotionEffectType.WEAKNESS, PotionEffectType.WEAVING, PotionEffectType.WIND_CHARGED
         )
     }
 }

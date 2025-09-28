@@ -27,7 +27,6 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitTask
 import java.util.Random
 import java.util.UUID
-import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Supplier
 
@@ -97,11 +96,14 @@ object CriteriaManager {
 
         register("break_block", ::BreakBlockCriteria)
         register("place_block", ::PlaceBlockCriteria)
+        register("physical_action", ::PhysicalActionCriteria)
         register("interact_block_with_item", ::InteractBlockWithItemCriteria)
         register("surrounded_by_block", ::SurroundedByBlockCriteria)
+        register("in_block", ::InBlockCriteria)
         register("standing_on_block", ::StandingOnBlockCriteria)
         register("bucket_operation", ::BucketOperationCriteria)
 
+        register("effect", ::EffectCriteria)
         register("hurt_entity", ::HurtEntityCriteria)
         register("kill_entity", ::KillEntityCriteria)
         register("hurt_by_entity", ::HurtByEntityCriteria)

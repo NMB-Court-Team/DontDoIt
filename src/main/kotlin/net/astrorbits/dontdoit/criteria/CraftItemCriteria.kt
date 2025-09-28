@@ -1,6 +1,7 @@
 package net.astrorbits.dontdoit.criteria
 
 import net.astrorbits.dontdoit.criteria.helper.CriteriaType
+import net.astrorbits.dontdoit.criteria.inspect.InventoryInspectContext
 import net.astrorbits.dontdoit.criteria.inspect.ItemInspectCandidate
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -15,6 +16,13 @@ class CraftItemCriteria : Criteria(), Listener, ItemInspectCandidate {
 
     override fun getCandidateItemTypes(): Set<Material> {
         return itemTypes
+    }
+
+    override fun modifyWeight(
+        weight: Double,
+        context: InventoryInspectContext
+    ): Double {
+        return weight
     }
 
     override fun readData(data: Map<String, String>) {

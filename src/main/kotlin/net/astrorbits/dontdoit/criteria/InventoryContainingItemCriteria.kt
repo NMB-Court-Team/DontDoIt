@@ -1,6 +1,7 @@
 package net.astrorbits.dontdoit.criteria
 
 import net.astrorbits.dontdoit.criteria.helper.CriteriaType
+import net.astrorbits.dontdoit.criteria.inspect.InventoryInspectContext
 import net.astrorbits.dontdoit.criteria.inspect.ItemInspectCandidate
 import net.astrorbits.dontdoit.system.team.TeamData
 import org.bukkit.Material
@@ -13,6 +14,13 @@ class InventoryContainingItemCriteria : Criteria(), ItemInspectCandidate {
 
     override fun getCandidateItemTypes(): Set<Material> {
         return itemTypes
+    }
+
+    override fun modifyWeight(
+        weight: Double,
+        context: InventoryInspectContext
+    ): Double {
+        return weight
     }
 
     override fun tick(teamData: TeamData) {
