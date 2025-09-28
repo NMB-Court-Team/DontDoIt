@@ -42,9 +42,9 @@ class InBlockCriteria : Criteria(), Listener, BlockInspectCandidate, Immediately
     override fun shouldTrigger(player: Player): Boolean {
         val world = player.world
         val checkBlocks = setOf(
-            world.getBlockAt(player.location), //feet
-            world.getBlockAt(player.location.clone().add(0.0, player.height / 2, 0.0)), //middle
-            world.getBlockAt(player.eyeLocation) //eye
+            world.getBlockAt(player.location), // feet
+            world.getBlockAt(player.location.clone().add(0.0, player.height / 2, 0.0)), // middle
+            world.getBlockAt(player.eyeLocation) // eye
         )
         return checkBlocks.any { it.type in blockTypes } xor reversed
     }

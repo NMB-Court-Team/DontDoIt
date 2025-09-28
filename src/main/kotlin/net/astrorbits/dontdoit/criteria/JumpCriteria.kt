@@ -23,6 +23,14 @@ class JumpCriteria : Criteria(), Listener {
     override fun readData(data: Map<String, String>) {
         super.readData(data)
         data.setIntField(COUNT_KEY, true) { count = it }
+        if (count <= 0) throw InvalidCriteriaException(this, "Count should be at least 1")
+    }
+
+    override fun onUnbind(teamData: TeamData, reason: CriteriaChangeReason): Boolean {
+        for (player in teamData.members) {
+            jumpCount.remove(player.uniqueId)
+        }
+        return super.onUnbind(teamData, reason)
     }
 
     @EventHandler

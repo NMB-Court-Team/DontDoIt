@@ -98,10 +98,11 @@ criteria:
     - name: 合成剪刀
       difficulty: hard
       item: shears
-  # 获得状态效果时触发
-  effect:
-    - name: 获得饥饿效果
+  # 玩家拥有effect状态效果时触发
+  status_effect:
+    - name: 拥有饥饿效果
       difficulty: normal
+      # 可以用"*"代表任意状态效果，可指定多个，不允许标签
       effect: hunger
   # 一次性对entity造成amount点damage_type类型的伤害时触发
   hurt_entity:
@@ -121,9 +122,9 @@ criteria:
     - name: 镐击
       difficulty: easy
       mainhand: "#pickaxes"
-    - name: 用斧子攻击玩家
+    - name: 用斧子攻击生物
       difficulty: easy
-      entity: player
+      entity: *
       mainhand: "#axes"
   # 一次性收到来自entity的amount点damage_type类型的伤害时触发
   hurt_by_entity:
@@ -134,12 +135,12 @@ criteria:
       damage_type: "*"
       amount: ..
       reversed: false
-    - name: 窒息(不是溺水)
+    - name: 在方块里窒息
       difficulty: hard
       entity: "/"
       damage_type: in_wall
-    - name: 受到4颗心及以上伤害
-      difficulty: hard
+    - name: 一次性受到至少4×❤伤害
+      difficulty: normal
       entity: "/"
       amount: 8..
   # 以damage_type类型的伤害杀死entity中包含的实体时触发
@@ -162,8 +163,8 @@ criteria:
   jump:
     - name: 蹦跶
       difficulty: trigger_definitely
-    - name: 蹦跶30下
-      count: 30
+    - name: 跳20下
+      count: 20
       difficulty: easy
   # 拿着item与block方块交互时触发
   interact_block_with_item:
@@ -179,11 +180,30 @@ criteria:
       difficulty: hard
       block: crafting_table
       item: stone_pickaxe
+    - name: 用打火石在黑曜石上点火
+      difficulty: very_hard
+      block: obsidian
+      item: flint_and_steel
+    - name: 用锄头耕地
+      difficulty: very_hard
+      block: grass_block, dirt
   # 丢出item时触发
   drop_item:
     - name: 丢弃物品
       difficulty: easy
       item: "*"
+    - name: 丢弃木镐
+      difficulty: normal
+      item: wooden_pickaxe
+    - name: 丢弃小麦种子
+      difficulty: normal
+      item: wheat_seeds
+    - name: 丢弃羊毛
+      difficulty: hard
+      item: "#wool"
+    - name: 丢弃花
+      difficulty: normal
+      item: "#flowers"
   # 放置block方块时触发
   place_block:
     - name: 放置方块
@@ -196,6 +216,9 @@ criteria:
       difficulty: easy
       block: "*"
       count: 30
+    - name: 放置工作台
+      difficulty: easy
+      block: crafting_table
   # 踩踏互动时触发
   physical_action:
     - name: 踩压力板
@@ -203,7 +226,7 @@ criteria:
       block: "#pressure_plates"
     - name: 践踏耕地
       difficulty: easy
-      block: "farmland"
+      block: farmland
   # 站在或不站在block方块上时触发，具体取决于reversed
   standing_on_block:
     - name: 站在地上
@@ -478,9 +501,8 @@ criteria:
       difficulty: hard
       fluid: water
       type: pour
-  # 选中物品栏指定位置时触发
-  hotbar_index:
-    - name: 选中物品栏第七格
+  # 选中物品栏的slot槽位时触发
+  selected_hotbar_slot:
+    - name: 选中物品栏第一格
       difficulty: easy
-      # index = 数字键 - 1
-      index: 6
+      slot: 1

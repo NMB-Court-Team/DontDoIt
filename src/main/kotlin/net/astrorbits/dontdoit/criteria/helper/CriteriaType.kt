@@ -20,7 +20,7 @@ enum class CriteriaType {
     BUCKET_OPERATION,
 
     // 实体相关
-    POTION_EFFECT,
+    STATUS_EFFECT,
     HURT_ENTITY,
     KILL_ENTITY,
     HURT_BY_ENTITY,

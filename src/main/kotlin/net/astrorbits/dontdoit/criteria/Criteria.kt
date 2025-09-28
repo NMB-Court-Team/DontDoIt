@@ -434,36 +434,29 @@ abstract class Criteria {
         fieldSetter(result, entries.isWildcard)
     }
 
-    protected fun Map<String, String>.setPotionEffectTypes(
+    protected fun Map<String, String>.setStatusEffectTypes(
         key: String,
         absentBehavior: AbsentBehavior = AbsentBehavior.WILDCARD,
         fieldSetter: (potionEffectTypes: Set<PotionEffectType>, isWildcard: Boolean) -> Unit
     ) {
         val entries = getCsvEntries(key, absentBehavior)
+        if (entries.any { it.isTag }) {
+            throw InvalidCriteriaException(this@Criteria, "Status effect tags are not allowed")
+        }
 
         val result = HashSet<PotionEffectType>()
-        for ((potionEffectType, isTag, isReversed) in entries) {
+        for ((potionEffectType, _, isReversed) in entries) {
             if (isReversed && result.isEmpty()) {
                 result.addAll(ALL_POTION_EFFECT_TYPES)
             }
-            val potionEffectTypeId = Identifier.of(potionEffectType)
-            if (!potionEffectTypeId.isVanilla()) throw InvalidCriteriaException(this@Criteria, "Non-vanilla effect name are not supported")
-            val potionEffectTypes = HashSet<PotionEffectType>()
-            val potionEffectTypeRegistry = RegistryAccess.registryAccess().getRegistry(RegistryKey.MOB_EFFECT)
-            if (isTag) {
-                val tagKey = potionEffectTypeId.toKey()
-                val tag = potionEffectTypeRegistry.tags.firstOrNull { it.tagKey().key() == tagKey }
-                    ?: throw InvalidCriteriaException(this@Criteria, "Invalid effect tag: $potionEffectType")
-                potionEffectTypes.addAll(tag.values().map { RegistryAccess.registryAccess().getRegistry(RegistryKey.MOB_EFFECT).getOrThrow(it) })
-            } else {
-                val loadedPotionEffectType = potionEffectTypeRegistry.get(potionEffectTypeId.toKey())
-                    ?: throw InvalidCriteriaException(this@Criteria, "Invalid effect name: $potionEffectType")
-                potionEffectTypes.add(loadedPotionEffectType)
-            }
+            val potionEffectTypeId = Identifier.of(potionEffectType).toKey()
+            val loadedPotionEffectType = ALL_POTION_EFFECT_TYPES.firstOrNull { it.key == potionEffectTypeId }
+                ?: throw InvalidCriteriaException(this@Criteria, "Invalid status effect: $potionEffectType")
+
             if (isReversed) {
-                result.removeAll(potionEffectTypes)
+                result.remove(loadedPotionEffectType)
             } else {
-                result.addAll(potionEffectTypes)
+                result.add(loadedPotionEffectType)
             }
         }
         fieldSetter(result, entries.isWildcard)

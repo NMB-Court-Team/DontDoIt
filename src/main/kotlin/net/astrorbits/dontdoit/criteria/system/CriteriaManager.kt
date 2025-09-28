@@ -103,7 +103,7 @@ object CriteriaManager {
         register("standing_on_block", ::StandingOnBlockCriteria)
         register("bucket_operation", ::BucketOperationCriteria)
 
-        register("effect", ::PotionEffectCriteria)
+        register("status_effect", ::StatusEffectCriteria)
         register("hurt_entity", ::HurtEntityCriteria)
         register("kill_entity", ::KillEntityCriteria)
         register("hurt_by_entity", ::HurtByEntityCriteria)
@@ -118,7 +118,7 @@ object CriteriaManager {
         register("health", ::HealthCriteria)
         register("rotation", ::RotationCriteria)
         register("food_level", ::FoodLevelCriteria)
-        register("hotbar_index", ::SelectedHotbarIndexCriteria)
+        register("selected_hotbar_slot", ::SelectedHotbarIndexCriteria)
         register("heightmap_matching_pos", ::HeightmapMatchingPosCriteria)
         register("life_count", ::LifeCountCriteria)
         register("walk_distance", ::WalkDistanceCriteria)

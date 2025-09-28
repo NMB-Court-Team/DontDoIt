@@ -27,7 +27,7 @@ class PlaceBlockCriteria : Criteria(), Listener, BlockInspectCandidate {
 
     override fun onBind(teamData: TeamData, reason: CriteriaChangeReason) {
         super.onBind(teamData, reason)
-        for ( player in teamData.members ){
+        for (player in teamData.members) {
             placeCount[player.uniqueId] = 0
         }
     }
@@ -39,6 +39,14 @@ class PlaceBlockCriteria : Criteria(), Listener, BlockInspectCandidate {
             this.isWildcard = isWildcard
         }
         data.setIntField(COUNT_KEY, true) { count = it }
+        if (count <= 0) throw InvalidCriteriaException(this, "Count should be at least 1")
+    }
+
+    override fun onUnbind(teamData: TeamData, reason: CriteriaChangeReason): Boolean {
+        for (player in teamData.members) {
+            placeCount.remove(player.uniqueId)
+        }
+        return super.onUnbind(teamData, reason)
     }
 
     @EventHandler

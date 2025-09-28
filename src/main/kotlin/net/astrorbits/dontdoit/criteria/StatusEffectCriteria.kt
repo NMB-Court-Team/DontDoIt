@@ -11,21 +11,25 @@ import net.astrorbits.lib.task.TaskType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.player.PlayerItemHeldEvent
+import org.bukkit.event.entity.EntityPotionEffectEvent
+import org.bukkit.potion.PotionEffectType
 
-class SelectedHotbarIndexCriteria : Criteria(), Listener, ImmediatelyTriggerInspector {
-    override val type: CriteriaType = CriteriaType.SELECTED_HOTBAR_INDEX
-    var index: Int = 0
+class StatusEffectCriteria : Criteria(), Listener, ImmediatelyTriggerInspector {
+    override val type: CriteriaType = CriteriaType.STATUS_EFFECT
+    lateinit var effectTypes: Set<PotionEffectType>
+    var isWildcard: Boolean = false
 
     override fun readData(data: Map<String, String>) {
         super.readData(data)
-        data.setIntField(INDEX_KEY, false) { index = it - 1 }
-        if (index !in 0..8) throw InvalidCriteriaException(this, "Invalid slot: ${index + 1}")
+        data.setStatusEffectTypes(EFFECT_KEY) { potionEffectTypes, isWildcard ->
+            this.effectTypes = potionEffectTypes
+            this.isWildcard = isWildcard
+        }
     }
 
     override fun onBind(teamData: TeamData, reason: CriteriaChangeReason) {
         super.onBind(teamData, reason)
-        for (player in teamData.members){
+        for (player in teamData.members) {
             if (shouldTrigger(player)) {
                 TaskBuilder(DontDoIt.instance, TaskType.Delayed(Duration.ticks(1.0)))
                     .setTask { trigger(player) }
@@ -36,17 +40,18 @@ class SelectedHotbarIndexCriteria : Criteria(), Listener, ImmediatelyTriggerInsp
     }
 
     @EventHandler
-    fun onSelectedHotbarChange(event: PlayerItemHeldEvent) {
-        if (event.newSlot == index) {
-            trigger(event.player)
+    fun onPlayerGainEffect(event: EntityPotionEffectEvent) {
+        val player = event.entity as? Player ?: return
+        if (isWildcard || event.newEffect?.type in effectTypes) {
+            trigger(player)
         }
     }
 
     override fun shouldTrigger(player: Player): Boolean {
-        return player.inventory.heldItemSlot == index
+        return effectTypes.any { player.hasPotionEffect(it) } || isWildcard
     }
 
     companion object {
-        const val INDEX_KEY = "index"
+        const val EFFECT_KEY = "effect"
     }
 }

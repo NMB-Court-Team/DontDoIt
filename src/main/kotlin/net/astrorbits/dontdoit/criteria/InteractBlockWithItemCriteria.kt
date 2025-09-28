@@ -9,7 +9,6 @@ import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
-import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import kotlin.math.max
@@ -50,8 +49,8 @@ class InteractBlockWithItemCriteria : Criteria(), Listener, BlockInspectCandidat
     }
 
     @EventHandler
-    fun onPlaceBlock(event: PlayerInteractEvent) {
-        if (event.action == Action.PHYSICAL) return  // 检测physical事件的准则由PhysicalActionCriteria完成
+    fun onInteractWithBlock(event: PlayerInteractEvent) {
+        if (event.action != Action.RIGHT_CLICK_BLOCK) return
         val block = event.clickedBlock ?: return
         val item = event.item ?: ItemStack.empty()
         if ((isBlockWildcard || block.type in blockTypes) &&
