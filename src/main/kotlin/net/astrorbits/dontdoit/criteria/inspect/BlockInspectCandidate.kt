@@ -1,13 +1,14 @@
 package net.astrorbits.dontdoit.criteria.inspect
 
+import net.astrorbits.dontdoit.system.team.TeamData
 import org.bukkit.Material
 
 interface BlockInspectCandidate : InventoryInspectable {
-    fun getBlockMatchingWeightMultiplier(): Double {
+    fun getBlockMatchingWeightMultiplier(context: InventoryInspectContext): Double {
         return DEFAULT_WEIGHT_MULTIPLIER
     }
 
-    fun getSurroundingBlockMatchingWeightMultiplier(): Double {
+    fun getSurroundingBlockMatchingWeightMultiplier(context: InventoryInspectContext): Double {
         return DEFAULT_SURROUNDING_WEIGHT_MULTIPLIER
     }
 
@@ -18,18 +19,18 @@ interface BlockInspectCandidate : InventoryInspectable {
     fun getBlockMultiplier(context: InventoryInspectContext): Double {
         val blocks = getCandidateBlockTypes()
         return if (context.surroundingBlocks.any { it in blocks } || canMatchAnyBlock()) {
-            getSurroundingBlockMatchingWeightMultiplier()
+            getSurroundingBlockMatchingWeightMultiplier(context)
         } else if (context.allBlocks.any { it in blocks }) {
-            getBlockMatchingWeightMultiplier()
+            getBlockMatchingWeightMultiplier(context)
         } else 1.0
     }
 
-    override fun modifyWeight(weight: Double, context: InventoryInspectContext): Double {
+    override fun modifyWeight(weight: Double, bindTarget: TeamData, context: InventoryInspectContext): Double {
         return weight * getBlockMultiplier(context)
     }
 
     companion object {
-        const val DEFAULT_WEIGHT_MULTIPLIER: Double = 1.15
-        const val DEFAULT_SURROUNDING_WEIGHT_MULTIPLIER: Double = 1.3
+        const val DEFAULT_WEIGHT_MULTIPLIER: Double = 1.2
+        const val DEFAULT_SURROUNDING_WEIGHT_MULTIPLIER: Double = 0.9
     }
 }

@@ -124,7 +124,7 @@ object CriteriaManager {
         register("jump", ::JumpCriteria)
         register("fall_distance", ::FallDistanceCriteria)
         register("level_up", ::LevelUpCriteria)
-        register("immediate_trigger", ::ImmediateTriggerCriteria)
+        register("immediately_trigger", ::ImmediatelyTriggerCriteria)
     }
 
     fun register(id: String, initializer: Supplier<Criteria>) {
@@ -242,7 +242,7 @@ object CriteriaManager {
         val adjustedWeightMap = allCriteria.associateWith { criteria ->
             var adjustedWeight = criteria.initiallyModifyWeight(INITIAL_WEIGHT, teamData, oldCriteria)
             if (criteria is InventoryInspectable) {
-                adjustedWeight = criteria.modifyWeight(adjustedWeight, context)
+                adjustedWeight = criteria.modifyWeight(adjustedWeight, teamData, context)
             }
             return@associateWith adjustedWeight
         }

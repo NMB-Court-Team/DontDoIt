@@ -2,14 +2,19 @@ package net.astrorbits.dontdoit.criteria
 
 import net.astrorbits.dontdoit.criteria.helper.CriteriaType
 import net.astrorbits.dontdoit.criteria.inspect.BlockInspectCandidate
-import net.astrorbits.dontdoit.criteria.inspect.ItemInspectCandidate
+import net.astrorbits.dontdoit.criteria.inspect.InventoryInspectContext
+import net.astrorbits.dontdoit.criteria.inspect.InventoryItemInspectCandidate
+import net.astrorbits.dontdoit.system.team.TeamData
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.block.Action
+import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
+import kotlin.math.max
 
-class InteractBlockWithItemCriteria : Criteria(), Listener, BlockInspectCandidate, ItemInspectCandidate {
+class InteractBlockWithItemCriteria : Criteria(), Listener, BlockInspectCandidate, InventoryItemInspectCandidate {
     override val type = CriteriaType.INTERACT_BLOCK_WITH_ITEM
     lateinit var blockTypes: Set<Material>
     lateinit var itemTypes: Set<Material>
@@ -24,8 +29,12 @@ class InteractBlockWithItemCriteria : Criteria(), Listener, BlockInspectCandidat
         return isBlockWildcard
     }
 
-    override fun getCandidateItemTypes(): Set<Material> {
+    override fun getCandidateInventoryItemTypes(): Set<Material> {
         return itemTypes
+    }
+
+    override fun canMatchAnyInventoryItem(): Boolean {
+        return isItemWildcard
     }
 
     override fun readData(data: Map<String, String>) {
@@ -42,6 +51,7 @@ class InteractBlockWithItemCriteria : Criteria(), Listener, BlockInspectCandidat
 
     @EventHandler
     fun onPlaceBlock(event: PlayerInteractEvent) {
+        if (event.action == Action.PHYSICAL) return  // 检测physical事件的准则由PhysicalActionCriteria完成
         val block = event.clickedBlock ?: return
         val item = event.item ?: ItemStack.empty()
         if ((isBlockWildcard || block.type in blockTypes) &&
@@ -49,6 +59,10 @@ class InteractBlockWithItemCriteria : Criteria(), Listener, BlockInspectCandidat
         ) {
             trigger(event.player)
         }
+    }
+
+    override fun modifyWeight(weight: Double, bindTarget: TeamData, context: InventoryInspectContext): Double {
+        return weight * max(getBlockMultiplier(context), getInventoryItemMultiplier(context))
     }
 
     companion object {

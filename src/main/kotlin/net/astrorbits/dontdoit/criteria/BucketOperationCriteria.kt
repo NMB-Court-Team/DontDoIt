@@ -3,13 +3,16 @@ package net.astrorbits.dontdoit.criteria
 import net.astrorbits.dontdoit.criteria.helper.BucketOperationType
 import net.astrorbits.dontdoit.criteria.helper.CriteriaType
 import net.astrorbits.dontdoit.criteria.inspect.BlockInspectCandidate
+import net.astrorbits.dontdoit.criteria.inspect.InventoryInspectContext
+import net.astrorbits.dontdoit.criteria.inspect.InventoryItemInspectCandidate
+import net.astrorbits.dontdoit.system.team.TeamData
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerBucketEmptyEvent
 import org.bukkit.event.player.PlayerBucketFillEvent
 
-class BucketOperationCriteria : Criteria(), Listener, BlockInspectCandidate {
+class BucketOperationCriteria : Criteria(), Listener, BlockInspectCandidate, InventoryItemInspectCandidate {
     override val type: CriteriaType = CriteriaType.BUCKET_OPERATION
     lateinit var fluid: Material
     lateinit var operationType: BucketOperationType
@@ -19,6 +22,14 @@ class BucketOperationCriteria : Criteria(), Listener, BlockInspectCandidate {
     }
 
     override fun canMatchAnyBlock(): Boolean {
+        return false
+    }
+
+    override fun getCandidateInventoryItemTypes(): Set<Material> {
+        return BUCKETS.values.flatten().toSet() + Material.BUCKET
+    }
+
+    override fun canMatchAnyInventoryItem(): Boolean {
         return false
     }
 
@@ -48,6 +59,10 @@ class BucketOperationCriteria : Criteria(), Listener, BlockInspectCandidate {
         }
     }
 
+    override fun modifyWeight(weight: Double, bindTarget: TeamData, context: InventoryInspectContext): Double {
+        return weight * getBlockMatchingWeightMultiplier(context) * getInventoryItemMultiplier(context)
+    }
+
     companion object {
         const val FLUID_KEY = "fluid"
         const val OPERATION_TYPE_KEY = "type"
@@ -63,7 +78,7 @@ class BucketOperationCriteria : Criteria(), Listener, BlockInspectCandidate {
                 Material.AXOLOTL_BUCKET,
                 Material.TADPOLE_BUCKET
             ),
-            Material.LAVA to setOf(Material.LAVA),
+            Material.LAVA to setOf(Material.LAVA_BUCKET),
             Material.POWDER_SNOW to setOf(Material.POWDER_SNOW_BUCKET)
         )
     }

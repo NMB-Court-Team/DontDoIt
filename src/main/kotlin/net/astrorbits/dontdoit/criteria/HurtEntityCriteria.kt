@@ -1,8 +1,11 @@
 package net.astrorbits.dontdoit.criteria
 
 import net.astrorbits.dontdoit.criteria.helper.CriteriaType
-import net.astrorbits.dontdoit.criteria.inspect.ItemInspectCandidate
+import net.astrorbits.dontdoit.criteria.inspect.InventoryInspectContext
+import net.astrorbits.dontdoit.criteria.inspect.InventoryItemInspectCandidate
 import net.astrorbits.dontdoit.criteria.inspect.SourcedDamageInspector
+import net.astrorbits.dontdoit.system.team.TeamData
+import net.astrorbits.lib.math.vector.max
 import net.astrorbits.lib.range.DoubleRange
 import org.bukkit.Material
 import org.bukkit.damage.DamageType
@@ -11,8 +14,9 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageEvent
+import kotlin.math.max
 
-class HurtEntityCriteria : Criteria(), Listener, SourcedDamageInspector, ItemInspectCandidate {
+class HurtEntityCriteria : Criteria(), Listener, SourcedDamageInspector, InventoryItemInspectCandidate {
     override val type: CriteriaType = CriteriaType.HURT_ENTITY
     lateinit var entityTypes: Set<EntityType>
     var isEntityTypeWildcard: Boolean = false
@@ -39,8 +43,12 @@ class HurtEntityCriteria : Criteria(), Listener, SourcedDamageInspector, ItemIns
         return isDamageTypeWildcard
     }
 
-    override fun getCandidateItemTypes(): Set<Material> {
+    override fun getCandidateInventoryItemTypes(): Set<Material> {
         return mainhandItemTypes
+    }
+
+    override fun canMatchAnyInventoryItem(): Boolean {
+        return isMainhandItemTypeWildcard
     }
 
     override fun readData(data: Map<String, String>) {
@@ -73,6 +81,10 @@ class HurtEntityCriteria : Criteria(), Listener, SourcedDamageInspector, ItemIns
         ) {
             trigger(player)
         }
+    }
+
+    override fun modifyWeight(weight: Double, bindTarget: TeamData, context: InventoryInspectContext): Double {
+        return weight * max(getSourcedDamageMultiplier(context), getInventoryItemMultiplier(context))
     }
 
     companion object {

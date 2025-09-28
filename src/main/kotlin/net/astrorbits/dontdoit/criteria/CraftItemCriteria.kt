@@ -1,28 +1,35 @@
 package net.astrorbits.dontdoit.criteria
 
 import net.astrorbits.dontdoit.criteria.helper.CriteriaType
-import net.astrorbits.dontdoit.criteria.inspect.InventoryInspectContext
-import net.astrorbits.dontdoit.criteria.inspect.ItemInspectCandidate
+import net.astrorbits.dontdoit.criteria.inspect.InventoryItemInspectCandidate
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.CraftItemEvent
+import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.Recipe
+import org.bukkit.inventory.RecipeChoice
+import org.bukkit.inventory.RecipeChoice.ExactChoice
+import org.bukkit.inventory.RecipeChoice.MaterialChoice
+import org.bukkit.inventory.ShapedRecipe
+import org.bukkit.inventory.ShapelessRecipe
 
-class CraftItemCriteria : Criteria(), Listener, ItemInspectCandidate {
+class CraftItemCriteria : Criteria(), Listener, InventoryItemInspectCandidate {
     override val type: CriteriaType = CriteriaType.CRAFT_ITEM
     lateinit var itemTypes: Set<Material>
     var isWildcard: Boolean = false
 
-    override fun getCandidateItemTypes(): Set<Material> {
-        return itemTypes
+    override fun getCandidateInventoryItemTypes(): Set<Material> {
+        return itemTypes.flatMap { material ->
+            val item = ItemStack.of(material)
+            Bukkit.getRecipesFor(item).flatMap { getRecipeIngredient(it) }
+        }.toSet()
     }
 
-    override fun modifyWeight(
-        weight: Double,
-        context: InventoryInspectContext
-    ): Double {
-        return weight
+    override fun canMatchAnyInventoryItem(): Boolean {
+        return isWildcard
     }
 
     override fun readData(data: Map<String, String>) {
@@ -44,5 +51,21 @@ class CraftItemCriteria : Criteria(), Listener, ItemInspectCandidate {
 
     companion object {
         const val ITEM_TYPES_KEY = "item"
+
+        fun getRecipeIngredient(recipe: Recipe): Set<Material> {
+            return when (recipe) {
+                is ShapedRecipe -> recipe.choiceMap.values.flatMap(::getChoiceMaterials)
+                is ShapelessRecipe -> recipe.choiceList.flatMap(::getChoiceMaterials)
+                else -> emptyList()
+            }.toSet()
+        }
+
+        fun getChoiceMaterials(choice: RecipeChoice): Collection<Material> {
+            return when (choice) {
+                is MaterialChoice -> choice.choices
+                is ExactChoice -> choice.choices.map { it.type }
+                else -> emptyList()
+            }
+        }
     }
 }

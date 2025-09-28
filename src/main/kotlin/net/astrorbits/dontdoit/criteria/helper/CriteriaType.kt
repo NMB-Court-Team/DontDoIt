@@ -42,7 +42,7 @@ enum class CriteriaType {
     JUMP,
     FALL_DISTANCE,
     LEVEL_UP,
-    IMMEDIATE_TRIGGER,
+    IMMEDIATELY_TRIGGER,
 
     // 内建类型
     Y_LEVEL,

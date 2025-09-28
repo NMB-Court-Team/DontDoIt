@@ -1,10 +1,12 @@
 package net.astrorbits.dontdoit.criteria
 
 import net.astrorbits.dontdoit.criteria.helper.CriteriaType
+import net.astrorbits.dontdoit.criteria.inspect.ImmediatelyTriggerInspector
 import net.astrorbits.dontdoit.system.team.TeamData
 import net.astrorbits.lib.range.FloatRange
+import org.bukkit.entity.Player
 
-class RotationCriteria : Criteria() {
+class RotationCriteria : Criteria(), ImmediatelyTriggerInspector {
     override val type: CriteriaType = CriteriaType.ROTATION
     var yawRange: FloatRange = FloatRange.INFINITY
     var yawReversed: Boolean = false
@@ -13,11 +15,16 @@ class RotationCriteria : Criteria() {
 
     override fun tick(teamData: TeamData) {
         for (player in teamData.members) {
-            if (((player.yaw in yawRange) xor yawReversed) && ((player.pitch in pitchRange) xor pitchReversed)) {
+            if (shouldTrigger(player)) {
                 trigger(player)
                 break
             }
         }
+    }
+
+    override fun shouldTrigger(player: Player): Boolean {
+        return ((player.yaw in yawRange) xor yawReversed)
+            && ((player.pitch in pitchRange) xor pitchReversed)
     }
 
     override fun readData(data: Map<String, String>) {

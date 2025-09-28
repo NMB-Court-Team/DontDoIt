@@ -438,7 +438,7 @@ criteria:
     - name: 升级
       difficulty: hard
   # 自爆词条，立即触发
-  immediate_trigger:
+  immediately_trigger:
     - name: □□□□□
       difficulty: trigger_definitely
   # 当用桶装起流体或倒出fluid流体时触发，具体取决于type

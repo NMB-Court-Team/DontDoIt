@@ -31,7 +31,7 @@ class PhysicalActionCriteria : Criteria(), Listener, BlockInspectCandidate {
 
     @EventHandler
     fun onPhysicalAction(event: PlayerInteractEvent) {
-        if (event.action == Action.PHYSICAL){
+        if (event.action == Action.PHYSICAL) {
             if (isWildcard || event.clickedBlock?.type in blockTypes){
                 trigger(event.player)
             }

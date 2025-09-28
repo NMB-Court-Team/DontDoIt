@@ -1,13 +1,16 @@
 package net.astrorbits.dontdoit.criteria
 
 import net.astrorbits.dontdoit.criteria.helper.CriteriaType
+import net.astrorbits.dontdoit.criteria.inspect.ImmediatelyTriggerInspector
 import net.astrorbits.dontdoit.criteria.inspect.EntityInspectCandidate
+import net.astrorbits.dontdoit.criteria.inspect.InventoryInspectContext
 import net.astrorbits.dontdoit.system.team.TeamData
 import net.astrorbits.lib.range.DoubleRange
 import org.bukkit.entity.EntityType
+import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 
-class DistanceToEntityCriteria : Criteria(), Listener, EntityInspectCandidate {
+class DistanceToEntityCriteria : Criteria(), Listener, EntityInspectCandidate, ImmediatelyTriggerInspector {
     override val type: CriteriaType = CriteriaType.DISTANCE_TO_ENTITY
     lateinit var entityTypes: Set<EntityType>
     var isWildcard: Boolean = false
@@ -20,6 +23,10 @@ class DistanceToEntityCriteria : Criteria(), Listener, EntityInspectCandidate {
 
     override fun canMatchAnyEntity(): Boolean {
         return isWildcard
+    }
+
+    override fun getSurroundingEntityMatchingWeightMultiplier(context: InventoryInspectContext): Double {
+        return getEntityMatchingWeightMultiplier(context)
     }
 
     override fun readData(data: Map<String, String>) {
@@ -39,13 +46,21 @@ class DistanceToEntityCriteria : Criteria(), Listener, EntityInspectCandidate {
 
     override fun tick(teamData: TeamData) {
         for (player in teamData.members) {
-            val world = player.world
-            val entities = world.entities.filter { it.uniqueId != player.uniqueId && (isWildcard || it.type in entityTypes) }
-            if (entities.any { (player.location.distanceSquared(it.location) in distanceRangeSquared) xor rangeReversed }) {
+            if (shouldTrigger(player)) {
                 trigger(player)
                 break
             }
         }
+    }
+
+    override fun shouldTrigger(player: Player): Boolean {
+        val world = player.world
+        val entities = world.entities.filter { it.uniqueId != player.uniqueId && (isWildcard || it.type in entityTypes) }
+        return entities.any { (player.location.distanceSquared(it.location) in distanceRangeSquared) xor rangeReversed }
+    }
+
+    override fun modifyWeight(weight: Double, bindTarget: TeamData, context: InventoryInspectContext): Double {
+        return weight * getAnyTriggersMultiplier(bindTarget) { getEntityMultiplier(context) }
     }
 
     companion object {

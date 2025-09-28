@@ -1,28 +1,24 @@
 package net.astrorbits.dontdoit.criteria
 
 import net.astrorbits.dontdoit.criteria.helper.CriteriaType
-import net.astrorbits.dontdoit.criteria.inspect.InventoryInspectContext
-import net.astrorbits.dontdoit.criteria.inspect.ItemInspectCandidate
+import net.astrorbits.dontdoit.criteria.inspect.GroundItemInspectCandidate
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityPickupItemEvent
 
-class PickUpItemCriteria : Criteria(), Listener, ItemInspectCandidate {
+class PickUpItemCriteria : Criteria(), Listener, GroundItemInspectCandidate {
     override val type: CriteriaType = CriteriaType.PICK_UP_ITEM
     lateinit var itemTypes: Set<Material>
     var isWildcard: Boolean = false
 
-    override fun getCandidateItemTypes(): Set<Material> {
+    override fun getCandidateGroundItemTypes(): Set<Material> {
         return itemTypes
     }
 
-    override fun modifyWeight(
-        weight: Double,
-        context: InventoryInspectContext
-    ): Double {
-        return weight
+    override fun canMatchAnyGroundItem(): Boolean {
+        return isWildcard
     }
 
     override fun readData(data: Map<String, String>) {

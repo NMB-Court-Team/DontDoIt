@@ -1,10 +1,12 @@
 package net.astrorbits.dontdoit.criteria
 
 import net.astrorbits.dontdoit.criteria.helper.CriteriaType
+import net.astrorbits.dontdoit.criteria.inspect.ImmediatelyTriggerInspector
 import net.astrorbits.dontdoit.system.team.TeamData
 import org.bukkit.HeightMap
+import org.bukkit.entity.Player
 
-class HeightmapMatchingPosCriteria : Criteria() {
+class HeightmapMatchingPosCriteria : Criteria(), ImmediatelyTriggerInspector {
     override val type: CriteriaType = CriteriaType.HEIGHTMAP_MATCHING_POS
     lateinit var heightMap: HeightMap
     var reversed: Boolean = false
@@ -23,11 +25,15 @@ class HeightmapMatchingPosCriteria : Criteria() {
 
     override fun tick(teamData: TeamData) {
         for (player in teamData.members) {
-            if ((player.eyeLocation.y >= player.location.toHighestLocation(heightMap).y) xor reversed) {
+            if (shouldTrigger(player)) {
                 trigger(player)
                 break
             }
         }
+    }
+
+    override fun shouldTrigger(player: Player): Boolean {
+        return (player.eyeLocation.y >= player.location.toHighestLocation(heightMap).y) xor reversed
     }
 
     companion object {

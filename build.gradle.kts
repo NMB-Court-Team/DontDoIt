@@ -17,7 +17,6 @@ repositories {
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
     compileOnly(files("libs/paper-1.21.8.jar"))
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 }
 
 tasks {
@@ -27,6 +26,13 @@ tasks {
         // Your plugin's jar (or shadowJar if present) will be used automatically.
         minecraftVersion("1.21.8")
     }
+}
+
+tasks.shadowJar {
+    archiveClassifier.set("")
+    relocate("kotlin", "net.astrorbits.dontdoit.shadow.kotlin")
+    relocate("org.intellij.lang.annotations", "net.astrorbits.dontdoit.shadow.org.intellij.lang.annotations")
+    relocate("org.jetbrains.annotations", "net.astrorbits.dontdoit.shadow.org.jetbrains.annotations")
 }
 
 val targetJavaVersion = 21

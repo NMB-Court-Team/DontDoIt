@@ -16,13 +16,23 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.Item
 import org.bukkit.entity.ItemFrame
 import org.bukkit.entity.LivingEntity
-import org.bukkit.entity.Player
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
-import java.util.UUID
 import java.util.concurrent.CompletableFuture
 import kotlin.math.floor
 
+/**
+ * 仓检上下文
+ * @param allBlocks 游戏区域内所有方块的类型
+ * @param surroundingBlocks 附近所有方块的类型
+ * @param selfInventoryItems 自己队伍的成员背包里的物品类型
+ * @param otherInventoryItems 其他队伍的成员背包里的物品类型
+ * @param allGroundItems 地面上所有物品实体的物品类型
+ * @param surroundingGroundItems 附近的物品实体的物品类型
+ * @param allEntities 区域内所有实体的类型
+ * @param surroundingEntities 附近所有实体的类型
+ * @param availableDamageTypes 区域内所有可用的伤害类型
+ */
 class InventoryInspectContext(
     val allBlocks: Set<Material>,
     val surroundingBlocks: Set<Material>,
@@ -35,7 +45,6 @@ class InventoryInspectContext(
     val availableDamageTypes: Set<DamageType>
 ) {
     private class EntitySnapshot(
-        val uuid: UUID,
         val type: EntityType,
         val pos: Vec3d,
         val holdingItems: List<ItemStack>
@@ -64,7 +73,6 @@ class InventoryInspectContext(
                 items.add(entity.item.clone())
             }
             return EntitySnapshot(
-                entity.uniqueId,
                 entity.type,
                 Vec3d.fromLocation(entity.location),
                 items

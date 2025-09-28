@@ -2,26 +2,31 @@ package net.astrorbits.dontdoit.criteria
 
 import net.astrorbits.dontdoit.criteria.helper.CriteriaType
 import net.astrorbits.dontdoit.criteria.inspect.InventoryInspectContext
-import net.astrorbits.dontdoit.criteria.inspect.ItemInspectCandidate
+import net.astrorbits.dontdoit.criteria.inspect.InventoryItemInspectCandidate
 import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerItemConsumeEvent
 
-class EatItemCriteria : Criteria(), Listener, ItemInspectCandidate {
+class EatItemCriteria : Criteria(), Listener, InventoryItemInspectCandidate {
     override val type: CriteriaType = CriteriaType.EAT_ITEM
     lateinit var itemTypes: Set<Material>
     var isWildcard: Boolean = false
 
-    override fun getCandidateItemTypes(): Set<Material> {
+    override fun getCandidateInventoryItemTypes(): Set<Material> {
         return itemTypes
     }
 
-    override fun modifyWeight(
-        weight: Double,
-        context: InventoryInspectContext
-    ): Double {
-        return weight
+    override fun canMatchAnyInventoryItem(): Boolean {
+        return isWildcard
+    }
+
+    override fun getOtherInventoryItemWeightMultiplier(context: InventoryInspectContext): Double {
+        return 1.0
+    }
+
+    override fun getSelfInventoryItemMatchingWeightMultiplier(context: InventoryInspectContext): Double {
+        return SELF_INVENTORY_MULTIPLIER
     }
 
     override fun readData(data: Map<String, String>) {
@@ -42,5 +47,7 @@ class EatItemCriteria : Criteria(), Listener, ItemInspectCandidate {
 
     companion object {
         const val ITEM_TYPES_KEY = "item"
+
+        const val SELF_INVENTORY_MULTIPLIER = 1.15
     }
 }

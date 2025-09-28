@@ -157,6 +157,7 @@ object CriteriaCommand {
                 })
             )
         ).then(Commands.literal("reset")
+            .requires { it.sender.isOp }
             .executes { _ ->
                 GameStateManager.reset()
                 Bukkit.broadcast(Configs.COMMAND_RESET_GAME.get())

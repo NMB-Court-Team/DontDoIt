@@ -1,7 +1,10 @@
 package net.astrorbits.dontdoit.criteria
 
 import net.astrorbits.dontdoit.criteria.helper.CriteriaType
+import net.astrorbits.dontdoit.criteria.helper.TriggerDifficulty
 import net.astrorbits.dontdoit.criteria.helper.WaitTimeMode
+import net.astrorbits.dontdoit.criteria.inspect.InventoryInspectContext
+import net.astrorbits.dontdoit.criteria.inspect.InventoryInspectable
 import net.astrorbits.dontdoit.system.CriteriaChangeReason
 import net.astrorbits.dontdoit.system.team.TeamData
 import net.astrorbits.lib.range.IntRange
