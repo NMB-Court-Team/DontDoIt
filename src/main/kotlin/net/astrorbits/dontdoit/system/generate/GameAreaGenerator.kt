@@ -21,7 +21,7 @@ import kotlin.math.floor
 object GameAreaGenerator : Listener {
     private val LOGGER = DontDoIt.LOGGER
 
-    var world: World? = null
+    var mainWorld: World? = null
     var centerVec3i: Vec3i? = null
     var center: Location? = null
     var groundYLevel: Int? = null
@@ -40,6 +40,7 @@ object GameAreaGenerator : Listener {
     @NMSWarning
     fun generate(generateCenter: Vec3i, world: World) {
         val level = (world as? CraftWorld)?.handle ?: throw IllegalArgumentException("Cannot convert org.bukkit.World to net.minecraft.server.level.ServerLevel")
+        if (world.environment != World.Environment.NORMAL) throw IllegalStateException("Generating game area not in overworld is not supported")
 
         val centerLoc = generateCenter.center().toLocation(world)
         val centerSafeLoc = centerLoc.clone().apply { y = world.getHighestBlockYAt(centerLoc, HeightMap.MOTION_BLOCKING) + 1.0 }
@@ -48,7 +49,7 @@ object GameAreaGenerator : Listener {
         val border = world.worldBorder
         border.center = centerLoc
         border.warningDistance = 0
-        val size = calcSize() // 取比gameAreaSize大的最小奇数
+        val size = calcSize()
         border.size = size.toDouble()
 
         val radius = calcRadius()
@@ -67,11 +68,25 @@ object GameAreaGenerator : Listener {
             player.teleport(playerNewLoc)
         }
 
-        this.world = world
+        mainWorld = world
         world.difficulty = DynamicSettings.ingameDifficulty
         centerVec3i = generateCenter
         center = centerLoc
         groundYLevel = generateCenter.y
+
+        for (w in Bukkit.getWorlds()) {
+            val wBorder = w.worldBorder
+            if (world.environment == World.Environment.NORMAL && w.environment == World.Environment.NETHER) {
+                wBorder.center = Location(w, floor(centerLoc.x / 8) + 0.5, floor(centerLoc.y / 8) + 0.5, floor(centerLoc.z / 8) + 0.5)
+            } else if (world.environment == World.Environment.NETHER && w.environment == World.Environment.NORMAL) {
+                wBorder.center = Location(w, floor(centerLoc.x * 8) + 0.5, floor(centerLoc.y * 8) + 0.5, floor(centerLoc.z * 8) + 0.5)
+            } else {
+                wBorder.center = centerLoc
+            }
+            wBorder.warningDistance = 0
+            wBorder.size = size.toDouble()
+            w.difficulty = DynamicSettings.ingameDifficulty
+        }
 
         val bedrockDepth = Configs.BEDROCK_DEPTH.get()
         val bedrockY = generateCenter.y - bedrockDepth
@@ -102,9 +117,10 @@ object GameAreaGenerator : Listener {
                 level.setBlock(BlockPos(pos.x, pos.y, pos.z), (Material.STONE.createBlockData() as CraftBlockData).state, Block.UPDATE_CLIENTS)
             }
         }
+        LOGGER.info("Andesites and ores generated")
     }
 
-    fun calcSize(): Int = DynamicSettings.gameAreaSize + 1 - DynamicSettings.gameAreaSize % 2
+    fun calcSize(): Int = DynamicSettings.gameAreaSize + 1 - DynamicSettings.gameAreaSize % 2  // 取比gameAreaSize大的最小奇数
     fun calcRadius(): Int = floor(calcSize() / 2.0).toInt()
     fun getPosRange(): BlockBox? {
         if (centerVec3i == null) return null
@@ -172,7 +188,7 @@ object GameAreaGenerator : Listener {
             world.difficulty = Difficulty.PEACEFUL
             world.worldBorder.reset()
         }
-        world = null
+        mainWorld = null
         center = null
         groundYLevel = null
     }

@@ -94,6 +94,10 @@ object Configs {
         "enter_prepare_message",
         "<yellow>请使用手上的物品<green><bold>选择队伍</bold><yellow>，然后设置<green><bold>自定义词条"
     ))
+    val CHANGE_SETTINGS_HINT_MESSAGE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "change_settings_hint_message",
+        "<yellow>输入<light_purple><hover:show_text:'<aqua>点击执行'><click:run_command:/criteria settings set>/criteria settings set</click></hover><yellow>来修改游戏设置"
+    ))
     //endregion
 
     //region 游戏切换阶段的消息
@@ -331,6 +335,89 @@ object Configs {
     val COMMAND_GET_TEAM_CRITERIA: TextConfigData = CONFIG.defineConfig(TextConfigData(
         "criteria_command.success.get_team_criteria",
         "{team_name} 的词条是 {criteria}"
+    ))
+    val COMMAND_RESET_SETTINGS: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "criteria_command.success.reset_settings",
+        "<yellow>已重置游戏设置"
+    ))
+    //endregion
+
+    //region 动态配置界面文本
+    val DYN_SETTINGS_TITLE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "dynamic_settings.title",
+        "<aqua><bold>修改游戏设置"
+    ))
+    val DYN_SETTINGS_YES: StringConfigData = CONFIG.defineConfig(StringConfigData(
+        "dynamic_settings.yes",
+        "是"
+    ))
+    val DYN_SETTINGS_NO: StringConfigData = CONFIG.defineConfig(StringConfigData(
+        "dynamic_settings.no",
+        "否"
+    ))
+    val DYN_SETTINGS_GAME_AREA_SIZE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "dynamic_settings.game_area_size",
+        "<white>游戏区域大小"
+    ))
+    val DYN_SETTINGS_INGAME_DIFFICULTY: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "dynamic_settings.ingame_difficulty",
+        "<white>游戏期间的Minecraft游戏难度"
+    ))
+    val DYN_SETTINGS_LIFE_COUNT: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "dynamic_settings.life_count",
+        "<white>规则数量上限（生命值上限）"
+    ))
+    val DYN_SETTINGS_DIAMOND_BEHAVIOR: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "dynamic_settings.diamond_behavior.title",
+        "<white>钻石行为"
+    ))
+    val DYN_SETTINGS_DIAMOND_BEHAVIOR_ADD_SELF_LIFE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "dynamic_settings.diamond_behavior.add_self_life",
+        "<yellow>获取钻石时自己队伍回复1点规则数量"
+    ))
+    val DYN_SETTINGS_DIAMOND_BEHAVIOR_REDUCE_OTHERS_LIFE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "dynamic_settings.diamond_behavior.reduce_others_life",
+        "<yellow>获取钻石时其他队伍减少1点规则数量"
+    ))
+    val DYN_SETTINGS_DIAMOND_BEHAVIOR_ENABLED: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "dynamic_settings.diamond_behavior_enabled",
+        "<white>是否启用钻石行为"
+    ))
+    val DYN_SETTINGS_DIAMOND_BEHAVIOR_DISABLED_THRESHOLD: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "dynamic_settings.diamond_behavior_disabled_threshold",
+        "<white>钻石行为禁用阈值（钻石行为是回血时该项设置无效）"
+    ))
+    val DYN_SETTINGS_ALLOW_UNBALANCED_TEAMS: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "dynamic_settings.allow_unbalanced_teams",
+        "<white>是否允许各队伍人数不平衡"
+    ))
+    val DYN_SETTINGS_ALLOW_GUESS_CRITERIA: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "dynamic_settings.allow_guess_criteria",
+        "<white>是否开启猜词条玩法"
+    ))
+    val DYN_SETTINGS_GUESS_SUCCESS_ADD_LIFE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "dynamic_settings.guess_success_add_life",
+        "<white>猜对词条时回复的规则数量"
+    ))
+    val DYN_SETTINGS_GUESS_FAILED_REDUCE_LIFE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "dynamic_settings.guess_failed_reduce_life",
+        "<white>猜错词条时减少的规则数量"
+    ))
+    val DYN_SETTINGS_SAVE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "dynamic_settings.save.title",
+        "<white>保存修改"
+    ))
+    val DYN_SETTINGS_SAVE_START: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "dynamic_settings.save.start",
+        "<yellow>正在保存对游戏设置的修改..."
+    ))
+    val DYN_SETTINGS_SAVE_SUCCESS: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "dynamic_settings.save.success",
+        "<yellow>游戏设置保存完毕"
+    ))
+    val DYN_SETTINGS_DISCARD: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "dynamic_settings.discard",
+        "<white>放弃修改"
     ))
     //endregion
 

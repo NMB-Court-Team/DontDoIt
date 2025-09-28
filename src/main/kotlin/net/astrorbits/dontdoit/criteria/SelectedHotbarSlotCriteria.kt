@@ -13,8 +13,8 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerItemHeldEvent
 
-class SelectedHotbarIndexCriteria : Criteria(), Listener, ImmediatelyTriggerInspector {
-    override val type: CriteriaType = CriteriaType.SELECTED_HOTBAR_INDEX
+class SelectedHotbarSlotCriteria : Criteria(), Listener, ImmediatelyTriggerInspector {
+    override val type: CriteriaType = CriteriaType.SELECTED_HOTBAR_SLOT
     var index: Int = 0
 
     override fun readData(data: Map<String, String>) {

@@ -43,6 +43,8 @@ import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.java.JavaPlugin
 
 object Preparation : Listener {
+    private val LOGGER = DontDoIt.LOGGER
+
     fun onEnterPreparation() {
         for (player in Bukkit.getOnlinePlayers()) {
             setPrepared(player)
@@ -88,6 +90,9 @@ object Preparation : Listener {
         if (!GameStateManager.isWaiting()) return
         setPrepared(event.player)
         TeamInfoSynchronizer.syncTeamInfos(TeamManager.teams)
+        if (event.player.isOp) {
+            event.player.sendMessage(Configs.CHANGE_SETTINGS_HINT_MESSAGE.get())
+        }
     }
 
     @EventHandler
@@ -163,6 +168,7 @@ object Preparation : Listener {
                 return
             }
             GameStateManager.startGame(player)
+            LOGGER.info("Player ${player.name} starts the game")
         }
 
         event.isCancelled = true
@@ -407,6 +413,7 @@ object Preparation : Listener {
                 )
             )
         }
+        LOGGER.info("Player ${setter.name} sets the custom criteria name of team ${teamData.teamId} to $name")
     }
 
     private fun removeCustomCriteriaName(remover: Player, teamData: TeamData) {
@@ -418,5 +425,6 @@ object Preparation : Listener {
                 .format(PLAYER_NAME_PLACEHOLDER to player.displayName())
             )
         }
+        LOGGER.info("Player ${remover.name} removes the custom criteria name of team ${teamData.teamId}")
     }
 }

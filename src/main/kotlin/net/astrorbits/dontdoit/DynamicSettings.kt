@@ -1,6 +1,5 @@
 package net.astrorbits.dontdoit
 
-import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.JsonParseException
 import com.google.gson.JsonParser
@@ -14,8 +13,7 @@ import net.astrorbits.dontdoit.system.DiamondBehavior
 import net.astrorbits.lib.dialog.DialogHelper
 import net.astrorbits.lib.range.IntRange
 import net.astrorbits.lib.task.TaskBuilder
-import net.astrorbits.lib.text.LegacyText
-import net.astrorbits.lib.text.TextHelper.yellow
+import net.astrorbits.lib.text.TextHelper.white
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickCallback.Options
 import org.bukkit.Difficulty
@@ -25,6 +23,7 @@ import kotlin.io.path.exists
 import kotlin.io.path.writeText
 
 object DynamicSettings {
+    private val LOGGER = DontDoIt.LOGGER
     const val SETTINGS_FILE_NAME = "settings.json"
 
     const val DEFAULT_GAME_AREA_SIZE = 63
@@ -50,44 +49,70 @@ object DynamicSettings {
     var guessFailedReduceLife: Int = DEFAULT_GUESS_FAILED_REDUCE_LIFE
 
     fun loadSettings() {
-        val path = getPath()
-        if (path.exists()) {
-            val jsonElement = JsonParser.parseString(path.toFile().readText())
-            if (!jsonElement.isJsonObject) throw JsonParseException("Root element is not a json object")
-            val json = jsonElement.asJsonObject
-            gameAreaSize = json.getAsJsonPrimitive("game_area_size").asInt
-            ingameDifficulty = Difficulty.valueOf(json.getAsJsonPrimitive("ingame_difficulty").asString.uppercase())
-            lifeCount = json.getAsJsonPrimitive("life_count").asInt
-            diamondBehavior = DiamondBehavior.valueOf(json.getAsJsonPrimitive("diamond_behavior").asString.uppercase())
-            diamondBehaviorEnabled = json.getAsJsonPrimitive("diamond_behavior_enabled").asBoolean
-            diamondBehaviorDisabledThreshold = json.getAsJsonPrimitive("diamond_behavior_disabled_threshold").asInt
-            allowUnbalancedTeams = json.getAsJsonPrimitive("allow_unbalanced_teams").asBoolean
-            allowGuessCriteria = json.getAsJsonPrimitive("allow_guess_criteria").asBoolean
-            guessSuccessAddLife = json.getAsJsonPrimitive("guess_success_add_life").asInt
-            guessFailedReduceLife = json.getAsJsonPrimitive("guess_failed_reduce_life").asInt
-        } else {
-            saveSettings()
+        LOGGER.info("Loading dynamic settings...")
+        try {
+            val path = getPath()
+            if (path.exists()) {
+                val jsonElement = JsonParser.parseString(path.toFile().readText())
+                if (!jsonElement.isJsonObject) throw JsonParseException("Root element is not a json object")
+                val json = jsonElement.asJsonObject
+                gameAreaSize = json.getAsJsonPrimitive("game_area_size").asInt
+                ingameDifficulty = Difficulty.valueOf(json.getAsJsonPrimitive("ingame_difficulty").asString.uppercase())
+                lifeCount = json.getAsJsonPrimitive("life_count").asInt
+                diamondBehavior = DiamondBehavior.valueOf(json.getAsJsonPrimitive("diamond_behavior").asString.uppercase())
+                diamondBehaviorEnabled = json.getAsJsonPrimitive("diamond_behavior_enabled").asBoolean
+                diamondBehaviorDisabledThreshold = json.getAsJsonPrimitive("diamond_behavior_disabled_threshold").asInt
+                allowUnbalancedTeams = json.getAsJsonPrimitive("allow_unbalanced_teams").asBoolean
+                allowGuessCriteria = json.getAsJsonPrimitive("allow_guess_criteria").asBoolean
+                guessSuccessAddLife = json.getAsJsonPrimitive("guess_success_add_life").asInt
+                guessFailedReduceLife = json.getAsJsonPrimitive("guess_failed_reduce_life").asInt
+            } else {
+                LOGGER.info("Dynamic settings file not found, using default value")
+                saveSettings()
+            }
+        } catch (e: Exception) {
+            LOGGER.error("Error when loading dynamic settings: ", e)
+            e.printStackTrace()
         }
     }
 
     fun saveSettings() {
-        val path = getPath()
-        if (!path.parent.exists()) {
-            Files.createDirectory(path.parent)
+        LOGGER.info("Saving dynamic settings...")
+        try {
+            val path = getPath()
+            if (!path.parent.exists()) {
+                Files.createDirectory(path.parent)
+            }
+            val json = JsonObject()
+            json.addProperty("game_area_size", gameAreaSize)
+            json.addProperty("ingame_difficulty", ingameDifficulty.name.lowercase())
+            json.addProperty("life_count", lifeCount)
+            json.addProperty("diamond_behavior", diamondBehavior.name.lowercase())
+            json.addProperty("diamond_behavior_enabled", diamondBehaviorEnabled)
+            json.addProperty("diamond_behavior_disabled_threshold", diamondBehaviorDisabledThreshold)
+            json.addProperty("allow_unbalanced_teams", allowUnbalancedTeams)
+            json.addProperty("allow_guess_criteria", allowGuessCriteria)
+            json.addProperty("guess_success_add_life", guessSuccessAddLife)
+            json.addProperty("guess_failed_reduce_life", guessFailedReduceLife)
+            val jsonString = json.toString()
+            path.writeText(jsonString)
+        } catch (e: Exception) {
+            LOGGER.error("Error when saving dynamic settings: ", e)
+            e.printStackTrace()
         }
-        val json = JsonObject()
-        json.addProperty("game_area_size", gameAreaSize)
-        json.addProperty("ingame_difficulty", ingameDifficulty.name.lowercase())
-        json.addProperty("life_count", lifeCount)
-        json.addProperty("diamond_behavior", diamondBehavior.name.lowercase())
-        json.addProperty("diamond_behavior_enabled", diamondBehaviorEnabled)
-        json.addProperty("diamond_behavior_disabled_threshold", diamondBehaviorDisabledThreshold)
-        json.addProperty("allow_unbalanced_teams", allowUnbalancedTeams)
-        json.addProperty("allow_guess_criteria", allowGuessCriteria)
-        json.addProperty("guess_success_add_life", guessSuccessAddLife)
-        json.addProperty("guess_failed_reduce_life", guessFailedReduceLife)
-        val jsonString = json.toString()
-        path.writeText(jsonString)
+    }
+
+    fun resetSettings() {
+        gameAreaSize = DEFAULT_GAME_AREA_SIZE
+        ingameDifficulty = DEFAULT_INGAME_DIFFICULTY
+        lifeCount = DEFAULT_LIFE_COUNT
+        diamondBehavior = DEFAULT_DIAMOND_BEHAVIOR
+        diamondBehaviorEnabled = DEFAULT_DIAMOND_BEHAVIOR_ENABLED
+        diamondBehaviorDisabledThreshold = DEFAULT_DIAMOND_BEHAVIOR_DISABLED_THRESHOLD
+        allowUnbalancedTeams = DEFAULT_ALLOW_UNBALANCED_TEAMS
+        allowGuessCriteria = DEFAULT_ALLOW_GUESS_CRITERIA
+        guessSuccessAddLife = DEFAULT_GUESS_SUCCESS_ADD_LIFE
+        guessFailedReduceLife = DEFAULT_GUESS_FAILED_REDUCE_LIFE
     }
 
     private fun getPath(): Path {
@@ -98,90 +123,99 @@ object DynamicSettings {
     @Suppress("UnstableApiUsage")
     fun createDynamicSettingsDialog(): Dialog {
         return Dialog.create { factory ->
-            factory.empty().base(DialogBase.builder(LegacyText.toComponent("§b§l修改游戏设置"))
+            factory.empty().base(DialogBase.builder(Configs.DYN_SETTINGS_TITLE.get())
                 .afterAction(DialogBase.DialogAfterAction.CLOSE)
                 .canCloseWithEscape(true)
                 .inputs(listOf(
                     DialogInput.numberRange(
                         "game_area_size",
-                        LegacyText.toComponent("§f游戏区域大小"),
+                        Configs.DYN_SETTINGS_GAME_AREA_SIZE.get(),
                         GAME_AREA_SIZE_RANGE.min.toFloat(),
                         GAME_AREA_SIZE_RANGE.max.toFloat()
                     ).step(2f)
                         .initial(gameAreaSize.toFloat())
+                        .width(250)
                         .build(),
                     DialogInput.singleOption(
                         "ingame_difficulty",
-                        LegacyText.toComponent("§f游戏期间的Minecraft游戏难度"),
-                        DialogHelper.createOptionEntries(Difficulty.entries, ingameDifficulty) { Component.translatable("options.difficulty.${it.name.lowercase()}").yellow() },
+                        Configs.DYN_SETTINGS_INGAME_DIFFICULTY.get(),
+                        DialogHelper.createOptionEntries(Difficulty.entries, ingameDifficulty) { Component.translatable("options.difficulty.${it.name.lowercase()}").white() },
                     ).labelVisible(true)
+                        .width(250)
                         .build(),
                     DialogInput.numberRange(
                         "life_count",
-                        LegacyText.toComponent("§f规则数量上限（生命值上限）"),
+                        Configs.DYN_SETTINGS_LIFE_COUNT.get(),
                         LIFE_COUNT_RANGE.min.toFloat(),
                         LIFE_COUNT_RANGE.max.toFloat()
                     ).step(1f)
                         .initial(lifeCount.toFloat())
+                        .width(250)
                         .build(),
                     DialogInput.singleOption(
                         "diamond_behavior",
-                        LegacyText.toComponent("§f钻石行为"),
+                        Configs.DYN_SETTINGS_DIAMOND_BEHAVIOR.get(),
                         DialogHelper.createOptionEntries(DiamondBehavior.entries, diamondBehavior) {
                             when (it) {
-                                DiamondBehavior.ADD_SELF_LIFE -> LegacyText.toComponent("§e获取钻石时自己队伍回复1点规则数量")
-                                DiamondBehavior.REDUCE_OTHERS_LIFE -> LegacyText.toComponent("§e获取钻石时其他队伍减少1点规则数量")
+                                DiamondBehavior.ADD_SELF_LIFE -> Configs.DYN_SETTINGS_DIAMOND_BEHAVIOR_ADD_SELF_LIFE.get()
+                                DiamondBehavior.REDUCE_OTHERS_LIFE -> Configs.DYN_SETTINGS_DIAMOND_BEHAVIOR_REDUCE_OTHERS_LIFE.get()
                             }
                         }
                     ).labelVisible(true)
+                        .width(250)
                         .build(),
                     DialogInput.bool(
                         "diamond_behavior_enabled",
-                        LegacyText.toComponent("§f是否启用钻石行为"),
+                        Configs.DYN_SETTINGS_DIAMOND_BEHAVIOR_ENABLED.get(),
                         diamondBehaviorEnabled,
-                        "是", "否"
+                        Configs.DYN_SETTINGS_YES.get(),
+                        Configs.DYN_SETTINGS_NO.get()
                     ),
                     DialogInput.numberRange(
                         "diamond_behavior_disabled_threshold",
-                        LegacyText.toComponent("§f钻石行为禁用阈值（其他队伍规则数量小于等于该值时禁用钻石行为）"),
+                        Configs.DYN_SETTINGS_DIAMOND_BEHAVIOR_DISABLED_THRESHOLD.get(),
                         DIAMOND_BEHAVIOR_DISABLED_THRESHOLD.min.toFloat(),
                         DIAMOND_BEHAVIOR_DISABLED_THRESHOLD.max.toFloat()
                     ).step(1f)
                         .initial(diamondBehaviorDisabledThreshold.toFloat())
-                        .labelFormat("§f钻石行为禁用阈值: %2\$s")
+                        .width(250)
                         .build(),
                     DialogInput.bool(
                         "allow_unbalanced_teams",
-                        LegacyText.toComponent("§f是否允许各队伍人数不平衡"),
+                        Configs.DYN_SETTINGS_ALLOW_UNBALANCED_TEAMS.get(),
                         allowUnbalancedTeams,
-                        "是", "否"
+                        Configs.DYN_SETTINGS_YES.get(),
+                        Configs.DYN_SETTINGS_NO.get()
                     ),
                     DialogInput.bool(
                         "allow_guess_criteria",
-                        LegacyText.toComponent("§f是否开启猜词条玩法"),
+                        Configs.DYN_SETTINGS_ALLOW_GUESS_CRITERIA.get(),
                         allowGuessCriteria,
-                        "是", "否"
+                        Configs.DYN_SETTINGS_YES.get(),
+                        Configs.DYN_SETTINGS_NO.get()
                     ),
                     DialogInput.numberRange(
                         "guess_success_add_life",
-                        LegacyText.toComponent("§f猜对词条时回复的规则数量"),
+                        Configs.DYN_SETTINGS_GUESS_SUCCESS_ADD_LIFE.get(),
                         GUESS_SUCCESS_ADD_LIFE_RANGE.min.toFloat(),
                         GUESS_SUCCESS_ADD_LIFE_RANGE.max.toFloat()
                     ).step(1f)
                         .initial(guessSuccessAddLife.toFloat())
+                        .width(250)
                         .build(),
                     DialogInput.numberRange(
                         "guess_failed_reduce_life",
-                        LegacyText.toComponent("§f猜错词条时减少的规则数量"),
+                        Configs.DYN_SETTINGS_GUESS_FAILED_REDUCE_LIFE.get(),
                         GUESS_FAILED_REDUCE_LIFE_RANGE.min.toFloat(),
                         GUESS_FAILED_REDUCE_LIFE_RANGE.max.toFloat()
                     ).step(1f)
                         .initial(guessFailedReduceLife.toFloat())
+                        .width(250)
                         .build(),
                 ))
                 .build()
             ).type(DialogType.confirmation(
-                ActionButton.builder(LegacyText.toComponent("保存修改"))
+                ActionButton.builder(Configs.DYN_SETTINGS_SAVE.get())
                     .action(DialogAction.customClick(
                         { responseView, audience ->
                             val gameAreaSize = responseView.getFloat("game_area_size")
@@ -204,20 +238,20 @@ object DynamicSettings {
                             if (allowGuessCriteria != null) this.allowGuessCriteria = allowGuessCriteria
                             if (guessSuccessAddLife != null) this.guessSuccessAddLife = guessSuccessAddLife.toInt()
                             if (guessFailedReduceLife != null) this.guessFailedReduceLife = guessFailedReduceLife.toInt()
-                            audience.sendMessage(LegacyText.toComponent("§e正在保存对游戏设置的修改..."))
+                            audience.sendMessage(Configs.DYN_SETTINGS_SAVE_START.get())
                             TaskBuilder(DontDoIt.instance)
                                 .setAsync()
                                 .setTask {
                                     saveSettings()
-                                    audience.sendMessage(LegacyText.toComponent("§e游戏设置保存完毕"))
+                                    audience.sendMessage(Configs.DYN_SETTINGS_SAVE_SUCCESS.get())
                                 }.runTask()
                         },
                         Options.builder().build()
                     )).build(),
-                ActionButton.builder(LegacyText.toComponent("放弃修改")).build()
+                ActionButton.builder(Configs.DYN_SETTINGS_DISCARD.get()).build()
             ))
         }
-    }  //TODO 这里有一堆文本要写进配置
+    }
 
     val GAME_AREA_SIZE_RANGE: IntRange = IntRange(31, 255)
     val LIFE_COUNT_RANGE: IntRange = IntRange(1, 99)

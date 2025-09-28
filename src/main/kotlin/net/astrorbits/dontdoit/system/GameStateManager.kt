@@ -8,7 +8,6 @@ import net.astrorbits.dontdoit.system.team.TeamData.Companion.PLAYER_NAME_PLACEH
 import net.astrorbits.dontdoit.system.team.TeamData.Companion.TEAM_NAME_PLACEHOLDER
 import net.astrorbits.dontdoit.system.team.TeamInfoSynchronizer
 import net.astrorbits.dontdoit.system.team.TeamManager
-import net.astrorbits.lib.item.ItemHelper.removeIfMatch
 import net.astrorbits.lib.math.vector.Vec3d
 import net.astrorbits.lib.task.TaskBuilder
 import net.astrorbits.lib.task.TaskType
@@ -16,14 +15,11 @@ import net.astrorbits.lib.text.SimpleTextBuilder
 import net.astrorbits.lib.text.TextHelper.format
 import net.astrorbits.lib.text.TitleHelper
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.title.Title
 import org.bukkit.Bukkit
-import org.bukkit.Difficulty
 import org.bukkit.GameRule
 import org.bukkit.SoundCategory
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitTask
 
 object GameStateManager {
@@ -70,6 +66,7 @@ object GameStateManager {
 
         TeamInfoSynchronizer.syncTeamInfos(TeamManager.teams)
         CriteriaManager.onGameStart()
+        LOGGER.info("Game started")
     }
 
     const val TRIGGER_COUNT_PLACEHOLDER = "count"
@@ -108,6 +105,7 @@ object GameStateManager {
 
         TeamManager.onGameEnd()
         CriteriaManager.onGameEnd()
+        LOGGER.info("Game ended")
     }
 
     fun reset() {
@@ -118,6 +116,7 @@ object GameStateManager {
         CriteriaManager.onEnterPreparation()
 
         Bukkit.broadcast(Configs.RESET_GAME_MESSAGE.get())
+        LOGGER.info("Game is reset")
     }
 
     fun tick() {
