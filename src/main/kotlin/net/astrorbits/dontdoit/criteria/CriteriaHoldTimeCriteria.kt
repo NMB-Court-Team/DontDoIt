@@ -11,7 +11,7 @@ import net.astrorbits.lib.range.IntRange
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 
-class CriteriaHoldTimeCriteria : Criteria() {
+class CriteriaHoldTimeCriteria : Criteria(), InventoryInspectable {
     override val type: CriteriaType = CriteriaType.CRITERIA_HOLD_TIME
     lateinit var waitTimeMode: WaitTimeMode
     var changeTimeTicksRange: IntRange = IntRange.INFINITY
@@ -54,9 +54,15 @@ class CriteriaHoldTimeCriteria : Criteria() {
         }
     }
 
+    override fun modifyWeight(weight: Double, bindTarget: TeamData, context: InventoryInspectContext): Double {
+        return weight * MULTIPLIER
+    }
+
     companion object {
         const val WAIT_TIME_MODE_KEY = "mode"
         const val CHANGE_TIME_TICKS_RANGE_KEY = "time"
         const val RANGE_REVERSED_KEY = "reversed"
+
+        const val MULTIPLIER = 0.5
     }
 }

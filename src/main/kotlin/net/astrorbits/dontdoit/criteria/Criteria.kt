@@ -307,7 +307,7 @@ abstract class Criteria {
         val result = HashSet<Material>()
         for ((item, isTag, isReversed) in entries) {
             if (isReversed && result.isEmpty()) {
-                result.addAll(Material.entries.filter { it.isBlock })
+                result.addAll(Material.entries.filter { it.isItem })
             }
             val items = HashSet<Material>()
             if (isTag) {

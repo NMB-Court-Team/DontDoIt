@@ -39,6 +39,6 @@ class LifeCountCriteria : Criteria(), InventoryInspectable {
         const val COUNT_RANGE_KEY = "count"
         const val RANGE_REVERSED_KEY = "reversed"
 
-        const val MULTIPLIER = 0.8
+        const val MULTIPLIER = 0.75
     }
 }
