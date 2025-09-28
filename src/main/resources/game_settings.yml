@@ -169,29 +169,3 @@ y_level_offset:
   on_air: 14
 # 自动切换词条的时间，必须是整数（单位：秒）
 auto_change_criteria_time: 120
-
-
-# ==== 可在游戏内动态配置的项 ====
-# 游戏区域大小
-game_area_size: 63
-# 最大规则数量（队伍血量）
-life_count: 15
-# 常规模式下，获取钻石时的行为，可以是reduce_others_life或add_self_life
-# reduce_others_life: 减少其他队伍1点生命值
-# add_self_life: 增加自己队伍1点生命值
-diamond_behavior: reduce_others_life
-# 是否启用钻石行为
-diamond_behavior_enabled: true
-# 钻石行为禁用阈值，当任意一名玩家生命值达到阈值及以下时，钻石行为将禁用
-# 此项配置仅在diamond_behavior为reduce_others_life时有效
-diamond_behavior_disabled_threshold: 7
-# 是否允许各队伍人数不平衡
-allow_unbalanced_teams: false
-# 是否允许猜词条
-allow_guess_criteria: true
-# 猜中词条增加的生命值
-guess_success_add_life: 1
-# 猜错词条减少的规则数
-guess_failed_reduce_life: 2
-# 游戏进行时的难度，只能是peaceful, easy, normal, hard
-ingame_difficulty: easy

@@ -54,16 +54,16 @@ class CraftItemCriteria : Criteria(), Listener, InventoryItemInspectCandidate {
 
         fun getRecipeIngredient(recipe: Recipe): Set<Material> {
             return when (recipe) {
-                is ShapedRecipe -> recipe.choiceMap.values.flatMap(::getChoiceMaterials)
-                is ShapelessRecipe -> recipe.choiceList.flatMap(::getChoiceMaterials)
+                is ShapedRecipe -> recipe.choiceMap.values.filterNotNull().flatMap(::getChoiceMaterials)
+                is ShapelessRecipe -> recipe.choiceList.filterNotNull().flatMap(::getChoiceMaterials)
                 else -> emptyList()
             }.toSet()
         }
 
         fun getChoiceMaterials(choice: RecipeChoice): Collection<Material> {
             return when (choice) {
-                is MaterialChoice -> choice.choices
-                is ExactChoice -> choice.choices.map { it.type }
+                is MaterialChoice -> choice.choices.filterNotNull()
+                is ExactChoice -> choice.choices.filterNotNull().map { it.type }
                 else -> emptyList()
             }
         }

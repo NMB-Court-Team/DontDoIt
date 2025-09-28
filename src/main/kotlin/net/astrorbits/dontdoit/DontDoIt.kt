@@ -18,6 +18,7 @@ class DontDoIt : JavaPlugin() {
         _instance = this
 
         Configs.init()
+        DynamicSettings.loadSettings()
         CriteriaManager.init(this)
         GameStateManager.reset()
 

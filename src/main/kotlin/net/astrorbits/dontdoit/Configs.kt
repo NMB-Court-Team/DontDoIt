@@ -424,49 +424,6 @@ object Configs {
     ))
     //endregion
 
-    //region 全局设置默认值
-    val GAME_AREA_SIZE: IntConfigData = CONFIG.defineConfig(IntConfigData(
-        "game_area_size",
-        63
-    ))
-    val LIFE_COUNT: IntConfigData = CONFIG.defineConfig(IntConfigData(
-        "life_count",
-        15
-    ))
-    val DIAMOND_BEHAVIOR: EnumConfigData<DiamondBehavior> = CONFIG.defineConfig(EnumConfigData(
-        "diamond_behavior",
-        DiamondBehavior.REDUCE_OTHERS_LIFE
-    ))
-    val DIAMOND_BEHAVIOR_ENABLED: BoolConfigData = CONFIG.defineConfig(BoolConfigData(
-        "diamond_behavior_enabled",
-        true
-    ))
-    val DIAMOND_BEHAVIOR_DISABLED_THRESHOLD: IntConfigData = CONFIG.defineConfig(IntConfigData(
-        "diamond_behavior_disabled_threshold",
-        7
-    ))
-    val ALLOW_UNBALANCED_TEAMS: BoolConfigData = CONFIG.defineConfig(BoolConfigData(
-        "allow_unbalanced_teams",
-        false
-    ))
-    val ALLOW_GUESS_CRITERIA: BoolConfigData = CONFIG.defineConfig(BoolConfigData(
-        "allow_guess_criteria",
-        true
-    ))
-    val GUESS_SUCCESS_ADD_LIFE: IntConfigData = CONFIG.defineConfig(IntConfigData(
-        "guess_success_add_life",
-        1
-    ))
-    val GUESS_FAILED_REDUCE_LIFE: IntConfigData = CONFIG.defineConfig(IntConfigData(
-        "guess_failed_reduce_life",
-        2
-    ))
-    val INGAME_DIFFICULTY: EnumConfigData<Difficulty> = CONFIG.defineConfig(EnumConfigData(
-        "ingame_difficulty",
-        Difficulty.EASY
-    ))
-    //endregion
-
     fun getTeamName(color: NamedTextColor): Component {
         return TEAM_NAME.get()[color]!!
     }
