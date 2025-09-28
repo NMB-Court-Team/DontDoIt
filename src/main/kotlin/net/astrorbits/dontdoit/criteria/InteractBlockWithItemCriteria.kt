@@ -54,7 +54,7 @@ class InteractBlockWithItemCriteria : Criteria(), Listener, BlockInspectCandidat
         val block = event.clickedBlock ?: return
         val item = event.item ?: ItemStack.empty()
         if ((isBlockWildcard || block.type in blockTypes) &&
-            (isItemWildcard || (item.type in itemTypes))
+            (isItemWildcard || item.type in itemTypes)
         ) {
             trigger(event.player)
         }

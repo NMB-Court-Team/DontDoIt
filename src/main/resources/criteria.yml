@@ -160,7 +160,7 @@ criteria:
       mainhand: "#pickaxes"
     - name: 用斧子攻击生物
       difficulty: normal
-      entity: *
+      entity: "*"
       mainhand: "#axes"
     - name: 空手打人
       difficulty: normal
@@ -618,4 +618,14 @@ criteria:
     - name: 选中快捷栏最后一格
       difficulty: very_easy
       slot: 9
+  transfer_item:
+    - name: 把木镐放入熔炉
+      difficulty: easy
+      item: wooden_pickaxe
+      to: furnace
+    - name: 从熔炉拿出木镐
+      difficulty: easy
+      item: wooden_pickaxe
+      from: furnace
+
 

@@ -7,6 +7,7 @@ enum class CriteriaType {
     CRAFT_ITEM,
     PICK_UP_ITEM,
     HOLDING_ITEM,
+    TRANSFER_ITEM,
     INVENTORY_CONTAINING_ITEM,
 
     // 方块相关

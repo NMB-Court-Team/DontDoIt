@@ -21,6 +21,7 @@ import org.bukkit.Material
 import org.bukkit.damage.DamageType
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
+import org.bukkit.event.inventory.InventoryType
 import org.bukkit.potion.PotionEffectType
 import java.util.UUID
 
@@ -457,6 +458,31 @@ abstract class Criteria {
                 result.remove(loadedPotionEffectType)
             } else {
                 result.add(loadedPotionEffectType)
+            }
+        }
+        fieldSetter(result, entries.isWildcard)
+    }
+
+    protected fun Map<String, String>.setInventoryTypes(
+        key: String,
+        absentBehavior: AbsentBehavior = AbsentBehavior.EMPTY,
+        fieldSetter: (itemTypes: Set<InventoryType>, isWildcard: Boolean) -> Unit
+    ) {
+        val entries = getCsvEntries(key, absentBehavior)
+
+        val result = HashSet<InventoryType>()
+        for ((type, isTag, isReversed) in entries) {
+            if (isTag) throw InvalidCriteriaException(this@Criteria, "Inventory tag does not exist: $type")
+            if (isReversed && result.isEmpty()) {
+                result.addAll(InventoryType.entries.filter { true })
+            }
+            val inventoryTypes = HashSet<InventoryType>()
+            inventoryTypes.add(InventoryType.valueOf(type.uppercase()))
+
+            if (isReversed) {
+                result.removeAll(inventoryTypes)
+            } else {
+                result.addAll(inventoryTypes)
             }
         }
         fieldSetter(result, entries.isWildcard)

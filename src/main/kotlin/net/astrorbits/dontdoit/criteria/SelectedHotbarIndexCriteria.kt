@@ -19,7 +19,7 @@ class SelectedHotbarIndexCriteria : Criteria(), Listener, ImmediatelyTriggerInsp
 
     override fun readData(data: Map<String, String>) {
         super.readData(data)
-        data.setIntField(INDEX_KEY, false) { index = it - 1 }
+        data.setIntField(SLOT_KEY, false) { index = it - 1 }
         if (index !in 0..8) throw InvalidCriteriaException(this, "Invalid slot: ${index + 1}")
     }
 
@@ -47,6 +47,6 @@ class SelectedHotbarIndexCriteria : Criteria(), Listener, ImmediatelyTriggerInsp
     }
 
     companion object {
-        const val INDEX_KEY = "index"
+        const val SLOT_KEY = "slot"
     }
 }
