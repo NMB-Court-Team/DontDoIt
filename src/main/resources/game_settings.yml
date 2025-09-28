@@ -114,10 +114,10 @@ criteria_command:
 
 # Y坐标准则
 y_level_criteria:
-  below: "Y坐标小于%d（%s）"
-  above: "Y坐标大于%d（%s）"
-  ground: "地面"
-  on_air: "高处"
+  below: "%s（Y<%d）"
+  above: "%s（Y>%d）"
+  ground: "位于地面"
+  on_air: "位于高处"
 
 # 物品
 join_team_item:

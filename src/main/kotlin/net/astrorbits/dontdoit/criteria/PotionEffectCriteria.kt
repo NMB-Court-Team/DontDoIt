@@ -7,8 +7,8 @@ import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityPotionEffectEvent
 import org.bukkit.potion.PotionEffectType
 
-class EffectCriteria : Criteria(), Listener {
-    override val type: CriteriaType = CriteriaType.PICK_UP_ITEM
+class PotionEffectCriteria : Criteria(), Listener {
+    override val type: CriteriaType = CriteriaType.POTION_EFFECT
     lateinit var effectTypes: Set<PotionEffectType>
     var isWildcard: Boolean = false
 
@@ -21,10 +21,10 @@ class EffectCriteria : Criteria(), Listener {
     }
 
     @EventHandler
-    fun onPlayerPickUpItem(event: EntityPotionEffectEvent) {
-        val entity = event.entity as? Player ?: return
+    fun onPlayerGainEffect(event: EntityPotionEffectEvent) {
+        val player = event.entity as? Player ?: return
         if (isWildcard || event.newEffect?.type in effectTypes) {
-            trigger(entity)
+            trigger(player)
         }
     }
 

@@ -20,6 +20,7 @@ enum class CriteriaType {
     BUCKET_OPERATION,
 
     // 实体相关
+    POTION_EFFECT,
     HURT_ENTITY,
     KILL_ENTITY,
     HURT_BY_ENTITY,
@@ -36,6 +37,7 @@ enum class CriteriaType {
     HEALTH,
     ROTATION,
     FOOD_LEVEL,
+    SELECTED_HOTBAR_INDEX,
     HEIGHTMAP_MATCHING_POS,
     LIFE_COUNT,
     WALK_DISTANCE,

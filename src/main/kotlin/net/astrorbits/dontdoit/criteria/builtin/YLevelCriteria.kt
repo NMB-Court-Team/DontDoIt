@@ -7,7 +7,6 @@ import net.astrorbits.dontdoit.criteria.helper.CriteriaType
 import net.astrorbits.dontdoit.criteria.helper.TriggerDifficulty
 import net.astrorbits.dontdoit.criteria.helper.YLevelType
 import net.astrorbits.dontdoit.system.team.TeamData
-import net.kyori.adventure.text.Component
 
 class YLevelCriteria : Criteria(), BuiltinCriteria {
     override val type: CriteriaType = CriteriaType.Y_LEVEL
@@ -28,7 +27,7 @@ class YLevelCriteria : Criteria(), BuiltinCriteria {
             Configs.Y_LEVEL_CRITERIA_BELOW
         } else {
             Configs.Y_LEVEL_CRITERIA_ABOVE
-        }.get().format(border, type.typeNameGetter())
+        }.get().format(type.typeNameGetter(), border)
     }
 
     override fun tick(teamData: TeamData) {
