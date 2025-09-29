@@ -5,6 +5,7 @@ import net.astrorbits.dontdoit.Configs
 import net.astrorbits.dontdoit.DontDoIt
 import net.astrorbits.dontdoit.DynamicSettings
 import net.astrorbits.dontdoit.system.DiamondBehavior
+import net.astrorbits.dontdoit.system.GameState
 import net.astrorbits.dontdoit.system.GameStateManager
 import net.astrorbits.dontdoit.system.team.TeamData.Companion.CRITERIA_DISPLAY_NAME_PLACEHOLDER
 import net.astrorbits.dontdoit.system.team.TeamData.Companion.LIFE_COUNT_PLACEHOLDER
@@ -86,23 +87,37 @@ object TeamManager : Listener {
             val otherTeams = teams.filter { it !== teamData }
             teamData.updateSidebar(otherTeams)
         }
-        spectatorSidebarDisplay.content = teams.filter { it.criteria != null }
-            .map { teamData ->
-                val criteria = teamData.criteria!!
-                val nameFormatConfig = if (teamData.isEliminated) Configs.SIDEBAR_ENTRY_DEAD_NAME else Configs.SIDEBAR_ENTRY_NAME
-                val name = nameFormatConfig.get().format(mapOf(
-                    TEAM_NAME_PLACEHOLDER to teamData.teamName,
-                    LIFE_COUNT_PLACEHOLDER to teamData.lifeCount,
-                    CRITERIA_DISPLAY_NAME_PLACEHOLDER to criteria.displayName
-                ))
-                val numberFormatConfig = if (teamData.isEliminated) Configs.SIDEBAR_ENTRY_DEAD_NUMBER else Configs.SIDEBAR_ENTRY_NUMBER
-                val number = numberFormatConfig.get().format(mapOf(
-                    TEAM_NAME_PLACEHOLDER to teamData.teamName,
-                    LIFE_COUNT_PLACEHOLDER to teamData.lifeCount,
-                    CRITERIA_DISPLAY_NAME_PLACEHOLDER to criteria.displayName
-                ))
-                return@map SidebarDisplay.ScoreEntry(name, number)
+        spectatorSidebarDisplay.content = getInUseTeams().values.map(::formatTeamSidebarInfo)
+        for (player in Bukkit.getOnlinePlayers()) {
+            if (getTeam(player) == null) {
+                spectatorSidebarDisplay.addPlayer(player)
             }
+        }
+    }
+
+    fun formatTeamSidebarInfo(teamData: TeamData): SidebarDisplay.ScoreEntry {
+        val isWinner = GameStateManager.state == GameState.FINISHED && getWinner() === teamData
+
+        val criteria = teamData.criteria
+        val nameFormatConfig = if (teamData.isEliminated) Configs.SIDEBAR_ENTRY_DEAD_NAME else Configs.SIDEBAR_ENTRY_NAME
+        val name = nameFormatConfig.get().format(mapOf(
+            TEAM_NAME_PLACEHOLDER to teamData.teamName,
+            LIFE_COUNT_PLACEHOLDER to teamData.lifeCount,
+            CRITERIA_DISPLAY_NAME_PLACEHOLDER to criteria?.displayName
+        ))
+        val numberFormatConfig = if (teamData.isEliminated) {
+            Configs.SIDEBAR_ENTRY_DEAD_NUMBER
+        } else if (isWinner) {
+            Configs.SIDEBAR_ENTRY_NUMBER_WINNER
+        } else {
+            Configs.SIDEBAR_ENTRY_NUMBER
+        }
+        val number = numberFormatConfig.get().format(mapOf(
+            TEAM_NAME_PLACEHOLDER to teamData.teamName,
+            LIFE_COUNT_PLACEHOLDER to teamData.lifeCount,
+            CRITERIA_DISPLAY_NAME_PLACEHOLDER to criteria?.displayName
+        ))
+        return SidebarDisplay.ScoreEntry(name, number)
     }
 
     fun getTeam(player: Player): TeamData? {
@@ -114,7 +129,12 @@ object TeamManager : Listener {
     }
 
     fun getWinner(): TeamData? {
-        return getInUseTeams().values.firstOrNull { !it.isEliminated }
+        val aliveTeams = getInUseTeams().values.filter { !it.isEliminated }
+        return if (aliveTeams.size == 1) {
+            aliveTeams[0]
+        } else {
+            null
+        }
     }
 
     @EventHandler
@@ -123,7 +143,6 @@ object TeamManager : Listener {
         val player = event.player
         val team = getTeam(player)
         if (team == null) {
-            spectatorSidebarDisplay.addPlayer(player)
             player.gameMode = GameMode.SPECTATOR
             setSpectatorDisplayName(player)
         } else {
@@ -178,6 +197,7 @@ object TeamManager : Listener {
     fun onGameEnd() {
         guessHintAnnounceTimer.reset()
         teams.forEach { team -> team.onGameEnd() }
+        updateSidebars()
     }
 
     fun onEnterPreparation() {

@@ -38,17 +38,11 @@ class TeamData(val color: NamedTextColor) {
     val teamName: Component
         get() = team.displayName()
     val members: List<Player>
-        get() = if (GameStateManager.isWaiting() || membersCache == null) {
-            team.entries.mapNotNull { name -> if (name.isUuid()) null else Bukkit.getPlayer(name) }
-        } else {
-            membersCache!!
-        }
+        get() = team.entries.mapNotNull { name -> if (name.isUuid()) null else Bukkit.getPlayer(name) }
     val memberCount: Int
         get() = team.entries.size
     val hasMember: Boolean
         get() = members.isNotEmpty()
-
-    private var membersCache: List<Player>? = null
 
     var isInUse: Boolean = false
     var lifeCount: Int = DynamicSettings.lifeCount
@@ -144,7 +138,6 @@ class TeamData(val color: NamedTextColor) {
 
     fun onGameStart() {
         isInUse = true
-        membersCache = team.entries.mapNotNull { name -> if (name.isUuid()) null else Bukkit.getPlayer(name) }
         lifeCount = DynamicSettings.lifeCount
         val unbindResult = criteria?.onUnbind(this, CriteriaChangeReason.GAME_STAGE_CHANGE)
         if (unbindResult != false) {
@@ -171,31 +164,7 @@ class TeamData(val color: NamedTextColor) {
     }
 
     fun updateSidebar(otherTeamsData: List<TeamData>) {
-        val isWinner = GameStateManager.state == GameState.FINISHED && TeamManager.getWinner() === this
-        sidebarDisplay.content = otherTeamsData
-            .filter { it.criteria != null }
-            .map { teamData ->
-                val criteria = teamData.criteria!!
-                val nameFormatConfig = if (teamData.isEliminated) Configs.SIDEBAR_ENTRY_DEAD_NAME else Configs.SIDEBAR_ENTRY_NAME
-                val name = nameFormatConfig.get().format(mapOf(
-                    TEAM_NAME_PLACEHOLDER to teamData.teamName,
-                    LIFE_COUNT_PLACEHOLDER to teamData.lifeCount,
-                    CRITERIA_DISPLAY_NAME_PLACEHOLDER to criteria.displayName
-                ))
-                val numberFormatConfig = if (teamData.isEliminated) {
-                    Configs.SIDEBAR_ENTRY_DEAD_NUMBER
-                } else if (isWinner) {
-                    Configs.SIDEBAR_ENTRY_NUMBER_WINNER
-                } else {
-                    Configs.SIDEBAR_ENTRY_NUMBER
-                }
-                val number = numberFormatConfig.get().format(mapOf(
-                    TEAM_NAME_PLACEHOLDER to teamData.teamName,
-                    LIFE_COUNT_PLACEHOLDER to teamData.lifeCount,
-                    CRITERIA_DISPLAY_NAME_PLACEHOLDER to criteria.displayName
-                ))
-                return@map SidebarDisplay.ScoreEntry(name, number)
-            }
+        sidebarDisplay.content = otherTeamsData.map(TeamManager::formatTeamSidebarInfo)
         for (player in members) {
             sidebarDisplay.addPlayer(player)
         }
@@ -238,7 +207,7 @@ class TeamData(val color: NamedTextColor) {
         val whoTriggered: Component = player?.displayName() ?: teamName
 
         criteria?.onUnbind(this, CriteriaChangeReason.TRIGGERED)
-        if (isEliminated) {
+        if (lifeCount - 1 <= 0) {
             criteria = null
         } else {
             criteria = CriteriaManager.getRandomCriteria(this, oldCriteria)

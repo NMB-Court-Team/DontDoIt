@@ -34,17 +34,39 @@ object GameAreaGenerator : Listener {
         Material.DEEPSLATE_COAL_ORE, Material.DEEPSLATE_IRON_ORE, Material.DEEPSLATE_COPPER_ORE, Material.DEEPSLATE_GOLD_ORE,
         Material.DEEPSLATE_REDSTONE_ORE, Material.DEEPSLATE_EMERALD_ORE, Material.DEEPSLATE_LAPIS_ORE, Material.DEEPSLATE_DIAMOND_ORE
     )
-    private const val AIR_THRESHOLD = 10
     private const val COLLECT_Y_RANGE = 64
+    private const val STONE_PERCENTAGE = 0.25
+    private const val STONE_SEARCH_MAX_DISTANCE = 30
 
     @NMSWarning
-    fun generate(generateCenter: Vec3i, world: World) {
+    fun generate(generateCenter: Vec3i, world: World): Boolean {
         val level = (world as? CraftWorld)?.handle ?: throw IllegalArgumentException("Cannot convert org.bukkit.World to net.minecraft.server.level.ServerLevel")
         if (world.environment != World.Environment.NORMAL) throw IllegalStateException("Generating game area not in overworld is not supported")
 
         val centerLoc = generateCenter.center().toLocation(world)
         val centerSafeLoc = centerLoc.clone().apply { y = world.getHighestBlockYAt(centerLoc, HeightMap.MOTION_BLOCKING) + 1.0 }
+        val radius = calcRadius()
+        val minX = generateCenter.x - radius
+        val minZ = generateCenter.z - radius
+        val maxX = generateCenter.x + radius
+        val maxZ = generateCenter.z + radius
 
+        var stoneY: Int? = null
+
+        for (offset in 0 until STONE_SEARCH_MAX_DISTANCE) {
+            var stoneCount = 0
+            for (pos in Vec3i(minX, generateCenter.y - offset, minZ)..Vec3i(maxX, generateCenter.y - offset, maxZ)) {
+                if (world.getType(pos.x, pos.y, pos.z) in STONE_LIKE_BLOCKS) {
+                    stoneCount += 1
+                }
+            }
+            if (stoneCount.toDouble() / (DynamicSettings.gameAreaSize * DynamicSettings.gameAreaSize).toDouble() >= STONE_PERCENTAGE) {
+                stoneY = generateCenter.y - offset
+                break
+            }
+        }
+        if (stoneY == null) return false
+        LOGGER.info("Generating game area: stoneY = $stoneY")
 
         val border = world.worldBorder
         border.center = centerLoc
@@ -52,11 +74,6 @@ object GameAreaGenerator : Listener {
         val size = calcSize()
         border.size = size.toDouble()
 
-        val radius = calcRadius()
-        val minX = generateCenter.x - radius
-        val minZ = generateCenter.z - radius
-        val maxX = generateCenter.x + radius
-        val maxZ = generateCenter.z + radius
         for (player in Bukkit.getOnlinePlayers()) {
             val playerLoc = player.location.clone()
             player.respawnLocation = centerSafeLoc
@@ -89,7 +106,7 @@ object GameAreaGenerator : Listener {
         }
 
         val bedrockDepth = Configs.BEDROCK_DEPTH.get()
-        val bedrockY = generateCenter.y - bedrockDepth
+        val bedrockY = stoneY - bedrockDepth
 
         for (pos in Vec3i(minX, bedrockY, minZ)..Vec3i(maxX, bedrockY, maxZ)) {
             level.setBlock(BlockPos(pos.x, pos.y, pos.z), (Material.BEDROCK.createBlockData() as CraftBlockData).state, Block.UPDATE_CLIENTS)
@@ -101,7 +118,7 @@ object GameAreaGenerator : Listener {
         val diamondOreGeneration = Configs.DIAMOND_ORE_GENERATION.get()
 
         for (depth in 1 until bedrockDepth) {
-            val y = generateCenter.y - depth
+            val y = stoneY - depth + 1
             val stones: MutableSet<Vec3i> = mutableSetOf()
             for (pos in Vec3i(minX, y, minZ)..Vec3i(maxX, y, maxZ)) {
                 if (world.getType(pos.x, pos.y, pos.z) in STONE_LIKE_BLOCKS) {
@@ -118,6 +135,7 @@ object GameAreaGenerator : Listener {
             }
         }
         LOGGER.info("Andesites and ores generated")
+        return true
     }
 
     fun calcSize(): Int = DynamicSettings.gameAreaSize + 1 - DynamicSettings.gameAreaSize % 2  // 取比gameAreaSize大的最小奇数
@@ -133,54 +151,6 @@ object GameAreaGenerator : Listener {
         val minY = center.y - Configs.BEDROCK_DEPTH.get()
         val maxY = center.y + COLLECT_Y_RANGE
         return BlockBox(minX, minY, minZ, maxX, maxY, maxZ)
-    }
-
-    // GPT给出的在异步线程遍历世界上的方块的方案
-    private fun collectAllBlockMaterialsAsync(world: World, from: Vec3i, to: Vec3i) {
-        val chunkMinX = from.x shr 4
-        val chunkMaxX = to.x shr 4
-        val chunkMinZ = from.z shr 4
-        val chunkMaxZ = to.z shr 4
-
-        val snapshots = mutableMapOf<Pair<Int, Int>, ChunkSnapshot>()
-
-        for (cx in chunkMinX..chunkMaxX) {
-            for (cz in chunkMinZ..chunkMaxZ) {
-                val chunk = world.getChunkAt(cx, cz)
-                snapshots[cx to cz] = chunk.getChunkSnapshot(true, false, false)
-            }
-        }
-
-        TaskBuilder(DontDoIt.instance).setAsync()
-            .setTask {
-                val materials = mutableSetOf<Material>()
-                val allPossible = Material.entries.size
-
-                outer@for (x in from.x..to.x) {
-                    for (z in from.z..to.z) {
-                        val snapshot = snapshots[(x shr 4) to (z shr 4)] ?: continue
-                        var airCount = 0
-                        for (y in from.y..to.y) {
-                            val type = snapshot.getBlockType(x and 15, y, z and 15)
-
-                            if (type.isAir) {
-                                airCount++
-                                if (airCount >= AIR_THRESHOLD) break
-                            } else {
-                                airCount = 0
-                                materials.add(type)
-                                if (materials.size == allPossible) {
-                                    break@outer
-                                }
-                            }
-                        }
-                    }
-                }
-
-                TaskHelper.runForceSync(DontDoIt.instance) {
-                    //materialsInArea = materials
-                }
-            }.runTask()
     }
 
     fun onEnterPreparation() {

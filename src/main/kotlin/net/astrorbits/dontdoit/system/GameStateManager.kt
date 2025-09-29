@@ -36,8 +36,12 @@ object GameStateManager {
     }
 
     fun startGame(starter: Player) {
+        val generateResult = GameAreaGenerator.generate(Vec3d.fromLocation(starter.location).floor(), starter.world)
+        if (!generateResult) {
+            starter.sendMessage(Configs.CANNOT_START_GAME_MESSAGE.get())
+            return
+        }
         state = GameState.RUNNING
-        GameAreaGenerator.generate(Vec3d.fromLocation(starter.location).floor(), starter.world)
         CriteriaManager.updateYLevelCriteria(GameAreaGenerator.groundYLevel!!)
         CriteriaManager.updateUserDefinedCriteria(Preparation.customCriteriaNames)
         TeamManager.onGameStart()
@@ -49,8 +53,10 @@ object GameStateManager {
             5, 50, 10
         ))
         Bukkit.getOnlinePlayers().forEach { player ->
-            player.isInvulnerable = false
-            player.allowFlight = false
+            if (TeamManager.getTeam(player) != null) {
+                player.isInvulnerable = false
+                player.allowFlight = false
+            }
             Preparation.removePrepareGameItems(player)
             player.playSound(
                 player.location,
@@ -102,6 +108,14 @@ object GameStateManager {
         }
         val triggerCountMessage = builder.appendNewline().append(Configs.TRIGGER_COUNT_TAIL.get()).build()
         Bukkit.broadcast(triggerCountMessage)
+        for (player in Bukkit.getOnlinePlayers()) {
+            player.playSound(
+                player.location,
+                "minecraft:ui.toast.challenge_complete",
+                SoundCategory.BLOCKS,
+                0.75f, 1f
+            )
+        }
 
         TeamManager.onGameEnd()
         CriteriaManager.onGameEnd()

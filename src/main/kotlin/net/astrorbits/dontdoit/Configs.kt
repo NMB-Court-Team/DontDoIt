@@ -98,6 +98,10 @@ object Configs {
         "change_settings_hint_message",
         "<yellow>输入<light_purple><hover:show_text:'<aqua>点击执行'><click:run_command:/criteria settings set>/criteria settings set</click></hover><yellow>来修改游戏设置"
     ))
+    val CANNOT_START_GAME_MESSAGE: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "cannot_start_game_message",
+        "<red>此位置无法开始游戏，请换一个位置"
+    ))
     //endregion
 
     //region 游戏切换阶段的消息

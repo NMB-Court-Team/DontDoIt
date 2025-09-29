@@ -25,6 +25,6 @@ interface DamageTypeInspectCandidate : InventoryInspectable {
 
     companion object {
         const val DEFAULT_WEIGHT_MULTIPLIER: Double = 1.15
-        const val DEFAULT_NO_MATCHING_WEIGHT_MULTIPLIER: Double = 0.5
+        const val DEFAULT_NO_MATCHING_WEIGHT_MULTIPLIER: Double = 0.1
     }
 }

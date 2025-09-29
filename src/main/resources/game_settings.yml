@@ -29,6 +29,7 @@ self_remove_custom_criteria_message: "<yellow>已取消自己队伍定义的自�
 other_remove_custom_criteria_message: "<yellow>{player}取消了你的队伍定义的自定义词条"
 enter_prepare_message: "<yellow>请使用手上的物品<green><bold>选择队伍</bold><yellow>，然后设置<green><bold>自定义词条"
 change_settings_hint_message: "<yellow>输入<light_purple><hover:show_text:'<aqua>点击执行'><click:run_command:/criteria settings set>/criteria settings set</click></hover><yellow>来修改游戏设置"
+cannot_start_game_message: "<red>此位置无法开始游戏，请换一个位置"
 
 # 游戏切换阶段的消息
 start_game_message: "<green><bold>游戏开始！"
@@ -110,8 +111,8 @@ criteria_command:
     change_settings_when_not_waiting: "游戏开始后到游戏重置之前不允许修改设置"
   success:
     reset_game: "<yellow>已重置游戏"
-    set_life: "<yellow>已设置 {team_name} 的生命值为 <red>{life_count}"
-    get_team_criteria: "{team_name} 的词条是 {criteria}"
+    set_life: "<yellow>已设置 {team_name} <yellow>的生命值为 <red>{life_count}"
+    get_team_criteria: "{team_name} <yellow>的词条是 {criteria}"
     reset_settings: "<yellow>已重置游戏设置"
 
 # 动态配置界面文本

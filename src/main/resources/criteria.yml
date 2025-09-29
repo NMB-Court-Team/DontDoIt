@@ -487,9 +487,11 @@ criteria:
     - name: 背包里没有铁装备
       difficulty: very_easy
       item: iron_helmet, iron_chestplate, iron_leggings, iron_boots
+      reversed: true
     - name: 背包里没有钻石工具或武器
       difficulty: very_easy
       item: diamond_shovel, diamond_pickaxe, diamond_axe, diamond_hoe, diamond_sword
+      reversed: true
   # 玩家所在位置的heightmap高度图对应的最高位置与玩家所在位置相同或不同时触发，具体取决于reversed
   heightmap_matching_pos:
     - name: 头顶无方块遮挡

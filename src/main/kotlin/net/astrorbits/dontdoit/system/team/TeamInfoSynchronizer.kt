@@ -11,7 +11,7 @@ import java.lang.reflect.Field
 @NMSWarning
 object TeamInfoSynchronizer {
     fun syncTeamInfos(teams: List<TeamData>) {
-        val teamPackets: List<ClientboundSetPlayerTeamPacket> = teams.filter { it.hasMember }.map { teamData ->
+        val teamPackets: List<ClientboundSetPlayerTeamPacket> = teams.map { teamData ->
             val team = teamData.team.getHandle()
             return@map ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(team, true)
         }

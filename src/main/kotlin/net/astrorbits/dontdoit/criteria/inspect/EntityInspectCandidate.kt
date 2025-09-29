@@ -32,6 +32,6 @@ interface EntityInspectCandidate: InventoryInspectable {
     companion object {
         const val DEFAULT_WEIGHT_MULTIPLIER: Double = 1.2
         const val DEFAULT_SURROUNDING_WEIGHT_MULTIPLIER: Double = 0.9
-        const val DEFAULT_NO_MATCHING_WEIGHT_MULTIPLIER: Double = 0.5
+        const val DEFAULT_NO_MATCHING_WEIGHT_MULTIPLIER: Double = 0.1
     }
 }

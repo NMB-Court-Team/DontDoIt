@@ -48,6 +48,7 @@ object Preparation : Listener {
     fun onEnterPreparation() {
         for (player in Bukkit.getOnlinePlayers()) {
             setPrepared(player)
+            player.level = 0
         }
         Bukkit.getWorlds().forEach { world ->
             world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false)
@@ -93,12 +94,15 @@ object Preparation : Listener {
         if (event.player.isOp) {
             event.player.sendMessage(Configs.CHANGE_SETTINGS_HINT_MESSAGE.get())
         }
+        event.player.level = 0
     }
 
     @EventHandler
     fun onInventoryClick(event: InventoryClickEvent) {
         if (!GameStateManager.isWaiting()) return
-        if (event.cursor.isPrepareGameItem() || event.currentItem?.isPrepareGameItem() == true) {
+        if (event.cursor.isPrepareGameItem() || event.currentItem?.isPrepareGameItem() == true ||
+            (event.hotbarButton != -1 && event.inventory.getItem(event.hotbarButton)?.isPrepareGameItem() == true)
+        ) {
             event.isCancelled = true
             event.view.setCursor(ItemStack.empty())
         }
