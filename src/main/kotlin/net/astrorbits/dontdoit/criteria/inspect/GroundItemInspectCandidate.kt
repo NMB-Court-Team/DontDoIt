@@ -22,7 +22,7 @@ interface GroundItemInspectCandidate : InventoryInspectable {
             getSurroundingGroundItemWeightMultiplier(context)
         } else if (context.allGroundItems.any { it in items }) {
             getGroundItemMatchingWeightMultiplier(context)
-        } else 1.0
+        } else DEFAULT_NO_MATCHING_WEIGHT_MULTIPLIER
     }
 
     override fun modifyWeight(weight: Double, bindTarget: TeamData, context: InventoryInspectContext): Double {
@@ -32,5 +32,6 @@ interface GroundItemInspectCandidate : InventoryInspectable {
     companion object {
         const val DEFAULT_WEIGHT_MULTIPLIER: Double = 1.2
         const val DEFAULT_SURROUNDING_WEIGHT_MULTIPLIER: Double = 0.9
+        const val DEFAULT_NO_MATCHING_WEIGHT_MULTIPLIER: Double = 0.5
     }
 }

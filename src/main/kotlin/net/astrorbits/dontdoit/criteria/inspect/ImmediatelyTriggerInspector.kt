@@ -26,6 +26,6 @@ interface ImmediatelyTriggerInspector : InventoryInspectable {
     }
 
     companion object {
-        const val DIRECTLY_TRIGGER_MULTIPLIER = 0.9
+        const val DIRECTLY_TRIGGER_MULTIPLIER = 0.8
     }
 }

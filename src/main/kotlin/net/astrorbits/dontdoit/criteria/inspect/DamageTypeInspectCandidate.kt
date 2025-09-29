@@ -16,7 +16,7 @@ interface DamageTypeInspectCandidate : InventoryInspectable {
         val damageTypes = getCandidateDamageTypes()
         return if (context.availableDamageTypes.any { it in damageTypes } || canMatchAnyDamageType()) {
             getDamageTypeMatchingWeightMultiplier(context)
-        } else 1.0
+        } else DEFAULT_NO_MATCHING_WEIGHT_MULTIPLIER
     }
 
     override fun modifyWeight(weight: Double, bindTarget: TeamData, context: InventoryInspectContext): Double {
@@ -25,5 +25,6 @@ interface DamageTypeInspectCandidate : InventoryInspectable {
 
     companion object {
         const val DEFAULT_WEIGHT_MULTIPLIER: Double = 1.15
+        const val DEFAULT_NO_MATCHING_WEIGHT_MULTIPLIER: Double = 0.5
     }
 }

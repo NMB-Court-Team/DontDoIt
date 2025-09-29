@@ -23,7 +23,7 @@ interface InventoryItemInspectCandidate : InventoryInspectable {
             getSelfInventoryItemMatchingWeightMultiplier(context)
         } else if (context.otherInventoryItems.any { it in items }) {
             getOtherInventoryItemWeightMultiplier(context)
-        } else 1.0
+        } else DEFAULT_NO_MATCHING_WEIGHT_MULTIPLIER
     }
 
     override fun modifyWeight(weight: Double, bindTarget: TeamData, context: InventoryInspectContext): Double {
@@ -33,5 +33,6 @@ interface InventoryItemInspectCandidate : InventoryInspectable {
     companion object {
         const val DEFAULT_SELF_WEIGHT_MULTIPLIER: Double = 0.9
         const val DEFAULT_OTHER_WEIGHT_MULTIPLIER: Double = 1.2
+        const val DEFAULT_NO_MATCHING_WEIGHT_MULTIPLIER: Double = 0.5
     }
 }
