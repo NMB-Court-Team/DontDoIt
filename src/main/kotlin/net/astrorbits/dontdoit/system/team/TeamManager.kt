@@ -130,6 +130,7 @@ object TeamManager : Listener {
             team.setPlayerDisplayName(player)
         }
         TeamInfoSynchronizer.syncTeamInfos(teams)
+        updateSidebars()
     }
 
     private val guessHintAnnounceTimer: Timer = object : Timer(DontDoIt.instance) {

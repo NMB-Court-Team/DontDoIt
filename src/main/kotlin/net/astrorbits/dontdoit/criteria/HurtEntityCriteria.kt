@@ -77,7 +77,7 @@ class HurtEntityCriteria : Criteria(), Listener, SourcedDamageInspector, Invento
         if ((isEntityTypeWildcard || entity.type in entityTypes) &&
             (isMainhandItemTypeWildcard || player.inventory.itemInMainHand.type in mainhandItemTypes) &&
             (isDamageTypeWildcard || damageType in damageTypes) &&
-            ((event.damage in damageAmountRange) xor rangeReversed)
+            ((event.finalDamage in damageAmountRange) xor rangeReversed)
         ) {
             trigger(player)
         }

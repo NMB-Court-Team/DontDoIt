@@ -46,7 +46,8 @@ class InBlockCriteria : Criteria(), Listener, BlockInspectCandidate, Immediately
             world.getBlockAt(player.location.clone().add(0.0, player.height / 2, 0.0)), // middle
             world.getBlockAt(player.eyeLocation) // eye
         )
-        return checkBlocks.any { it.type in blockTypes } xor reversed
+        return (checkBlocks.all { it.type in blockTypes } && !reversed)
+            || (checkBlocks.none { it.type in blockTypes } && reversed)
     }
 
     override fun modifyWeight(weight: Double, bindTarget: TeamData, context: InventoryInspectContext): Double {

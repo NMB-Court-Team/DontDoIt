@@ -32,7 +32,8 @@ class InventoryContainingItemCriteria : Criteria(), InventoryItemInspectCandidat
     }
 
     override fun shouldTrigger(player: Player): Boolean {
-        return (player.inventory.contents.any { it?.type in itemTypes } || isWildcard) xor reversed
+        return ((player.inventory.contents.any { it?.type in itemTypes } || isWildcard) && !reversed)
+            || ((player.inventory.contents.none { it?.type in itemTypes } && !isWildcard) && reversed)
     }
 
     override fun readData(data: Map<String, String>) {

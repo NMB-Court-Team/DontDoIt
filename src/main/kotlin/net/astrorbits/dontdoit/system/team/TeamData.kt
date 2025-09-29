@@ -196,6 +196,9 @@ class TeamData(val color: NamedTextColor) {
                 ))
                 return@map SidebarDisplay.ScoreEntry(name, number)
             }
+        for (player in members) {
+            sidebarDisplay.addPlayer(player)
+        }
     }
 
     fun addLife(amount: Int = 1) {
@@ -280,8 +283,10 @@ class TeamData(val color: NamedTextColor) {
             }.runTask()
 
         reduceLife(1)
-        mainTimer.resetAndStart()
-        LOGGER.info("Team $teamId triggered criteria ${oldCriteria?.displayName}, new criteria is ${criteria!!.displayName}, who triggered: {}", player?.name ?: teamId)
+        if (!isEliminated) {
+            mainTimer.resetAndStart()
+        }
+        LOGGER.info("Team $teamId triggered criteria ${oldCriteria?.displayName}, new criteria is ${criteria?.displayName}, who triggered: {}", player?.name ?: teamId)
     }
 
     private val allowGuess: Boolean
@@ -395,6 +400,7 @@ class TeamData(val color: NamedTextColor) {
         }
         LOGGER.info("Team $teamId is eliminated")
 
+        TeamManager.updateSidebars()
         TeamManager.tryEndGame()
     }
 

@@ -463,31 +463,6 @@ abstract class Criteria {
         fieldSetter(result, entries.isWildcard)
     }
 
-    protected fun Map<String, String>.setInventoryTypes(
-        key: String,
-        absentBehavior: AbsentBehavior = AbsentBehavior.EMPTY,
-        fieldSetter: (itemTypes: Set<InventoryType>, isWildcard: Boolean) -> Unit
-    ) {
-        val entries = getCsvEntries(key, absentBehavior)
-
-        val result = HashSet<InventoryType>()
-        for ((type, isTag, isReversed) in entries) {
-            if (isTag) throw InvalidCriteriaException(this@Criteria, "Inventory tag does not exist: $type")
-            if (isReversed && result.isEmpty()) {
-                result.addAll(InventoryType.entries.filter { true })
-            }
-            val inventoryTypes = HashSet<InventoryType>()
-            inventoryTypes.add(InventoryType.valueOf(type.uppercase()))
-
-            if (isReversed) {
-                result.removeAll(inventoryTypes)
-            } else {
-                result.addAll(inventoryTypes)
-            }
-        }
-        fieldSetter(result, entries.isWildcard)
-    }
-
     companion object {
         const val NAME_KEY = "name"
         const val TRIGGER_DIFFICULTY_KEY = "difficulty"

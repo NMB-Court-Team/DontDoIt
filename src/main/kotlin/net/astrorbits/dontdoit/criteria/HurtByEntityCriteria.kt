@@ -58,7 +58,7 @@ class HurtByEntityCriteria : Criteria(), Listener, SourcedDamageInspector {
         val damageType = event.damageSource.damageType
         if ((isEntityTypeWildcard || entity?.type in entityTypes) &&
             (isDamageTypeWildcard || damageType in damageTypes) &&
-            ((event.damage in damageAmountRange) xor rangeReversed)
+            ((event.finalDamage in damageAmountRange) xor rangeReversed)
         ) {
             trigger(player)
         }

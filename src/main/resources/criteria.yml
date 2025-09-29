@@ -59,10 +59,10 @@ criteria:
       difficulty: easy
       block: dirt
     - name: 挖掘工作台
-      difficulty: easy
+      difficulty: normal
       block: crafting_table
     - name: 挖掘熔炉
-      difficulty: easy
+      difficulty: normal
       block: furnace
   # 捡起item中包含的物品时触发
   pick_up_item:
@@ -179,10 +179,14 @@ criteria:
       difficulty: hard
       entity: "/"
       damage_type: in_wall
-    - name: 一次性受到至少4×❤伤害
-      difficulty: normal
+    - name: 一次性受到至少5×❤伤害
+      difficulty: easy
       entity: "/"
       amount: 8..
+    - name: 一次性受到至少10×❤伤害
+      difficulty: very_hard
+      entity: "/"
+      amount: 20..
     - name: 被箭伤害
       difficulty: hard
       damage_type: arrow
@@ -199,7 +203,7 @@ criteria:
       difficulty: easy
       entity: player
     - name: 杀死铁傀儡
-      difficulty: normal
+      difficulty: hard
       entity: iron_golem
     - name: 杀死僵尸
       difficulty: normal
@@ -227,7 +231,7 @@ criteria:
       difficulty: trigger_definitely
     - name: 跳20下
       count: 20
-      difficulty: easy
+      difficulty: normal
   # 拿着item与block方块交互时触发
   interact_block_with_item:
     - name: 打开工作台
@@ -307,7 +311,7 @@ criteria:
   # 踩踏互动时触发
   physical_action:
     - name: 踩压力板
-      difficulty: normal
+      difficulty: easy
       block: "#pressure_plates"
     - name: 践踏耕地
       difficulty: hard
@@ -384,20 +388,20 @@ criteria:
       difficulty: normal
       pitch: 60..
     - name: 面朝北方
-      difficulty: very_easy
+      difficulty: trigger_definitely
       yaw: -150..150
       yaw_reversed: true
       pitch: -30..30
     - name: 面朝东方
-      difficulty: very_easy
+      difficulty: trigger_definitely
       yaw: -120..-60
       pitch: -30..30
     - name: 面朝南方
-      difficulty: very_easy
+      difficulty: trigger_definitely
       yaw: -30..30
       pitch: -30..30
     - name: 面朝西方
-      difficulty: very_easy
+      difficulty: trigger_definitely
       yaw: 60..120
       pitch: -30..30
   # 主手拿着mainhand物品，且副手拿着offhand物品时触发
@@ -480,6 +484,12 @@ criteria:
       # 若为false，则物品栏内有至少1个item物品时触发
       # 若为true，则物品栏内没有item物品时触发
       reversed: true
+    - name: 背包里没有铁装备
+      difficulty: very_easy
+      item: iron_helmet, iron_chestplate, iron_leggings, iron_boots
+    - name: 背包里没有钻石工具或武器
+      difficulty: very_easy
+      item: diamond_shovel, diamond_pickaxe, diamond_axe, diamond_hoe, diamond_sword
   # 玩家所在位置的heightmap高度图对应的最高位置与玩家所在位置相同或不同时触发，具体取决于reversed
   heightmap_matching_pos:
     - name: 头顶无方块遮挡
@@ -534,20 +544,20 @@ criteria:
     - name: 持续移动30秒
       difficulty: normal
       type: move
-      time: 800
+      time: 600
     - name: 20秒内不疾跑
       difficulty: normal
       type: sprint
       time: 400
       reversed: true
-    - name: 持续疾跑5秒
+    - name: 持续疾跑8秒
       difficulty: normal
       type: sprint
-      time: 600
+      time: 160
     - name: 60秒内不潜行
       difficulty: normal
       type: sneak
-      time: 600
+      time: 1200
       reversed: true
     - name: 潜行3秒
       difficulty: normal
@@ -563,6 +573,10 @@ criteria:
       type: rotate
       time: 100
       reversed: true
+    - name: 滞空3秒
+      difficulty: normal
+      type: on_air
+      time: 60
   # 具体触发规则见mode字段的注释
   criteria_hold_time:
     - name: 100秒不换词条
@@ -581,21 +595,21 @@ criteria:
       time: 1200
   # 血量在count范围内时触发
   life_count:
-    - name: 剩余规则大于7个
-      difficulty: trigger_definitely
-      # 血量范围，必须是整数范围
-      count: 8..
-    - name: 剩余规则小于7个
-      difficulty: trigger_definitely
-      count: ..6
+#    - name: 剩余规则大于7个
+#      difficulty: trigger_definitely
+#      # 血量范围，必须是整数范围
+#      count: 8..
+#    - name: 剩余规则小于7个
+#      difficulty: trigger_definitely
+#      count: ..6
   # 升级时触发
   level_up:
     - name: 升级
       difficulty: hard
   # 自爆词条，立即触发
-  immediately_trigger:
-    - name: □□□□□
-      difficulty: trigger_definitely
+#  immediately_trigger:
+#    - name: □□□□□
+#      difficulty: trigger_definitely
   # 当用桶装起流体或倒出fluid流体时触发，具体取决于type
   bucket_operation:
     - name: 用桶装水
@@ -618,14 +632,43 @@ criteria:
     - name: 选中快捷栏最后一格
       difficulty: very_easy
       slot: 9
+  # 把item物品放入target_inventory容器或界面，或从target_inventory容器或界面拿出时触发，具体取决于reversed
   transfer_item:
-    - name: 把木镐放入熔炉
-      difficulty: easy
-      item: wooden_pickaxe
-      to: furnace
-    - name: 从熔炉拿出木镐
-      difficulty: easy
-      item: wooden_pickaxe
-      from: furnace
-
-
+    - name: 把煤炭放入熔炉
+      difficulty: normal
+      item: coal
+      # 容器或界面的类型，可以是：
+      # chest: 箱子
+      # dispenser: 发射器
+      # dropper: 投掷器
+      # furnace: 熔炉
+      # workbench: 工作台
+      # enchanting: 附魔台
+      # brewing: 酿造台
+      # merchant: 村民交易界面
+      # ender_chest: 末影箱
+      # anvil: 铁砧
+      # smithing: 锻造台
+      # beacon: 信标
+      # hopper: 漏斗
+      # shulker_box: 潜影盒
+      # barrel: 木桶
+      # blast_furnace: 高炉
+      # smoker: 烟熏炉
+      # loom: 织布机
+      # cartography: 制图台
+      # grindstone: 砂轮
+      # stonecutter: 切石机
+      # crafter: 合成器
+      target_inventory: furnace
+    - name: 从熔炉拿出铁锭
+      difficulty: normal
+      item: iron_ingot
+      target_inventory: furnace
+      # 如果为false，则放入target_inventory容器或界面时触发
+      # 如果为true，则从target_inventory容器或界面拿出时触发
+      reversed: true
+    - name: 把粗铁放入熔炉
+      difficulty: normal
+      item: raw_iron
+      target_inventory: furnace
