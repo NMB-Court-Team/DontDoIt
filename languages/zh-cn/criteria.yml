@@ -1,0 +1,679 @@
+criteria:
+  # 玩家吃下item中包含的物品时触发
+  eat_item:
+      # 词条名称
+    - name: 吃腐肉
+      # 词条触发难度，从简单到困难分为：
+      # trigger_definitely  几乎一定会触发的自爆词条，比如：滞空，蹦跶
+      # very_easy           被其他玩家干扰而自爆的词条，比如：受到伤害，死亡
+      # easy                比较容易触发的词条，比如：头顶无方块遮挡，复活
+      # normal      <默认值> 常规词条，比如：脚下是安山岩，吃腐肉
+      # hard                比较难触发的词条，比如：被僵尸杀死
+      # very_hard           非常难触发的词条，比如：淹死
+      # impossible          几乎不可能触发的词条，比如：哈哈我想不出来，能写出不可能触发的词条的也是神人了
+      difficulty: normal
+      # 可以用逗号分隔多种物品，支持物品标签，物品标签需要用"#"开头
+      # 在物品或物品标签前加上"!"代表排除该物品
+      # 填入"*"或没有item字段，则代表任意物品
+      item: rotten_flesh
+    - name: 吃面包
+      difficulty: normal
+      item: bread
+    - name: 吃熟肉
+      difficulty: normal
+      item: cooked_beef, cooked_porkchop, cooked_mutton, cooked_chicken, cooked_rabbit, cooked_cod, cooked_salmon
+  # 玩家行走距离超过distance格时触发
+  walk_distance:
+    - name: 行走40米
+      difficulty: normal
+      # 行走距离，可以是浮点数
+      distance: 40
+  # 挖掘block中包含的方块时触发
+  break_block:
+    - name: 挖掘安山岩
+      difficulty: easy
+      # 格式与item字段相同
+      block: andesite
+    - name: 挖掘石头
+      difficulty: normal
+      block: stone
+    - name: 挖掘钻石矿石
+      difficulty: hard
+      block: diamond_ore
+    - name: 挖掘磨制安山岩
+      difficulty: normal
+      block: polished_andesite
+    - name: 挖掘煤矿石
+      difficulty: normal
+      block: coal_ore
+    - name: 挖掘铁矿石
+      difficulty: normal
+      block: iron_ore
+    - name: 挖掘原木
+      difficulty: easy
+      block: "#logs"
+    - name: 挖掘树叶
+      difficulty: normal
+      block: "#leaves"
+    - name: 挖掘泥土
+      difficulty: easy
+      block: dirt
+    - name: 挖掘工作台
+      difficulty: normal
+      block: crafting_table
+    - name: 挖掘熔炉
+      difficulty: normal
+      block: furnace
+  # 捡起item中包含的物品时触发
+  pick_up_item:
+    - name: 拾起煤炭
+      difficulty: normal
+      item: coal
+    - name: 拾起腐肉
+      difficulty: normal
+      item: rotten_flesh
+    - name: 拾起安山岩
+      difficulty: easy
+      item: andesite
+    - name: 拾起圆石
+      difficulty: normal
+      item: cobblestone
+    - name: 拾起钻石
+      difficulty: hard
+      item: diamond
+    - name: 拾起粗铁
+      difficulty: normal
+      item: raw_iron
+    - name: 拾起生肉
+      difficulty: normal
+      item: beef, porkchop, mutton, chicken, rabbit, cod, salmon
+    - name: 拾起木棍
+      difficulty: easy
+      item: stick
+    - name: 拾起树苗
+      difficulty: easy
+      item: "#saplings"
+  # 在空中掉落超过distance格时触发
+  fall_distance:
+    - name: 坠落5格
+      difficulty: normal
+      # 坠落距离，可以是浮点数
+      distance: 5
+  # 合成item时触发
+  craft_item:
+    - name: 合成石镐
+      difficulty: hard
+      item: stone_pickaxe
+    - name: 合成铁镐
+      difficulty: hard
+      item: iron_pickaxe
+    - name: 合成熔炉
+      difficulty: hard
+      item: furnace
+    - name: 合成木镐
+      difficulty: hard
+      item: wooden_pickaxe
+    - name: 合成盾牌
+      difficulty: hard
+      item: shield
+    - name: 合成磨制安山岩
+      difficulty: easy
+      item: polished_andesite
+    - name: 合成剪刀
+      difficulty: hard
+      item: shears
+    - name: 合成工作台
+      difficulty: easy
+      item: crafting_table
+    - name: 合成钻石工具或武器
+      difficulty: hard
+      item: diamond_shovel, diamond_pickaxe, diamond_hoe, diamond_axe, diamond_sword
+  # 玩家拥有effect状态效果时触发
+  status_effect:
+    - name: 拥有饥饿效果
+      difficulty: normal
+      # 可以用"*"代表任意状态效果，可指定多个，不允许标签
+      effect: hunger
+    - name: 拥有中毒效果
+      difficulty: very_hard
+      effect: poison
+  # 一次性对entity造成amount点damage_type类型的伤害时触发
+  hurt_entity:
+    - name: 造成伤害
+      difficulty: easy
+      # 实体类型，格式与item字段相同
+      entity: "*"
+      # 伤害类型，格式与item字段相同
+      damage_type: "*"
+      # 伤害量，可以是浮点数
+      # 格式为"[<min>]..[<max>]"，代表一个大于等于<min>且小于等于<max>的范围
+      # <min>为空时代表小于等于<max>
+      # <max>为空时代表大于等于<min>
+      # 若都为空，则代表可以为任意值
+      amount: ..
+      reversed: false
+    - name: 用镐子攻击生物
+      difficulty: hard
+      mainhand: "#pickaxes"
+    - name: 用斧子攻击生物
+      difficulty: normal
+      entity: "*"
+      mainhand: "#axes"
+    - name: 空手打人
+      difficulty: normal
+      entity: player
+      mainhand: air
+  # 一次性收到来自entity的amount点damage_type类型的伤害时触发
+  hurt_by_entity:
+    - name: 受到伤害
+      difficulty: very_easy
+      # 伤害来源实体，可以设置为"/"来代表无来源伤害
+      entity: "*"
+      damage_type: "*"
+      amount: ..
+      reversed: false
+    - name: 在方块里窒息
+      difficulty: hard
+      entity: "/"
+      damage_type: in_wall
+    - name: 一次性受到至少5×❤伤害
+      difficulty: easy
+      entity: "*"
+      amount: 10..
+    - name: 一次性受到至少10×❤伤害
+      difficulty: very_hard
+      entity: "*"
+      amount: 20..
+    - name: 被箭伤害
+      difficulty: hard
+      damage_type: arrow
+    - name: 受到火焰伤害
+      difficulty: normal
+      damage_type: campfire, in_fire, hot_floor, lava, on_fire
+  # 以damage_type类型的伤害杀死entity中包含的实体时触发
+  kill_entity:
+    - name: 杀死生物
+      difficulty: easy
+      entity: "*"
+      damage_type: "*"
+    - name: 杀死玩家
+      difficulty: easy
+      entity: player
+    - name: 杀死铁傀儡
+      difficulty: hard
+      entity: iron_golem
+    - name: 杀死僵尸
+      difficulty: normal
+      entity: zombie
+  # 被entity因damage_type类型的伤害杀死时触发
+  killed_by_entity:
+    - name: 死亡
+      difficulty: very_easy
+      # 伤害来源实体，可以设置为"/"来代表无来源伤害
+      entity: "*"
+      damage_type: "*"
+    - name: 摔死
+      difficulty: hard
+      entity: "/"
+      damage_type: fall
+    - name: 被炸死
+      difficulty: hard
+      damage_type: explosion, player_explosion
+    - name: 被烧死
+      difficulty: hard
+      damage_type: campfire, in_fire, hot_floor, lava, on_fire
+  # 跳跃时触发
+  jump:
+    - name: 蹦跶
+      difficulty: trigger_definitely
+    - name: 跳20下
+      count: 20
+      difficulty: normal
+  # 拿着item与block方块交互时触发
+  interact_block_with_item:
+    - name: 打开工作台
+      difficulty: easy
+      block: crafting_table
+      item: "*"
+    - name: 打开熔炉
+      difficulty: easy
+      block: furnace
+    - name: 打开箱子
+      difficulty: normal
+      block: chest, trapped_chest
+    - name: 手持石镐打开工作台
+      difficulty: hard
+      block: crafting_table
+      item: stone_pickaxe
+    - name: 用打火石在黑曜石上点火
+      difficulty: very_hard
+      block: obsidian
+      item: flint_and_steel
+    - name: 用锄头耕地
+      difficulty: very_hard
+      block: grass_block, dirt
+  # 丢出item时触发
+  drop_item:
+    - name: 丢弃物品
+      difficulty: easy
+      item: "*"
+    - name: 丢弃木镐
+      difficulty: normal
+      item: wooden_pickaxe
+    - name: 丢弃小麦种子
+      difficulty: normal
+      item: wheat_seeds
+    - name: 丢弃羊毛
+      difficulty: hard
+      item: "#wool"
+    - name: 丢弃花
+      difficulty: normal
+      item: "#flowers"
+  # 放置block方块时触发
+  place_block:
+    - name: 放置方块
+      difficulty: trigger_definitely
+      block: "*"
+    - name: 放置木板
+      difficulty: normal
+      block: "#planks"
+    - name: 放置30个方块
+      difficulty: easy
+      block: "*"
+      count: 30
+    - name: 放置工作台
+      difficulty: easy
+      block: crafting_table
+    - name: 放置熔炉
+      difficulty: easy
+      block: furnace
+    - name: 放置圆石
+      difficulty: normal
+      block: cobblestone
+    - name: 放置安山岩
+      difficulty: easy
+      block: andesite
+    - name: 放置磨制安山岩
+      difficulty: easy
+      block: polished_andesite
+    - name: 放置树叶
+      difficulty: normal
+      block: "#leaves"
+    - name: 放置泥土
+      difficulty: easy
+      block: dirt
+    - name: 放置石头
+      difficulty: hard
+      block: stone
+  # 踩踏互动时触发
+  physical_action:
+    - name: 踩压力板
+      difficulty: easy
+      block: "#pressure_plates"
+    - name: 践踏耕地
+      difficulty: hard
+      block: farmland
+  # 站在或不站在block方块上时触发，具体取决于reversed
+  standing_on_block:
+    - name: 站在地上
+      difficulty: trigger_definitely
+      block: "*"
+    - name: 站在安山岩上
+      difficulty: easy
+      block: andesite
+    - name: 站在草方块上
+      difficulty: easy
+      block: grass_block
+    - name: 站在基岩上
+      difficulty: normal
+      block: bedrock
+    - name: 站在石头上
+      difficulty: normal
+      block: stone
+    - name: 站在磨制安山岩上
+      difficulty: normal
+      block: polished_andesite
+    - name: 站在树叶上
+      difficulty: normal
+      block: "#leaves"
+    - name: 滞空
+      difficulty: trigger_definitely
+      block: "*"
+      # 若为false，则站在block方块上时触发
+      # 若为true，则不站在block方块上时触发
+      reversed: true
+  # 处于方块内部时触发
+  in_block:
+    - name: 完全浸在流体中
+      difficulty: normal
+      block: water, lava
+    - name: 不在空气中
+      difficulty: hard
+      block: air
+      reversed: true
+    - name: 站在高草丛中
+      difficulty: hard
+      block: tall_grass
+  # 玩家与entity之间的距离在distance给定的范围内时触发
+  distance_to_entity:
+    - name: 跟其他玩家贴贴
+      difficulty: normal
+      entity: player
+      # 距离范围，可以是浮点数
+      distance: ..1
+      # 若为true则反转范围，例如 a..b 代表 a <= var && var <= b ，而反转了之后代表 a < var || var > b
+      reversed: false
+      # 检测模式，可以是any_of或者all_of，不可为空
+      # any_of: 任意一个实体在这个范围内则触发
+      # all_of: 所有实体都在这个范围内则触发
+      mode: any_of
+    - name: 离其他玩家15格以上
+      difficulty: normal
+      entity: player
+      distance: 15..
+      mode: all_of
+    - name: 靠近铁傀儡
+      difficulty: normal
+      entity: iron_golem
+      distance: ..4
+      mode: any_of
+  # 玩家视角朝向的偏航角在yaw给定的范围内，且俯仰角也在pitch给定的范围内时触发
+  rotation:
+    - name: 抬头
+      difficulty: normal
+      # 偏航角范围，使用角度制，可以是浮点数，留空时使用".."，即任意值
+      yaw: ..
+      yaw_reversed: false
+      # 俯仰角范围，使用角度制，可以是浮点数
+      pitch: ..-60
+      pitch_reversed: false
+    - name: 低头
+      difficulty: normal
+      pitch: 60..
+    - name: 面朝北方
+      difficulty: trigger_definitely
+      yaw: -150..150
+      yaw_reversed: true
+      pitch: -30..30
+    - name: 面朝东方
+      difficulty: trigger_definitely
+      yaw: -120..-60
+      pitch: -30..30
+    - name: 面朝南方
+      difficulty: trigger_definitely
+      yaw: -30..30
+      pitch: -30..30
+    - name: 面朝西方
+      difficulty: trigger_definitely
+      yaw: 60..120
+      pitch: -30..30
+  # 主手拿着mainhand物品，且副手拿着offhand物品时触发
+  holding_item:
+    - name: 主手拿着工作台
+      difficulty: easy
+      # 主手物品，格式同item字段
+      mainhand: crafting_table
+    - name: 主手拿着安山岩
+      difficulty: normal
+      mainhand: andesite
+    - name: 主手拿着磨制安山岩
+      difficulty: normal
+      mainhand: polished_andesite
+    - name: 主手拿着铁镐
+      difficulty: normal
+      mainhand: iron_pickaxe
+    - name: 主手拿着木斧
+      difficulty: normal
+      mainhand: wooden_axe
+    - name: 主手拿着石镐
+      difficulty: normal
+      mainhand: stone_pickaxe
+    - name: 主手拿着树叶
+      difficulty: normal
+      mainhand: "#leaves"
+    - name: 副手持盾
+      difficulty: normal
+      # 副手物品，格式同item字段
+      offhand: shield
+  # 血量在health给定的范围内时触发
+  health:
+    - name: 血量高于10点
+      difficulty: very_easy
+      # 血量范围，可以是浮点数
+      amount: ..10
+      #反转范围 ">=10" <-reverse-> "<10"
+      reversed: true
+    - name: 血量低于10点
+      difficulty: very_easy
+      amount: 10..
+      reversed: true
+  # 饥饿值在hunger给定的范围内时触发
+  food_level:
+    - name: 饱食度大于18点
+      difficulty: very_easy
+      amount: ..18
+      reversed: true
+    - name: 饱食度小于18点
+      difficulty: very_easy
+      amount: 18..
+      reversed: true
+  # 玩家的头的上方和前后左右，以及脚的下方和前后左右均为block方块时触发
+  surrounded_by_block:
+    - name: 完全暴露于空气中
+      difficulty: easy
+      block: "#air"
+    - name: 自闭
+      difficulty: normal
+      block: "#air"
+      # 注：此处的反转行为代表周围的所有方块都不是block
+      reversed: true
+  # 物品栏内有至少1个item物品或没有item物品时触发，具体取决于reversed
+  inventory_containing_item:
+    - name: 背包里有铁锭
+      difficulty: normal
+      item: iron_ingot
+    - name: 背包里有钻石
+      difficulty: hard
+      item: diamond
+    - name: 背包里有煤炭
+      difficulty: normal
+      item: coal
+    - name: 背包里有泥土
+      difficulty: easy
+      item: dirt
+    - name: 背包里没有腐肉
+      difficulty: very_easy
+      item: rotten_flesh
+      # 若为false，则物品栏内有至少1个item物品时触发
+      # 若为true，则物品栏内没有item物品时触发
+      reversed: true
+    - name: 背包里没有铁盔甲
+      difficulty: very_easy
+      item: iron_helmet, iron_chestplate, iron_leggings, iron_boots
+      reversed: true
+    - name: 背包里没有钻石工具或武器
+      difficulty: very_easy
+      item: diamond_shovel, diamond_pickaxe, diamond_axe, diamond_hoe, diamond_sword
+      reversed: true
+  # 玩家所在位置的heightmap高度图对应的最高位置与玩家所在位置相同或不同时触发，具体取决于reversed
+  heightmap_matching_pos:
+    - name: 头顶无方块遮挡
+      difficulty: very_easy
+      # 高度图，只能指定单个，具体可用参数参考命令/execute 的 positioned over <heightmap> 子命令的<heightmap>参数
+      heightmap: world_surface
+    - name: 头顶有方块遮挡
+      difficulty: easy
+      heightmap: world_surface
+      # 若为false，则位置相同时触发
+      # 若为true，则位置不同时触发
+      reversed: true
+  # 具体触发规则见mode字段的注释
+  respawn_time:
+    - name: 死亡后三秒内复活
+      difficulty: easy
+      # 检查模式，可以是delay或stay，不可以留空
+      # 若为delay，则在玩家点击复活时检查距离死亡的时间，若时间在time给定的范围内则触发
+      # 若为stay，则当玩家在死亡界面停留的时间在time给定的范围内时触发
+      mode: delay
+      # 时间单位为游戏刻(ticks)，是一个整数范围，留空时使用".."
+      time: 60..
+      # 反转时间范围
+      reversed: true
+    - name: 死亡后三秒内不复活
+      difficulty: easy
+      mode: stay
+      time: 60..
+    - name: 复活
+      difficulty: easy
+      mode: delay
+  # 持续以type方式移动或不移动超过time时间时触发，具体取决于reversed
+  move_time:
+    - name: 15秒不移动
+      difficulty: hard
+      # 可以是move, sprint, sneak, swim, glide, jump, fall, on_air, rotate，不可指定多个
+      # move: 位置移动（不包括视角移动）
+      # sprint: 疾跑
+      # sneak: 潜行
+      # swim: 游泳
+      # glide: 滑翔，例如用鞘翅飞行
+      # jump: 跳跃，此移动方式不支持reversed为false的触发方式
+      # fall: 坠落
+      # on_air: 滞空
+      # rotate: 视角移动
+      type: move
+      # 时间单位为游戏刻(ticks)，是一个整数
+      time: 300
+      # 若为false，则持续以type形式移动超过time时间时触发
+      # 若为true，则保持不以type方式移动超过time时间时触发
+      reversed: true
+    - name: 持续移动20秒
+      difficulty: normal
+      type: move
+      time: 400
+    - name: 20秒内不疾跑
+      difficulty: normal
+      type: sprint
+      time: 400
+      reversed: true
+    - name: 持续疾跑5秒
+      difficulty: normal
+      type: sprint
+      time: 100
+    - name: 60秒内不潜行
+      difficulty: normal
+      type: sneak
+      time: 1200
+      reversed: true
+    - name: 潜行3秒
+      difficulty: normal
+      type: sneak
+      time: 60
+    - name: 30秒内不蹦跶
+      difficulty: normal
+      type: jump
+      time: 600
+      reversed: true
+    - name: 5秒不改变视角
+      difficulty: hard
+      type: rotate
+      time: 100
+      reversed: true
+    - name: 滞空2秒
+      difficulty: normal
+      type: on_air
+      time: 40
+  # 具体触发规则见mode字段的注释
+  criteria_hold_time:
+    - name: 100秒不换词条
+      difficulty: trigger_definitely
+      # 检查模式，可以是delay或stay，不可以留空
+      # 若为delay，则在玩家切换词条时检查距离获得该词条的时间，若时间在time给定的范围内则触发
+      # 若为stay，则当玩家持有该词条的持续时间在time给定的范围内时触发
+      mode: stay
+      time: ..2000
+      # 反转时间范围
+      reversed: true
+  # 距离上次死亡的时间超过time时触发
+  after_death_time:
+    - name: 上次死亡在60秒之前
+      difficulty: very_easy
+      time: 1200
+  # 血量在count范围内时触发
+  life_count:
+#    - name: 剩余规则大于7个
+#      difficulty: trigger_definitely
+#      # 血量范围，必须是整数范围
+#      count: 8..
+#    - name: 剩余规则小于7个
+#      difficulty: trigger_definitely
+#      count: ..6
+  # 升级时触发
+  level_up:
+    - name: 升级
+      difficulty: hard
+  # 自爆词条，立即触发
+#  immediately_trigger:
+#    - name: □□□□□
+#      difficulty: trigger_definitely
+  # 当用桶装起流体或倒出fluid流体时触发，具体取决于type
+  bucket_operation:
+    - name: 用桶装水
+      difficulty: hard
+      # 流体名称，只能是水、熔岩或细雪，不可指定多个
+      fluid: water
+      # 可以是fill或pour
+      # fill: 装起流体
+      # pour: 倒出流体
+      type: fill
+    - name: 用桶倒水
+      difficulty: hard
+      fluid: water
+      type: pour
+  # 选中快捷栏的slot槽位时触发
+  selected_hotbar_slot:
+    - name: 选中快捷栏第一格
+      difficulty: very_easy
+      slot: 1
+    - name: 选中快捷栏最后一格
+      difficulty: very_easy
+      slot: 9
+  # 把item物品放入target_inventory容器或界面，或从target_inventory容器或界面拿出时触发，具体取决于reversed
+  transfer_item:
+    - name: 把煤炭放入熔炉
+      difficulty: normal
+      item: coal
+      # 容器或界面的类型，可以是：
+      # chest: 箱子
+      # dispenser: 发射器
+      # dropper: 投掷器
+      # furnace: 熔炉
+      # workbench: 工作台
+      # enchanting: 附魔台
+      # brewing: 酿造台
+      # merchant: 村民交易界面
+      # ender_chest: 末影箱
+      # anvil: 铁砧
+      # smithing: 锻造台
+      # beacon: 信标
+      # hopper: 漏斗
+      # shulker_box: 潜影盒
+      # barrel: 木桶
+      # blast_furnace: 高炉
+      # smoker: 烟熏炉
+      # loom: 织布机
+      # cartography: 制图台
+      # grindstone: 砂轮
+      # stonecutter: 切石机
+      # crafter: 合成器
+      target_inventory: furnace
+    - name: 从熔炉拿出铁锭
+      difficulty: normal
+      item: iron_ingot
+      target_inventory: furnace
+      # 如果为false，则放入target_inventory容器或界面时触发
+      # 如果为true，则从target_inventory容器或界面拿出时触发
+      reversed: true
+    - name: 把粗铁放入熔炉
+      difficulty: normal
+      item: raw_iron
+      target_inventory: furnace
