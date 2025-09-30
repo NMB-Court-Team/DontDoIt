@@ -1,17 +1,21 @@
 package net.astrorbits.dontdoit.criteria.system
 
+import com.google.common.collect.EvictingQueue
 import it.unimi.dsi.fastutil.objects.Object2ReferenceMap
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet
 import net.astrorbits.dontdoit.DontDoIt
+import net.astrorbits.dontdoit.DynamicSettings
 import net.astrorbits.dontdoit.criteria.*
 import net.astrorbits.dontdoit.criteria.builtin.UserDefinedCriteria
 import net.astrorbits.dontdoit.criteria.builtin.YLevelCriteria
 import net.astrorbits.dontdoit.criteria.helper.BuiltinCriteria
 import net.astrorbits.dontdoit.criteria.helper.MoveType
+import net.astrorbits.dontdoit.criteria.helper.TriggerDifficulty
 import net.astrorbits.dontdoit.criteria.helper.YLevelType
 import net.astrorbits.dontdoit.criteria.inspect.InventoryInspectContext
 import net.astrorbits.dontdoit.criteria.inspect.InventoryInspectable
+import net.astrorbits.dontdoit.system.CriteriaChangeReason
 import net.astrorbits.dontdoit.system.generate.GameAreaGenerator
 import net.astrorbits.dontdoit.system.team.TeamData
 import net.astrorbits.dontdoit.system.team.TeamManager
@@ -29,6 +33,7 @@ import java.util.Random
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Supplier
+import kotlin.math.*
 
 object CriteriaManager {
     private val LOGGER = DontDoIt.LOGGER
@@ -220,7 +225,7 @@ object CriteriaManager {
                             } else ctx
                         }.thenAccept { ctx ->
                             if (ctx != null) {
-                                criteriaContext[teamColor] = ctx
+                                criteriaContexts[teamColor] = ctx
                             }
                         }
                 }
@@ -230,6 +235,7 @@ object CriteriaManager {
     fun onGameEnd() {
         criteriaContextCalcTask?.cancel()
         criteriaContextCalcTask = null
+        prevSelectedCriteria.clear()
     }
 
     private val random = Random()
@@ -237,24 +243,85 @@ object CriteriaManager {
     var criteriaContextCalcTask: BukkitTask? = null
     const val INITIAL_WEIGHT = 1.0
 
-    val criteriaContext: ConcurrentHashMap<NamedTextColor, InventoryInspectContext> = ConcurrentHashMap()
+    const val PREV_SELECTED_CRITERIA_MEMORY_CAPACITY = 20
 
-    fun getRandomCriteria(teamData: TeamData, oldCriteria: Criteria? = null): Criteria {
-        val context = criteriaContext[teamData.color] ?: InventoryInspectContext.EMPTY
+    val criteriaContexts: ConcurrentHashMap<NamedTextColor, InventoryInspectContext> = ConcurrentHashMap()
+
+    val prevSelectedCriteria: HashMap<NamedTextColor, EvictingQueue<SelectedCriteria>> = hashMapOf()
+
+    class SelectedCriteria(val criteria: Criteria, val changeReason: CriteriaChangeReason)
+
+    fun getRandomCriteria(teamData: TeamData, oldCriteria: Criteria? = null, reason: CriteriaChangeReason): Criteria {
+        val historyCriteria = prevSelectedCriteria.computeIfAbsent(teamData.color) { EvictingQueue.create(PREV_SELECTED_CRITERIA_MEMORY_CAPACITY) }
+
+        if (oldCriteria != null) {
+            historyCriteria.add(SelectedCriteria(oldCriteria, reason))
+        }
+
+        val context = criteriaContexts[teamData.color] ?: InventoryInspectContext.EMPTY
         val adjustedWeightMap = allCriteria.associateWith { criteria ->
-            var adjustedWeight = criteria.initiallyModifyWeight(INITIAL_WEIGHT, teamData, oldCriteria)
+            var adjustedWeight = initiallyModifyWeight(INITIAL_WEIGHT, teamData, criteria, historyCriteria.toList().reversed())
             if (criteria is InventoryInspectable) {
                 adjustedWeight = criteria.modifyWeight(adjustedWeight, teamData, context)
             }
             return@associateWith adjustedWeight
         }
         val criteria = CollectionHelper.selectByDoubleWeight(adjustedWeightMap, random)
-        LOGGER.info("Criteria weight map: ")
-        for (pair in adjustedWeightMap.toList().sortedBy { it.second }) {
-            LOGGER.info("{}: {}", pair.first.displayName, pair.second)
-        }
+//        LOGGER.info("Criteria weight map: ")
+//        for (pair in adjustedWeightMap.toList().sortedByDescending { it.second }) {
+//            LOGGER.info("{}: {}", pair.first.displayName, pair.second)
+//        }
         LOGGER.info("Selected random criteria for team ${teamData.teamId}: ${criteria.displayName}")
 
         return criteria
+    }
+
+    // 初步修改权重，基于词条重复性、触发难度和队伍血量计算
+    fun initiallyModifyWeight(weight: Double, teamData: TeamData, newCriteria: Criteria, historyCriteria: List<SelectedCriteria>): Double {
+        var result = weight
+
+        val duplicatedCriteriaIndex = historyCriteria.indexOfFirst { it.criteria == newCriteria }
+        if (duplicatedCriteriaIndex != -1) {
+            result *= historyCriteria[duplicatedCriteriaIndex].changeReason.weightMultiplier(duplicatedCriteriaIndex)
+        }
+
+        val otherTeamsCriteria = TeamManager.getInUseTeams().values.filter { it !== teamData }.mapNotNull { it.criteria }
+        if (newCriteria in otherTeamsCriteria) {
+            result *= CRITERIA_DUPLICATED_WITH_OTHER_MULTIPLIER
+        }
+        val lifePercentage = teamData.lifeCount.toDouble() / DynamicSettings.lifeCount.toDouble()
+        result *= calcLifePercentageMultiplier(lifePercentage, newCriteria.triggerDifficulty)
+        result *= newCriteria.triggerDifficulty.weightMultiplier
+        return result
+    }
+
+    const val CRITERIA_DUPLICATED_WITH_OTHER_MULTIPLIER = 0.5
+
+    // 这个函数里有一些莫名其妙的常数，这是我构造这个函数的过程中凑出来的数字
+    fun calcLifePercentageMultiplier(lifePercentage: Double, difficulty: TriggerDifficulty): Double {
+        val diff = difficulty.difficulty
+        return -0.00565 * (diff - 4) * (diff - 5) * (diff - 4.5) * ln(lifePercentage + 0.5) + 1
+        // 公式的参数化版本：（D为diff，L为lifePercentage)
+        // f(D) = a*(D-4)(D-5)(D-b)*life(L)+1
+        // a=-0.00565, b=4.5
+        // life(L) = ln(L+0.5)
+        // 这里a*(D-4)(D-5)(D-b)一部分是一个三次函数，4,5,b是用来凑零点的，a是用来控制三次函数的增长速度的
+        // ln(L+0.5)是凑出来的，只是为了满足life(0.5)=0而已，使用自然对数函数是试出来的
+    }
+
+    @Suppress("unused_parameter")
+    fun constMultiplier(historyDistance: Int): Double = 1.0
+
+    fun generalDuplicatedMultiplier(historyDistance: Int): Double {
+        return -2.04 * exp(-historyDistance.toDouble().pow(0.41)) + 1  // 这个是凑出来的函数
+        // exp(-x^k), k in (0, 1)，这个函数在正无穷是无穷小，且无穷小的阶在1/x和exp(-x)之间，调整k的数值可以调整靠近0的速率
+    }
+
+    fun guessedDuplicatedMultiplier(historyDistance: Int): Double {
+        return if (historyDistance <= 8) {
+            -3.28 * exp(-historyDistance.toDouble().pow(0.32)) + 1.5
+        } else if (historyDistance <= 15) {
+            0.3 * sin(PI / 8.0 * (historyDistance - 8.0)) + 1.0  // 函数在9~15的区间>=1，在12取到极大值1.3，在8和16的函数值为1
+        } else 1.0
     }
 }

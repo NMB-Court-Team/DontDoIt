@@ -93,7 +93,7 @@ object CriteriaCommand {
                     val oldCriteria = team.criteria
                     val unbindResult = team.criteria?.onUnbind(team, CriteriaChangeReason.MANUAL)
                     if (unbindResult != false) {
-                        team.criteria = CriteriaManager.getRandomCriteria(team, oldCriteria)
+                        team.criteria = CriteriaManager.getRandomCriteria(team, oldCriteria, CriteriaChangeReason.MANUAL)
                         team.criteria!!.onBind(team, CriteriaChangeReason.MANUAL)
 
                         if (oldCriteria != null) {

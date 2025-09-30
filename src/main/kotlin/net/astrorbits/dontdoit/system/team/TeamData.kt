@@ -84,7 +84,7 @@ class TeamData(val color: NamedTextColor) {
             val oldCriteria = criteria
             val unbindResult = criteria?.onUnbind(this@TeamData, CriteriaChangeReason.AUTO)
             if (unbindResult != false) {
-                criteria = CriteriaManager.getRandomCriteria(this@TeamData, oldCriteria)
+                criteria = CriteriaManager.getRandomCriteria(this@TeamData, oldCriteria, CriteriaChangeReason.AUTO)
                 criteria!!.onBind(this@TeamData, CriteriaChangeReason.AUTO)
             }
 
@@ -139,7 +139,7 @@ class TeamData(val color: NamedTextColor) {
         lifeCount = DynamicSettings.lifeCount
         val unbindResult = criteria?.onUnbind(this, CriteriaChangeReason.GAME_STAGE_CHANGE)
         if (unbindResult != false) {
-            criteria = CriteriaManager.getRandomCriteria(this)
+            criteria = CriteriaManager.getRandomCriteria(this, reason = CriteriaChangeReason.GAME_STAGE_CHANGE)
             criteria!!.onBind(this, CriteriaChangeReason.GAME_STAGE_CHANGE)
         }
         sidebarDisplay.show()
@@ -191,7 +191,7 @@ class TeamData(val color: NamedTextColor) {
                 player.teleport(GameAreaGenerator.center ?: player.respawnLocation ?: player.world.spawnLocation)
                 player.gameMode = GameMode.SURVIVAL
             }
-            criteria = CriteriaManager.getRandomCriteria(this)
+            criteria = CriteriaManager.getRandomCriteria(this, reason = CriteriaChangeReason.GAME_STAGE_CHANGE)
             criteria!!.onBind(this, CriteriaChangeReason.GAME_STAGE_CHANGE)
             mainTimer.start()
         } else if (!prevEliminated && isEliminated) {
@@ -208,7 +208,7 @@ class TeamData(val color: NamedTextColor) {
         if (lifeCount - 1 <= 0) {
             criteria = null
         } else {
-            criteria = CriteriaManager.getRandomCriteria(this, oldCriteria)
+            criteria = CriteriaManager.getRandomCriteria(this, oldCriteria, CriteriaChangeReason.TRIGGERED)
             criteria!!.onBind(this, CriteriaChangeReason.TRIGGERED)
             broadcastTitle(
                 Title.title(
@@ -302,7 +302,7 @@ class TeamData(val color: NamedTextColor) {
 
             val unbindResult = criteria?.onUnbind(this, CriteriaChangeReason.GUESS_SUCCESS)
             if (unbindResult != false) {
-                criteria = CriteriaManager.getRandomCriteria(this, oldCriteria)
+                criteria = CriteriaManager.getRandomCriteria(this, oldCriteria, CriteriaChangeReason.GUESS_SUCCESS)
                 criteria!!.onBind(this, CriteriaChangeReason.GUESS_SUCCESS)
             }
         } else {
@@ -332,7 +332,7 @@ class TeamData(val color: NamedTextColor) {
 
             val unbindResult = criteria?.onUnbind(this, CriteriaChangeReason.GUESS_FAILED)
             if (unbindResult != false) {
-                criteria = CriteriaManager.getRandomCriteria(this, oldCriteria)
+                criteria = CriteriaManager.getRandomCriteria(this, oldCriteria, CriteriaChangeReason.GUESS_FAILED)
                 criteria!!.onBind(this, CriteriaChangeReason.GUESS_FAILED)
             }
         }
@@ -377,6 +377,16 @@ class TeamData(val color: NamedTextColor) {
         criteria = null
         guessCooldownTimer.reset()
         mainTimer.reset()
+    }
+
+    fun onEnterPreparation() {
+        criteria = null
+        isInUse = false
+        lifeCount = DynamicSettings.lifeCount
+        sidebarDisplay.hide()
+        sidebarDisplay.content = emptyList()
+        mainTimer.reset()
+        guessCooldownTimer.reset()
     }
 
     operator fun contains(player: Player): Boolean {

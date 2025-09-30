@@ -13,7 +13,10 @@ import net.astrorbits.dontdoit.system.team.TeamData.Companion.PLAYER_NAME_PLACEH
 import net.astrorbits.dontdoit.system.team.TeamData.Companion.TEAM_NAME_PLACEHOLDER
 import net.astrorbits.lib.collection.CollectionHelper.toBiMap
 import net.astrorbits.lib.item.ItemHelper.getBoolPdc
+import net.astrorbits.lib.math.Duration
 import net.astrorbits.lib.scoreboard.SidebarDisplay
+import net.astrorbits.lib.task.TaskBuilder
+import net.astrorbits.lib.task.TaskType
 import net.astrorbits.lib.task.Timer
 import net.astrorbits.lib.text.TextHelper.format
 import net.astrorbits.lib.text.TextHelper.gray
@@ -27,6 +30,7 @@ import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
+import org.bukkit.scoreboard.Team
 
 object TeamManager : Listener {
     val TEAM_COLORS: BiMap<String, NamedTextColor> = setOf(
@@ -42,6 +46,7 @@ object TeamManager : Listener {
 
     private val _teams: MutableList<TeamData> = mutableListOf()
     val spectatorSidebarDisplay: SidebarDisplay = SidebarDisplay()
+    val spectatorTeam: Team = spectatorSidebarDisplay.scoreboard.registerNewTeam("spectator")
 
     val teams: List<TeamData>
         get() = _teams
@@ -53,6 +58,7 @@ object TeamManager : Listener {
             _teams.add(TeamData(color))
         }
         spectatorSidebarDisplay.title = Configs.SIDEBAR_TITLE.get()
+        spectatorTeam.color(NamedTextColor.GRAY)
     }
 
     fun getInUseTeams(): Map<String, TeamData> {
@@ -64,13 +70,17 @@ object TeamManager : Listener {
     }
 
     fun joinTeam(player: Player, color: NamedTextColor) {
-        leaveTeam(player)
+        leaveTeam(player, false)
         getTeam(color).join(player)
         TeamInfoSynchronizer.syncTeamInfos(teams)
     }
 
-    fun leaveTeam(player: Player) {
+    fun leaveTeam(player: Player, joinSpectator: Boolean = true) {
         getTeam(player)?.leave(player)
+        spectatorTeam.removePlayer(player)
+        if (joinSpectator) {
+            spectatorTeam.addPlayer(player)
+        }
         TeamInfoSynchronizer.syncTeamInfos(teams)
     }
 
@@ -148,7 +158,9 @@ object TeamManager : Listener {
         } else {
             team.setPlayerDisplayName(player)
         }
-        TeamInfoSynchronizer.syncTeamInfos(teams)
+        TaskBuilder(DontDoIt.instance, TaskType.Delayed(Duration.ticks(2.0)))
+            .setTask { TeamInfoSynchronizer.syncTeamInfos(teams) }
+            .runTask()
         updateSidebars()
     }
 
@@ -176,6 +188,7 @@ object TeamManager : Listener {
             if (team == null) {
                 player.gameMode = GameMode.SPECTATOR
                 spectatorSidebarDisplay.addPlayer(player)
+                spectatorTeam.addPlayer(player)
             } else {
                 player.gameMode = GameMode.SURVIVAL
                 spectatorSidebarDisplay.removePlayer(player)
@@ -185,6 +198,7 @@ object TeamManager : Listener {
         if (DynamicSettings.allowGuessCriteria) {
             guessHintAnnounceTimer.start()
         }
+        spectatorSidebarDisplay.show()
         updateSidebars()
     }
 
@@ -202,11 +216,11 @@ object TeamManager : Listener {
 
     fun onEnterPreparation() {
         for (teamData in teams) {
-            teamData.criteria = null
-            teamData.isInUse = false
-            teamData.sidebarDisplay.hide()
+            teamData.onEnterPreparation()
         }
         spectatorSidebarDisplay.hide()
+        spectatorSidebarDisplay.content = emptyList()
+        guessHintAnnounceTimer.reset()
     }
 
     /**

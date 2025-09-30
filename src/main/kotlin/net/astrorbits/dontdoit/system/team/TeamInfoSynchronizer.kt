@@ -14,7 +14,7 @@ object TeamInfoSynchronizer {
         val teamPackets: List<ClientboundSetPlayerTeamPacket> = teams.map { teamData ->
             val team = teamData.team.getHandle()
             return@map ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(team, true)
-        }
+        } + ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(TeamManager.spectatorTeam.getHandle(), true)
         for (player in Bukkit.getOnlinePlayers()) {
             val nmsPlayer = (player as? CraftPlayer)?.handle ?: continue
             teamPackets.forEach { nmsPlayer.connection.send(it) }

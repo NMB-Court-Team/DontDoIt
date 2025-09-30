@@ -3,14 +3,11 @@ package net.astrorbits.dontdoit.criteria
 import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList
-import net.astrorbits.dontdoit.DynamicSettings
 import net.astrorbits.dontdoit.criteria.helper.TriggerDifficulty
 import net.astrorbits.dontdoit.criteria.system.CriteriaManager
 import net.astrorbits.dontdoit.criteria.helper.CriteriaType
-import net.astrorbits.dontdoit.criteria.inspect.InventoryInspectable
 import net.astrorbits.dontdoit.system.CriteriaChangeReason
 import net.astrorbits.dontdoit.system.team.TeamData
-import net.astrorbits.dontdoit.system.team.TeamManager
 import net.astrorbits.lib.Identifier
 import net.astrorbits.lib.range.DoubleRange
 import net.astrorbits.lib.range.FloatRange
@@ -85,22 +82,6 @@ abstract class Criteria {
         if (teamData in holders) {
             CriteriaManager.trigger(this, teamData)
         }
-    }
-
-    // 初步修改权重，基于词条重复性、触发难度和队伍血量计算
-    fun initiallyModifyWeight(weight: Double, teamData: TeamData, oldCriteria: Criteria?): Double {
-        var result = weight
-        if (oldCriteria === this) {
-            result *= InventoryInspectable.CRITERIA_DUPLICATED_WITH_SELF_MULTIPLIER
-        }
-        val otherTeamsCriteria = TeamManager.getInUseTeams().values.filter { it !== teamData }.mapNotNull { it.criteria }
-        if (this in otherTeamsCriteria) {
-            result *= InventoryInspectable.CRITERIA_DUPLICATED_WITH_OTHER_MULTIPLIER
-        }
-        val lifePercentage = teamData.lifeCount.toDouble() / DynamicSettings.lifeCount.toDouble()
-        result *= InventoryInspectable.calcLifePercentageMultiplier(lifePercentage, triggerDifficulty)
-        result *= triggerDifficulty.weightMultiplier
-        return result
     }
 
     /**

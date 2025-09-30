@@ -27,7 +27,7 @@ class DontDoIt : JavaPlugin() {
         lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
             val registrar = event.registrar()
             CriteriaCommand.register(registrar)
-            DebugCommand.register(registrar)  //TODO 删掉这个debug命令
+            //DebugCommand.register(registrar)  //TODO 删掉这个debug命令
         }
         server.worlds.forEach { it.difficulty = Difficulty.PEACEFUL }
     }

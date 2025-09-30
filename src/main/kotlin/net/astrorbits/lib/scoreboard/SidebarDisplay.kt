@@ -68,7 +68,7 @@ class SidebarDisplay {
                 }
             }
             field = value
-            lineCount = value.size - 1
+            lineCount = value.size
         }
 
     fun hide() {

@@ -33,6 +33,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.player.PlayerCommandPreprocessEvent
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerGameModeChangeEvent
 import org.bukkit.event.player.PlayerInteractEvent
@@ -62,6 +63,9 @@ object Preparation : Listener {
         player.gameMode = GameMode.ADVENTURE
         player.isInvulnerable = true
         player.allowFlight = true
+        if (TeamManager.getTeam(player) == null) {
+            TeamManager.spectatorTeam.addPlayer(player)
+        }
     }
 
     fun putPrepareGameItemsAndSetDisplay(player: Player) {
