@@ -427,19 +427,19 @@ object Configs {
     //region Y坐标准则
     val Y_LEVEL_CRITERIA_BELOW: StringConfigData = CONFIG.defineConfig(StringConfigData(
         "y_level_criteria.below",
-        "%s（Y<%d）"
+        "位置低于%s（Y小于%d）"
     ))
     val Y_LEVEL_CRITERIA_ABOVE: StringConfigData = CONFIG.defineConfig(StringConfigData(
         "y_level_criteria.above",
-        "%s（Y>%d）"
+        "位置高于%s（Y大于%d）"
     ))
     val Y_LEVEL_CRITERIA_GROUND: StringConfigData = CONFIG.defineConfig(StringConfigData(
         "y_level_criteria.ground",
-        "位于地面"
+        "地面"
     ))
     val Y_LEVEL_CRITERIA_ON_AIR: StringConfigData = CONFIG.defineConfig(StringConfigData(
         "y_level_criteria.on_air",
-        "位于高处"
+        "高处"
     ))
     //endregion
 

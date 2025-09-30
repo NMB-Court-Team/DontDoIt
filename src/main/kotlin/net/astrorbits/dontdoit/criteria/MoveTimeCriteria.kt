@@ -16,8 +16,9 @@ class MoveTimeCriteria : Criteria(), Listener {
     var moveTime: Int by Delegates.notNull()
     var reversed: Boolean = false
 
-    private val startTick: MutableMap<UUID, Int> = mutableMapOf()
-    private val lastState: MutableMap<UUID, Boolean> = mutableMapOf()
+    val startTicks: MutableMap<UUID, Int> = mutableMapOf()
+    val prevStates: MutableMap<UUID, Boolean> = mutableMapOf()
+    val prevTickChecked: MutableMap<UUID, Boolean> = mutableMapOf()
 
     override fun readData(data: Map<String, String>) {
         super.readData(data)
@@ -26,14 +27,27 @@ class MoveTimeCriteria : Criteria(), Listener {
         data.setBoolField(REVERSED_KEY, true) { reversed = it }
 
         if (moveType == MoveType.Jump && !reversed) {
-            throw InvalidCriteriaException(this, "Jump 不能设置 reversed = false")
+            throw InvalidCriteriaException(this, "Criteria 'move_time' with 'type: jump, reversed: false' is not supported")
+        }
+    }
+
+    override fun onBind(teamData: TeamData, reason: CriteriaChangeReason) {
+        super.onBind(teamData, reason)
+        for (player in teamData.members) {
+            val uuid = player.uniqueId
+            val currentState = isInState(player)
+            val prevState = prevStates[uuid]
+            if (prevState == null) {
+                this.prevStates[uuid] = currentState
+                if (currentState) startTicks[uuid] = Bukkit.getCurrentTick()
+            }
         }
     }
 
     override fun onUnbind(teamData: TeamData, reason: CriteriaChangeReason): Boolean {
         for (player in teamData.members) {
-            startTick.remove(player.uniqueId)
-            lastState.remove(player.uniqueId)
+            startTicks.remove(player.uniqueId)
+            prevStates.remove(player.uniqueId)
         }
         return super.onUnbind(teamData, reason)
     }
@@ -41,26 +55,33 @@ class MoveTimeCriteria : Criteria(), Listener {
     override fun tick(teamData: TeamData) {
         for (player in teamData.members) {
             val uuid = player.uniqueId
+            if (prevTickChecked[uuid] == true) {
+                prevTickChecked[uuid] = false
+                continue
+            }
+            prevTickChecked[uuid] = true
+
             val currentState = isInState(player)
-            val prevState = lastState[uuid]
+            val prevState = prevStates[uuid]
 
             // 初始化
             if (prevState == null) {
-                lastState[uuid] = currentState
-                if (currentState) startTick[uuid] = Bukkit.getCurrentTick()
+                this.prevStates[uuid] = currentState
+                if (currentState) startTicks[uuid] = Bukkit.getCurrentTick()
                 continue
             }
 
             // 状态变化
             if (!prevState && currentState) {
-                startTick[uuid] = Bukkit.getCurrentTick()
+                startTicks[uuid] = Bukkit.getCurrentTick()
             } else if (prevState && !currentState) {
-                startTick.remove(uuid)
+                startTicks.remove(uuid)
             }
-            lastState[uuid] = currentState
+            this.prevStates[uuid] = currentState
 
             // 检查时间
-            val start = startTick[uuid] ?: continue
+            val start = startTicks[uuid] ?: continue
+            //player.sendMessage("currentTick: ${Bukkit.getCurrentTick()}, start: $start, \ncurrent-start = ${Bukkit.getCurrentTick()-start}, requiredMoveTime: $moveTime")
             if (Bukkit.getCurrentTick() - start >= moveTime) {
                 trigger(player)
                 break

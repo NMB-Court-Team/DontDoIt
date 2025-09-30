@@ -31,7 +31,7 @@ class FallDistanceCriteria : Criteria(), Listener {
             lastTickFallDistances[uuid] = player.fallDistance
             lastTickYLevels[uuid] = y
             if (lastTickFallDistance + yLevelChange >= distance) {
-                player.sendMessage("$lastTickFallDistance, $yLevelChange")
+                //player.sendMessage("$lastTickFallDistance, $yLevelChange")
                 trigger(player)
                 break
             }

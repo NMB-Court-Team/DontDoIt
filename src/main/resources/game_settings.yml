@@ -141,8 +141,8 @@ dynamic_settings:
 
 # Y坐标准则
 y_level_criteria:
-  below: "位置低于%s（Y<%d）"
-  above: "位置高于%s（Y>%d）"
+  below: "位置低于%s（Y小于%d）"
+  above: "位置高于%s（Y大于%d）"
   ground: "地面"
   on_air: "高处"
 
@@ -191,6 +191,7 @@ bedrock_depth: 11
 # ==== 游戏玩法相关的配置项 ====
 # 是否启用有关Y高度的词条
 y_level_criteria_enabled: true
+# Y高度关于世界生成位置的偏移，必须是整数
 y_level_offset:
   ground: 1
   on_air: 14

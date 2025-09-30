@@ -37,16 +37,16 @@ criteria:
     - name: 挖掘石头
       difficulty: normal
       block: stone
-    - name: 挖掘钻石矿
+    - name: 挖掘钻石矿石
       difficulty: hard
       block: diamond_ore
     - name: 挖掘磨制安山岩
       difficulty: normal
       block: polished_andesite
-    - name: 挖掘煤矿
+    - name: 挖掘煤矿石
       difficulty: normal
       block: coal_ore
-    - name: 挖掘铁矿
+    - name: 挖掘铁矿石
       difficulty: normal
       block: iron_ore
     - name: 挖掘原木
@@ -125,9 +125,6 @@ criteria:
     - name: 合成工作台
       difficulty: easy
       item: crafting_table
-    - name: 合成熔炉
-      difficulty: easy
-      item: furnace
     - name: 合成钻石工具或武器
       difficulty: hard
       item: diamond_shovel, diamond_pickaxe, diamond_hoe, diamond_axe, diamond_sword
@@ -181,11 +178,11 @@ criteria:
       damage_type: in_wall
     - name: 一次性受到至少5×❤伤害
       difficulty: easy
-      entity: "/"
-      amount: 8..
+      entity: "*"
+      amount: 10..
     - name: 一次性受到至少10×❤伤害
       difficulty: very_hard
-      entity: "/"
+      entity: "*"
       amount: 20..
     - name: 被箭伤害
       difficulty: hard
@@ -366,14 +363,20 @@ criteria:
       distance: ..1
       # 若为true则反转范围，例如 a..b 代表 a <= var && var <= b ，而反转了之后代表 a < var || var > b
       reversed: false
+      # 检测模式，可以是any_of或者all_of，不可为空
+      # any_of: 任意一个实体在这个范围内则触发
+      # all_of: 所有实体都在这个范围内则触发
+      mode: any_of
     - name: 离其他玩家15格以上
       difficulty: normal
       entity: player
       distance: 15..
+      mode: all_of
     - name: 靠近铁傀儡
       difficulty: normal
       entity: iron_golem
-      distance: ..2.5
+      distance: ..4
+      mode: any_of
   # 玩家视角朝向的偏航角在yaw给定的范围内，且俯仰角也在pitch给定的范围内时触发
   rotation:
     - name: 抬头
@@ -484,7 +487,7 @@ criteria:
       # 若为false，则物品栏内有至少1个item物品时触发
       # 若为true，则物品栏内没有item物品时触发
       reversed: true
-    - name: 背包里没有铁装备
+    - name: 背包里没有铁盔甲
       difficulty: very_easy
       item: iron_helmet, iron_chestplate, iron_leggings, iron_boots
       reversed: true
@@ -543,19 +546,19 @@ criteria:
       # 若为false，则持续以type形式移动超过time时间时触发
       # 若为true，则保持不以type方式移动超过time时间时触发
       reversed: true
-    - name: 持续移动30秒
+    - name: 持续移动20秒
       difficulty: normal
       type: move
-      time: 600
+      time: 400
     - name: 20秒内不疾跑
       difficulty: normal
       type: sprint
       time: 400
       reversed: true
-    - name: 持续疾跑8秒
+    - name: 持续疾跑5秒
       difficulty: normal
       type: sprint
-      time: 160
+      time: 100
     - name: 60秒内不潜行
       difficulty: normal
       type: sneak
@@ -575,10 +578,10 @@ criteria:
       type: rotate
       time: 100
       reversed: true
-    - name: 滞空3秒
+    - name: 滞空2秒
       difficulty: normal
       type: on_air
-      time: 60
+      time: 40
   # 具体触发规则见mode字段的注释
   criteria_hold_time:
     - name: 100秒不换词条
