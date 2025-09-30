@@ -7,8 +7,6 @@ import net.astrorbits.dontdoit.criteria.Criteria
 import net.astrorbits.dontdoit.criteria.helper.CriteriaType
 import net.astrorbits.dontdoit.criteria.system.CriteriaManager
 import net.astrorbits.dontdoit.system.CriteriaChangeReason
-import net.astrorbits.dontdoit.system.GameState
-import net.astrorbits.dontdoit.system.GameStateManager
 import net.astrorbits.dontdoit.system.generate.GameAreaGenerator
 import net.astrorbits.lib.StringHelper.isUuid
 import net.astrorbits.lib.math.Duration

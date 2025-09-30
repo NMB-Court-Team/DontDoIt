@@ -1,8 +1,6 @@
 package net.astrorbits.dontdoit.criteria
 
 import net.astrorbits.dontdoit.criteria.helper.CriteriaType
-import net.astrorbits.dontdoit.criteria.inspect.DamageTypeInspectCandidate
-import net.astrorbits.dontdoit.criteria.inspect.EntityInspectCandidate
 import net.astrorbits.dontdoit.criteria.inspect.SourcedDamageInspector
 import net.astrorbits.lib.range.DoubleRange
 import org.bukkit.damage.DamageType

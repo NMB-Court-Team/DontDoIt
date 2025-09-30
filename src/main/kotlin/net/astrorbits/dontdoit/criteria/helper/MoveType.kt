@@ -4,7 +4,6 @@ import com.destroystokyo.paper.event.player.PlayerJumpEvent
 import net.astrorbits.dontdoit.DontDoIt
 import net.astrorbits.lib.math.Duration
 import net.astrorbits.lib.math.Rotation
-import net.astrorbits.lib.math.vector.Vec3d
 import net.astrorbits.lib.task.TaskBuilder
 import net.astrorbits.lib.task.TaskType
 import org.bukkit.Bukkit

@@ -26,42 +26,42 @@ class ObjectDecoder(data: ByteArray) {
 
     fun getShort(): Short {
         if (buffer.remaining() < 2) {
-            throw NotEnoughDataException("Not enough data to read short: " + buffer.array().contentToString());
+            throw NotEnoughDataException("Not enough data to read short: " + buffer.array().contentToString())
         }
         return buffer.getShort()
     }
 
     fun getInt(): Int {
         if (buffer.remaining() < 4) {
-            throw NotEnoughDataException("Not enough data to read int: " + buffer.array().contentToString());
+            throw NotEnoughDataException("Not enough data to read int: " + buffer.array().contentToString())
         }
         return buffer.getInt()
     }
 
     fun getLong(): Long {
         if (buffer.remaining() < 8) {
-            throw NotEnoughDataException("Not enough data to read long: " + buffer.array().contentToString());
+            throw NotEnoughDataException("Not enough data to read long: " + buffer.array().contentToString())
         }
         return buffer.getLong()
     }
 
     fun getFloat(): Float {
         if (buffer.remaining() < 4) {
-            throw NotEnoughDataException("Not enough data to read float: " + buffer.array().contentToString());
+            throw NotEnoughDataException("Not enough data to read float: " + buffer.array().contentToString())
         }
         return buffer.getFloat()
     }
 
     fun getDouble(): Double {
         if (buffer.remaining() < 8) {
-            throw NotEnoughDataException("Not enough data to read double: " + buffer.array().contentToString());
+            throw NotEnoughDataException("Not enough data to read double: " + buffer.array().contentToString())
         }
         return buffer.getDouble()
     }
 
     fun getChar(): Char {
         if (buffer.remaining() < 2) {
-            throw NotEnoughDataException("Not enough data to read char: " + buffer.array().contentToString());
+            throw NotEnoughDataException("Not enough data to read char: " + buffer.array().contentToString())
         }
         return buffer.getShort().toInt().toChar()
     }
@@ -93,7 +93,7 @@ class ObjectDecoder(data: ByteArray) {
         try {
             return enumClass.getEnumConstants()[ordinal]
         } catch (e: IndexOutOfBoundsException) {
-            throw InvalidDataException("Ordinal out of range: $ordinal", e);
+            throw InvalidDataException("Ordinal out of range: $ordinal", e)
         }
     }
 

@@ -5,7 +5,6 @@ import net.astrorbits.dontdoit.criteria.inspect.InventoryInspectContext
 import net.astrorbits.dontdoit.criteria.inspect.InventoryItemInspectCandidate
 import net.astrorbits.dontdoit.criteria.inspect.SourcedDamageInspector
 import net.astrorbits.dontdoit.system.team.TeamData
-import net.astrorbits.lib.math.vector.max
 import net.astrorbits.lib.range.DoubleRange
 import org.bukkit.Material
 import org.bukkit.damage.DamageType

@@ -21,7 +21,6 @@ import org.bukkit.Material
 import org.bukkit.damage.DamageType
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
-import org.bukkit.event.inventory.InventoryType
 import org.bukkit.potion.PotionEffectType
 import java.util.UUID
 

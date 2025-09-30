@@ -9,7 +9,6 @@ import net.astrorbits.lib.text.TextHelper.bold
 import net.astrorbits.lib.text.TextHelper.shadowColor
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import org.bukkit.Difficulty
 import org.bukkit.Material
 
 object Configs {

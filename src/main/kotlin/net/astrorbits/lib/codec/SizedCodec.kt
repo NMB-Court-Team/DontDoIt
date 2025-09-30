@@ -15,6 +15,6 @@ abstract class SizedCodec<T>(val size: Int) : Codec<T> {
         if (data.size != size) {
             throw InvalidDataException("Data size is not equal to the expected size")
         }
-        return decodeSized(data);
+        return decodeSized(data)
     }
 }
