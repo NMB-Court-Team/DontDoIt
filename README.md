@@ -1,4 +1,4 @@
-# DoNotDoIt
+# Don't Do It
 
 A paper plugin that provides a minigame called **Don't Do It**.
 
