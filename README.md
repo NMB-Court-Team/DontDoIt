@@ -5,11 +5,13 @@ A paper plugin that provides a minigame called **Don't Do It**.
 ## Commands
 
 readme WIP
+
 You can just read the source code directly. The command class is `net.astrorbits.dontdoit.system.CriteriaCommand`.
 
 ## How to Play
 
 readme WIP
+
 You can just search for videos so that you can easily know how to play.
 
 ## Supported Languages
@@ -32,11 +34,13 @@ directory `<your-server>/plugins/DontDoIt/`, then restart the server.
 ## 命令
 
 嘻嘻，readme还没写
+
 你可以直接读源代码，命令类是`net.astrorbits.dontdoit.system.CriteriaCommand`。
 
 ## 游戏玩法
 
 嘻嘻，readme还没写
+
 你可以直接搜视频，这样了解玩法更简单。
 
 ## 支持的语言
