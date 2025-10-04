@@ -36,6 +36,9 @@ object GameAreaGenerator : Listener {
     private const val STONE_PERCENTAGE = 0.25
     private const val STONE_SEARCH_MAX_DISTANCE = 30
 
+    /**
+     * @return 是否生成成功
+     */
     @NMSWarning
     fun generate(generateCenter: Vec3i, world: World): Boolean {
         val level = (world as? CraftWorld)?.handle ?: throw IllegalArgumentException("Cannot convert org.bukkit.World to net.minecraft.server.level.ServerLevel")
@@ -104,7 +107,7 @@ object GameAreaGenerator : Listener {
         }
 
         val bedrockDepth = Configs.BEDROCK_DEPTH.get()
-        val bedrockY = stoneY - bedrockDepth
+        val bedrockY = stoneY - bedrockDepth + 1
 
         for (pos in Vec3i(minX, bedrockY, minZ)..Vec3i(maxX, bedrockY, maxZ)) {
             level.setBlock(BlockPos(pos.x, pos.y, pos.z), (Material.BEDROCK.createBlockData() as CraftBlockData).state, Block.UPDATE_CLIENTS)
