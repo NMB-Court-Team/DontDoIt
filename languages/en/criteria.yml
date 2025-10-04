@@ -381,16 +381,16 @@ criteria:
       mode: any_of
   # Triggers when player's yaw and pitch are all within the specified ranges
   rotation:
-    - name: Look Up
-      difficulty: normal
+    - name: Head Up
+      difficulty: easy
       # Float Range. Leave empty to represent any value
       yaw: ..
       yaw_reversed: false
       # Float Range. Leave empty to represent any value
       pitch: ..-60
       pitch_reversed: false
-    - name: Look Down
-      difficulty: normal
+    - name: Head Down
+      difficulty: easy
       pitch: 60..
     - name: Face North
       difficulty: trigger_definitely
@@ -529,7 +529,7 @@ criteria:
       mode: delay
   # Triggers when player moved in *move_type* for more than *time* or not, determined by *reversed*
   move_time:
-    - name: Stay Still for 15s
+    - name: Stay Still for 10s
       difficulty: hard
       # types: move, sprint, sneak, swim, glide, jump, fall, on_air, rotate. Multi-type is not allowed.
       # move: Change position
@@ -539,7 +539,7 @@ criteria:
       # Note: Type "jump" with reversed field set to "false" is not supported
       type: move
       # Move time ticks: integer
-      time: 300
+      time: 200
       # false: Triggers when player moved in type for time
       # true: Triggers when player didn't moved in type for time
       reversed: true

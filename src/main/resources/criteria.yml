@@ -380,7 +380,7 @@ criteria:
   # 玩家视角朝向的偏航角在yaw给定的范围内，且俯仰角也在pitch给定的范围内时触发
   rotation:
     - name: 抬头
-      difficulty: normal
+      difficulty: easy
       # 偏航角范围，使用角度制，可以是浮点数，留空时使用".."，即任意值
       yaw: ..
       yaw_reversed: false
@@ -388,7 +388,7 @@ criteria:
       pitch: ..-60
       pitch_reversed: false
     - name: 低头
-      difficulty: normal
+      difficulty: easy
       pitch: 60..
     - name: 面朝北方
       difficulty: trigger_definitely
@@ -528,7 +528,7 @@ criteria:
       mode: delay
   # 持续以type方式移动或不移动超过time时间时触发，具体取决于reversed
   move_time:
-    - name: 15秒不移动
+    - name: 10秒不移动
       difficulty: hard
       # 可以是move, sprint, sneak, swim, glide, jump, fall, on_air, rotate，不可指定多个
       # move: 位置移动（不包括视角移动）
@@ -542,7 +542,7 @@ criteria:
       # rotate: 视角移动
       type: move
       # 时间单位为游戏刻(ticks)，是一个整数
-      time: 300
+      time: 200
       # 若为false，则持续以type形式移动超过time时间时触发
       # 若为true，则保持不以type方式移动超过time时间时触发
       reversed: true
