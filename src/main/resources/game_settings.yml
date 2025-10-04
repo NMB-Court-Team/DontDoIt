@@ -133,6 +133,7 @@ dynamic_settings:
   allow_guess_criteria: "<yellow>是否开启猜词条玩法"
   guess_success_add_life: "<yellow>猜对词条时回复的规则数量"
   guess_failed_reduce_life: "<yellow>猜错词条时减少的规则数量"
+  infinity_night_vision_enabled: "<yellow>是否启用无限夜视"
   save:
     title: "<white>保存修改"
     start: "<yellow>正在保存对游戏设置的修改..."

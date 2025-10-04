@@ -131,8 +131,9 @@ dynamic_settings:
   diamond_behavior_disabled_threshold: "<yellow>In reduce-others-life mode, diamond behavior will be disabled when life count is not above threshold"
   allow_unbalanced_teams: "<yellow>Allow Team Member Count not Balance"
   allow_guess_criteria: "<yellow>Guessing Criteria Rule Enabled"
-  guess_success_add_life: "<yellow>Add Life Count when Guessing Correctly"
-  guess_failed_reduce_life: "<yellow>Reduce Life Count when Guessing Wrongly"
+  guess_success_add_life: "<yellow>Add Life Count when Guessed Correctly"
+  guess_failed_reduce_life: "<yellow>Reduce Life Count when Guessed Wrongly"
+  infinity_night_vision_enabled: "<yellow>Infinity Night Vision Enabled"
   save:
     title: "<white>Save Changes"
     start: "<yellow>Saving..."

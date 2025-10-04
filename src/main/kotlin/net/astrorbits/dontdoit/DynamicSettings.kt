@@ -36,6 +36,7 @@ object DynamicSettings {
     const val DEFAULT_ALLOW_GUESS_CRITERIA = true
     const val DEFAULT_GUESS_SUCCESS_ADD_LIFE = 1
     const val DEFAULT_GUESS_FAILED_REDUCE_LIFE = 2
+    const val DEFAULT_INFINITY_NIGHT_VISION_ENABLED = false
 
     var gameAreaSize: Int = DEFAULT_GAME_AREA_SIZE
     var ingameDifficulty: Difficulty = DEFAULT_INGAME_DIFFICULTY
@@ -47,6 +48,7 @@ object DynamicSettings {
     var allowGuessCriteria: Boolean = DEFAULT_ALLOW_GUESS_CRITERIA
     var guessSuccessAddLife: Int = DEFAULT_GUESS_SUCCESS_ADD_LIFE
     var guessFailedReduceLife: Int = DEFAULT_GUESS_FAILED_REDUCE_LIFE
+    var infinityNightVisionEnabled: Boolean = DEFAULT_INFINITY_NIGHT_VISION_ENABLED
 
     fun loadSettings() {
         LOGGER.info("Loading dynamic settings...")
@@ -56,16 +58,28 @@ object DynamicSettings {
                 val jsonElement = JsonParser.parseString(path.toFile().readText())
                 if (!jsonElement.isJsonObject) throw JsonParseException("Root element is not a json object")
                 val json = jsonElement.asJsonObject
-                gameAreaSize = json.getAsJsonPrimitive("game_area_size").asInt
-                ingameDifficulty = Difficulty.valueOf(json.getAsJsonPrimitive("ingame_difficulty").asString.uppercase())
-                lifeCount = json.getAsJsonPrimitive("life_count").asInt
-                diamondBehavior = DiamondBehavior.valueOf(json.getAsJsonPrimitive("diamond_behavior").asString.uppercase())
-                diamondBehaviorEnabled = json.getAsJsonPrimitive("diamond_behavior_enabled").asBoolean
-                diamondBehaviorDisabledThreshold = json.getAsJsonPrimitive("diamond_behavior_disabled_threshold").asInt
-                allowUnbalancedTeams = json.getAsJsonPrimitive("allow_unbalanced_teams").asBoolean
-                allowGuessCriteria = json.getAsJsonPrimitive("allow_guess_criteria").asBoolean
-                guessSuccessAddLife = json.getAsJsonPrimitive("guess_success_add_life").asInt
-                guessFailedReduceLife = json.getAsJsonPrimitive("guess_failed_reduce_life").asInt
+                gameAreaSize = runCatching { json.getAsJsonPrimitive("game_area_size").asInt }
+                    .getOrDefault(DEFAULT_GAME_AREA_SIZE)
+                ingameDifficulty = runCatching {  Difficulty.valueOf(json.getAsJsonPrimitive("ingame_difficulty").asString.uppercase()) }
+                    .getOrDefault(DEFAULT_INGAME_DIFFICULTY)
+                lifeCount = runCatching {  json.getAsJsonPrimitive("life_count").asInt }
+                    .getOrDefault(DEFAULT_LIFE_COUNT)
+                diamondBehavior = runCatching {  DiamondBehavior.valueOf(json.getAsJsonPrimitive("diamond_behavior").asString.uppercase()) }
+                    .getOrDefault(DEFAULT_DIAMOND_BEHAVIOR)
+                diamondBehaviorEnabled = runCatching {  json.getAsJsonPrimitive("diamond_behavior_enabled").asBoolean }
+                    .getOrDefault(DEFAULT_DIAMOND_BEHAVIOR_ENABLED)
+                diamondBehaviorDisabledThreshold = runCatching {  json.getAsJsonPrimitive("diamond_behavior_disabled_threshold").asInt }
+                    .getOrDefault(DEFAULT_DIAMOND_BEHAVIOR_DISABLED_THRESHOLD)
+                allowUnbalancedTeams = runCatching {  json.getAsJsonPrimitive("allow_unbalanced_teams").asBoolean }
+                    .getOrDefault(DEFAULT_ALLOW_UNBALANCED_TEAMS)
+                allowGuessCriteria = runCatching {  json.getAsJsonPrimitive("allow_guess_criteria").asBoolean }
+                    .getOrDefault(DEFAULT_ALLOW_GUESS_CRITERIA)
+                guessSuccessAddLife = runCatching { json.getAsJsonPrimitive("guess_success_add_life").asInt }
+                    .getOrDefault(DEFAULT_GUESS_SUCCESS_ADD_LIFE)
+                guessFailedReduceLife = runCatching {  json.getAsJsonPrimitive("guess_failed_reduce_life").asInt }
+                    .getOrDefault(DEFAULT_GUESS_FAILED_REDUCE_LIFE)
+                infinityNightVisionEnabled = runCatching {  json.getAsJsonPrimitive("infinity_night_vision_enabled").asBoolean }
+                    .getOrDefault(DEFAULT_INFINITY_NIGHT_VISION_ENABLED)
             } else {
                 LOGGER.info("Dynamic settings file not found, using default value")
                 saveSettings()
@@ -94,6 +108,7 @@ object DynamicSettings {
             json.addProperty("allow_guess_criteria", allowGuessCriteria)
             json.addProperty("guess_success_add_life", guessSuccessAddLife)
             json.addProperty("guess_failed_reduce_life", guessFailedReduceLife)
+            json.addProperty("infinity_night_vision_enabled", infinityNightVisionEnabled)
             val jsonString = json.toString()
             path.writeText(jsonString)
         } catch (e: Exception) {
@@ -113,6 +128,7 @@ object DynamicSettings {
         allowGuessCriteria = DEFAULT_ALLOW_GUESS_CRITERIA
         guessSuccessAddLife = DEFAULT_GUESS_SUCCESS_ADD_LIFE
         guessFailedReduceLife = DEFAULT_GUESS_FAILED_REDUCE_LIFE
+        infinityNightVisionEnabled = DEFAULT_INFINITY_NIGHT_VISION_ENABLED
     }
 
     private fun getPath(): Path {
@@ -212,6 +228,13 @@ object DynamicSettings {
                         .initial(guessFailedReduceLife.toFloat())
                         .width(250)
                         .build(),
+                    DialogInput.bool(
+                        "infinity_night_vision_enabled",
+                        Configs.DYN_SETTINGS_INFINITY_NIGHT_VISION_ENABLED.get(),
+                        infinityNightVisionEnabled,
+                        Configs.DYN_SETTINGS_YES.get(),
+                        Configs.DYN_SETTINGS_NO.get()
+                    ),
                 ))
                 .build()
             ).type(DialogType.confirmation(
@@ -228,6 +251,7 @@ object DynamicSettings {
                             val allowGuessCriteria = responseView.getBoolean("allow_guess_criteria")
                             val guessSuccessAddLife = responseView.getFloat("guess_success_add_life")
                             val guessFailedReduceLife = responseView.getFloat("guess_failed_reduce_life")
+                            val infinityNightVisionEnabled = responseView.getBoolean("infinity_night_vision_enabled")
                             if (gameAreaSize != null) this.gameAreaSize = gameAreaSize.toInt()
                             if (ingameDifficulty != null) this.ingameDifficulty = Difficulty.valueOf(ingameDifficulty.uppercase())
                             if (lifeCount != null) this.lifeCount = lifeCount.toInt()
@@ -238,6 +262,7 @@ object DynamicSettings {
                             if (allowGuessCriteria != null) this.allowGuessCriteria = allowGuessCriteria
                             if (guessSuccessAddLife != null) this.guessSuccessAddLife = guessSuccessAddLife.toInt()
                             if (guessFailedReduceLife != null) this.guessFailedReduceLife = guessFailedReduceLife.toInt()
+                            if (infinityNightVisionEnabled != null) this.infinityNightVisionEnabled = infinityNightVisionEnabled
                             audience.sendMessage(Configs.DYN_SETTINGS_SAVE_START.get())
                             TaskBuilder(DontDoIt.instance)
                                 .setAsync()

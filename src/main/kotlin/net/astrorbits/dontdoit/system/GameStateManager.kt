@@ -2,6 +2,7 @@ package net.astrorbits.dontdoit.system
 
 import net.astrorbits.dontdoit.Configs
 import net.astrorbits.dontdoit.DontDoIt
+import net.astrorbits.dontdoit.DynamicSettings
 import net.astrorbits.dontdoit.criteria.system.CriteriaManager
 import net.astrorbits.dontdoit.system.generate.GameAreaGenerator
 import net.astrorbits.dontdoit.system.team.TeamData.Companion.PLAYER_NAME_PLACEHOLDER
@@ -20,6 +21,8 @@ import org.bukkit.Bukkit
 import org.bukkit.GameRule
 import org.bukkit.SoundCategory
 import org.bukkit.entity.Player
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 import org.bukkit.scheduler.BukkitTask
 
 object GameStateManager {
@@ -139,6 +142,19 @@ object GameStateManager {
         }
         for (player in Bukkit.getOnlinePlayers()) {
             player.isGlowing = TeamManager.getTeam(player) != null
+        }
+        if (DynamicSettings.infinityNightVisionEnabled) {
+            for (player in Bukkit.getOnlinePlayers()) {
+                player.addPotionEffect(PotionEffect(
+                    PotionEffectType.NIGHT_VISION,
+                    PotionEffect.INFINITE_DURATION, 0,
+                    false, false, false
+                ))
+            }
+        } else {
+            for (player in Bukkit.getOnlinePlayers()) {
+                player.removePotionEffect(PotionEffectType.NIGHT_VISION)
+            }
         }
     }
 

@@ -406,6 +406,10 @@ object Configs {
         "dynamic_settings.guess_failed_reduce_life",
         "<white>猜错词条时减少的规则数量"
     ))
+    val DYN_SETTINGS_INFINITY_NIGHT_VISION_ENABLED: TextConfigData = CONFIG.defineConfig(TextConfigData(
+        "dynamic_settings.infinity_night_vision_enabled",
+        "<white>是否启用无限夜视"
+    ))
     val DYN_SETTINGS_SAVE: TextConfigData = CONFIG.defineConfig(TextConfigData(
         "dynamic_settings.save.title",
         "<white>保存修改"
