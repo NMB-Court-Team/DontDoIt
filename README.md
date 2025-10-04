@@ -1,3 +1,99 @@
+# 不要做挑战 (English version follows)
+
+这是一个Paper插件，它提供了一个名为《不要做挑战》的游戏的功能。
+
+## 命令
+
+**插件所有命令的入口都在`/criteria`命令中。**
+
+想了解命令更详细的功能，你可以直接阅读源代码，命令类是`net.astrorbits.dontdoit.system.CriteriaCommand`。
+
+> 注：以下命令中，标上`*`符号的代表所有玩家都可以执行，未标上`*`符号的代表仅管理员可以执行。
+
+### `/criteria reset`
+
+重置游戏。会重置世界边界和队伍血量，但不会重置地图。
+
+### `/criteria settings`
+
+游戏设置相关的命令，有两个子命令：
+
+- `/criteria settings set`: 打开游戏设置界面。
+- `/criteria settings reset`: 重置游戏设置。
+
+### *`/criteria trigger <team:TeamId>`
+
+触发指定队伍的自定义词条。
+
+### *`/criteria guess <player:PlayerName> <guessed:Boolean>`
+
+标记指定玩家猜对了词条或猜错了词条。
+
+### `/criteria trigger-forced <team:TeamId>`
+
+强制触发指定队伍的词条，不论是不是自定义词条。
+
+### `/criteria change <team:TeamId>`
+
+强制切换指定队伍的词条（不会重置自动切换词条倒计时）。
+
+### `/criteria grant <team:TeamId> <criteria:CriteriaName>`
+
+强制将指定队伍的词条换成指定的词条（不会重置自动切换词条倒计时）。
+
+### `/criteria get <team:TeamId>`
+
+获取指定队伍的信息，目前只有一个子命令：
+
+- `/criteria get <team:TeamId> criteria`: 获取指定队伍当前的词条。
+
+### `/criteria set-life <team:TeamId> <life:Integer>`
+
+强制将指定队伍的血量设置为指定值。
+
+- 如果队伍仍存活，将队伍血量设置为0，则会导致队伍淘汰
+- 如果队伍已淘汰，将队伍血量设置为大于0的值，则会导致队伍复活
+
+## 游戏玩法
+
+嘻嘻，readme还没写
+
+你可以直接搜视频，这样了解玩法更简单。
+
+## 配置
+
+### config/game_settings.yml
+包含:
+- 文字显示配置
+- 队伍物品配置
+- 矿物生成配置
+- 游戏玩法相关的配置项
+一般不需要对此文件进行更改，游戏玩法相关的配置项可以在游戏内使用`/criteria settings set`: 打开游戏设置界面进行更改
+
+### config/criteria.yml
+
+包含大部分词条，有部分词条是由插件动态生成的，可以在设置里进行开关，不能增加。
+增加词条需要注意保持格式严格一致，如`:`，`-`后需要加空格，缩进一致等。
+一些特殊项：
+
+- 大部分词条可以用`reversed: true`表示反向的词条，具体实现就是给最终判据加一个异或reversed，比如背包里有腐肉reversed就是背包里没有腐肉
+- 物品、方块相关的词条可以用`*`表示任意物品、方块，用`#`表示物品、方块tag，如`#leaves`，`#pickaxes`
+- 如果需要判断多个物品，直接用`,`分隔写多个id，其中任意一个id符合条件就会触发
+- 实体相关的词条可以用`*`表示任意实体，用`/`表示无来源，无来源也包含在任意实体里。
+- `damage_type`和`effect`也可以用`*`表示任意
+- 范围相关的词条可以用`..`表示，如`3..`表示x≥3，`5..6`表示5≤x≤6
+- 详细解释见`criteria.yml`内注释
+
+## 支持的语言
+
+- 中文
+
+要添加其他语言的支持，请创建一个新的pull request。把对应语言的文件放到`languages\<你使用的语言>\`这个文件夹里。
+
+如果要把游戏语言换成你使用的语言，你需要把你使用的语言对应的文件`criteria.yml`和`game_settings.yml`放到`<你的服务器>/plugins/DontDoIt/`这个文件夹下，然后重启服务器。
+
+-------
+
 # Don't Do It
 
 A paper plugin that provides a minigame called **Don't Do It**.
@@ -94,101 +190,4 @@ You can add more languages support by creating a new pull request. Please put th
 To switch the game language to your language, you should put file `criteria.yml` and `game_settings.yml` of your language into 
 directory `<your-server>/plugins/DontDoIt/`, then restart the server.
 
-
-
--------
-
-# 不要做挑战
-
-这是一个Paper插件，它提供了一个名为《不要做挑战》的游戏的功能。
-
-## 命令
-
-**插件所有命令的入口都在`/criteria`命令中。**
-
-想了解命令更详细的功能，你可以直接阅读源代码，命令类是`net.astrorbits.dontdoit.system.CriteriaCommand`。
-
-> 注：以下命令中，标上`*`符号的代表所有玩家都可以执行，未标上`*`符号的代表仅管理员可以执行。
-
-### `/criteria reset`
-
-重置游戏。会重置世界边界和队伍血量，但不会重置地图。
-
-### `/criteria settings`
-
-游戏设置相关的命令，有两个子命令：
-
-- `/criteria settings set`: 打开游戏设置界面。
-- `/criteria settings reset`: 重置游戏设置。
-
-### *`/criteria trigger <team:TeamId>`
-
-触发指定队伍的自定义词条。
-
-### *`/criteria guess <player:PlayerName> <guessed:Boolean>`
-
-标记指定玩家猜对了词条或猜错了词条。
-
-### `/criteria trigger-forced <team:TeamId>`
-
-强制触发指定队伍的词条，不论是不是自定义词条。
-
-### `/criteria change <team:TeamId>`
-
-强制切换指定队伍的词条（不会重置自动切换词条倒计时）。
-
-### `/criteria grant <team:TeamId> <criteria:CriteriaName>`
-
-强制将指定队伍的词条换成指定的词条（不会重置自动切换词条倒计时）。
-
-### `/criteria get <team:TeamId>`
-
-获取指定队伍的信息，目前只有一个子命令：
-
-- `/criteria get <team:TeamId> criteria`: 获取指定队伍当前的词条。
-
-### `/criteria set-life <team:TeamId> <life:Integer>`
-
-强制将指定队伍的血量设置为指定值。
-
-- 如果队伍仍存活，将队伍血量设置为0，则会导致队伍淘汰
-- 如果队伍已淘汰，将队伍血量设置为大于0的值，则会导致队伍复活
-
-## 游戏玩法
-
-嘻嘻，readme还没写
-
-你可以直接搜视频，这样了解玩法更简单。
-
-## 配置
-
-### config/game_settings.yml
-包含:
-- 文字显示配置
-- 队伍物品配置
-- 矿物生成配置
-- 游戏玩法相关的配置项
-一般不需要对此文件进行更改，游戏玩法相关的配置项可以在游戏内使用`/criteria settings set`: 打开游戏设置界面进行更改
-
-### config/criteria.yml
-
-包含大部分词条，有部分词条是由插件动态生成的，可以在设置里进行开关，不能增加。
-增加词条需要注意保持格式严格一致，如`:`，`-`后需要加空格，缩进一致等。
-一些特殊项：
-
-- 大部分词条可以用`reversed: true`表示反向的词条，具体实现就是给最终判据加一个异或reversed，比如背包里有腐肉reversed就是背包里没有腐肉
-- 物品、方块相关的词条可以用`*`表示任意物品、方块，用`#`表示物品、方块tag，如`#leaves`，`#pickaxes`
-- 如果需要判断多个物品，直接用`,`分隔写多个id，其中任意一个id符合条件就会触发
-- 实体相关的词条可以用`*`表示任意实体，用`/`表示无来源，无来源也包含在任意实体里。
-- `damage_type`和`effect`也可以用`*`表示任意
-- 范围相关的词条可以用`..`表示，如`3..`表示x≥3，`5..6`表示5≤x≤6
-- 详细解释见`criteria.yml`内注释
-
-## 支持的语言
-
-- 中文
-
-要添加其他语言的支持，请创建一个新的pull request。把对应语言的文件放到`languages\<你使用的语言>\`这个文件夹里。
-
-如果要把游戏语言换成你使用的语言，你需要把你使用的语言对应的文件`criteria.yml`和`game_settings.yml`放到`<你的服务器>/plugins/DontDoIt/`这个文件夹下，然后重启服务器。
 
