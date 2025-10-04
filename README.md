@@ -60,6 +60,31 @@ readme WIP
 
 You can just search for videos so that you can easily know how to play.
 
+## Config
+
+### config/game_settings.yml
+Include:
+- text display config
+- team selection item config
+- ore gen config
+- ingame settings
+You can modify the ingame settings use command `/criteria settings set` before game start. So usually you don't have to edit this file.
+
+### config/criteria.yml
+
+Some of the criteria is dynamically modified by plugin so you can only switch them on/off at ingame settings.
+If you need to add some criteria, please maintain the exact formatting.
+
+Exrta Notes:
+
+- Some of the criteria can add `reversed: true` indicate the reversed version, it xor reversed at the end, e.g. reversed have rotten flesh in inventory equals no rotten flesh in inventory.
+- Items, Blocks related criteria can use `*` to indicate any Item or Block, use `#` to indicate Item Tags and Block Tags, e.g.`#leaves`, `#pickaxes`.
+- Use `,` to split items, repersent Any Of the item will trigger the criterion.
+- Use `*` repersent Any Entity, use `/` repersent no sourse, which also included in Any Entity.
+- `damage_type` and `effect` also use `*` indicate any of the type can trigger.
+- Use `..` represent number range, like `3..` means x≥3, `5..6` means 5≤x≤6
+- More info in `criteria.yml` (in chinese)
+
 ## Supported Languages
 
 - Chinese
@@ -134,6 +159,30 @@ directory `<your-server>/plugins/DontDoIt/`, then restart the server.
 嘻嘻，readme还没写
 
 你可以直接搜视频，这样了解玩法更简单。
+
+## 配置
+
+### config/game_settings.yml
+包含:
+- 文字显示配置
+- 队伍物品配置
+- 矿物生成配置
+- 游戏玩法相关的配置项
+一般不需要对此文件进行更改，游戏玩法相关的配置项可以在游戏内使用`/criteria settings set`: 打开游戏设置界面进行更改
+
+### config/criteria.yml
+
+包含大部分词条，有部分词条是由插件动态生成的，可以在设置里进行开关，不能增加。
+增加词条需要注意保持格式严格一致，如`:`，`-`后需要加空格，缩进一致等。
+一些特殊项：
+
+- 大部分词条可以用`reversed: true`表示反向的词条，具体实现就是给最终判据加一个异或reversed，比如背包里有腐肉reversed就是背包里没有腐肉
+- 物品、方块相关的词条可以用`*`表示任意物品、方块，用`#`表示物品、方块tag，如`#leaves`，`#pickaxes`
+- 如果需要判断多个物品，直接用`,`分隔写多个id，其中任意一个id符合条件就会触发
+- 实体相关的词条可以用`*`表示任意实体，用`/`表示无来源，无来源也包含在任意实体里。
+- `damage_type`和`effect`也可以用`*`表示任意
+- 范围相关的词条可以用`..`表示，如`3..`表示x≥3，`5..6`表示5≤x≤6
+- 详细解释见`criteria.yml`内注释
 
 ## 支持的语言
 
