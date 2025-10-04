@@ -1,0 +1,199 @@
+# ==== Game text ====
+team_name:
+  red: "<bold><red><shadow:#000000a0>RED</shadow></red></bold>"
+  gold: "<bold><gold><shadow:#000000a0>ORANGE</shadow></gold></bold>"
+  yellow: "<bold><yellow><shadow:#000000a0>YELLOW</shadow></yellow></bold>"
+  green: "<bold><green><shadow:#000000a0>GREEN</shadow></green></bold>"
+  aqua: "<bold><aqua><shadow:#000000a0>BLUE</shadow></aqua></bold>"
+  dark_aqua: "<bold><dark_aqua><shadow:#000000a0>AQUA</shadow></dark_aqua></bold>"
+  light_purple: "<bold><light_purple><shadow:#000000a0>PINK</shadow></light_purple></bold>"
+  dark_purple: "<bold><dark_purple><shadow:#000000a0>PURPLE</shadow></dark_purple></bold>"
+
+change_team_item_name: "<italic:false><aqua>[<key:key.use>]<yellow>switch team"
+modify_custom_criteria_item_name: "<italic:false><aqua>[<key:key.use>]<yellow>set custom criterion"
+start_game_item_name: "<italic:false><aqua>[<key:key.use>]<gold>Game Start!"
+
+custom_criteria_name_prefix: "[Custom]"
+diamond_behavior_description:
+  reduce_others_life: "Remove other team life by 1"
+  add_self_life: "Add own team life by 1"
+
+# Preparation Stage
+join_spectator_message: "<yellow>You are now <gray><bold>spectator"
+join_team_message: "<yellow>you joined team {team_name}"
+current_custom_criteria_message: "<yellow>your team's custom criteria: <white>{name}"
+self_set_custom_criteria_message: "<yellow>set team's custom criteria to: <white>{name}"
+other_set_custom_criteria_message: "<yellow>{player} set team's custom criteria to: <white>{name}"
+not_set_custom_criteria_message: "<yellow>your team have not set any custom criteria yet"
+self_remove_custom_criteria_message: "<yellow>cleared team custom criteria"
+other_remove_custom_criteria_message: "<yellow>{player} has cleared team custom criteria"
+enter_prepare_message: "<yellow>Use the item in hand <green><bold>Select Team</bold><yellow>, then set your team's <green><bold>Custom Criteria"
+change_settings_hint_message: "<yellow>Type <light_purple><hover:show_text:'<aqua>[Click]'><click:run_command:/criteria settings set>/criteria settings set</click></hover><yellow> to modify ingame settings"
+cannot_start_game_message: "<red>Current location is invalid, please change your location"
+
+# Game Switch Stage
+start_game_message: "<green><bold>GAME START!"
+end_game_message:
+  announce: "{team_name} <gold> WINS!"
+  title: "{team_name}"
+  subtitle: "<gold> WINS!"
+draw_game_message: "<red>NO ONE WINS"
+reset_game_message: "<yellow>Game Rested"
+
+# Trigger Count
+trigger_count_message:
+  head: "<gray>=====<yellow>Trigger Count<gray>====="
+  body: "{player}<white>: <green>{count}"
+  tail: "<gray>====================="
+
+# Ingame Stage
+ingame_actionbar: "<red>{time}seconds<green> before change criterion<white> || <green>life count: <red>{life_count}"
+criteria_triggered_message:
+  announce: "{who_triggered} <gold>has triggered {criteria}"
+  title: "{criteria}"
+  subtitle: "{who_triggered} <gold>triggered criterion"
+auto_change_criteria_message:
+  announce: "{team_name} <yellow> has changed criterion, last criterion was: {criteria}"
+  title: "Criterion Changed"
+  subtitle: "<yellow>last criterion was: {criteria}"
+get_diamond_message: "{player} <yellow>Gained <aqua>Diamond"
+holding_custom_criteria_message: "{team_name} <yellow>has custom criterion [{criteria}<yellow>]"
+holding_custom_criteria_click_message: "<dark_aqua><hover:show_text:'<aqua>Click if eligible: '>[Click here to trigger]"
+guess_hint_message: "<yellow>Type <light_purple><hover:show_text:'<aqua>Click to input'><click:suggest_command:/criteria guess>/criteria guess \\<player> \\<guess right or not></click></hover> <yellow> tag player's guess correct or not"
+guess_cooldown_finished_message: "{team_name} <yellow>Now is available to guess criteria"
+guessed_message:
+  success:
+    announce: "{player} <yellow>guessed correctly, life count <green>+{life_count}<yellow>, last criterion was:{criteria}"
+    title: "Criterion Changed"
+    subtitle: "<yellow>Guess Correctly! Life count <green>+{life_count}"
+  failed:
+    announce: "{player} <red>guessed wrongly, life count <dark_red>-{life_count}<red>, last criterion was: {criteria}"
+    title: "Criterion Changed"
+    subtitle: "<red>Guessed Wrongly! life count <dark_red>-{life_count}"
+eliminated_message:
+  announce: "{team_name} <dark_red> was Eliminate"
+  title: "{team_name}"
+  subtitle: "<dark_red> was Eliminate"
+
+# Sidebar
+sidebar:
+  title: "<shadow:#000000a0><gradient:#ff0000:#EF903E>※ <bold>Don't Do It</bold> ※"
+  entry:
+    name: "{team_name}<white><shadow:#aa0000a0>[<red><shadow:#aa0000a0>❤<white><shadow:#aa0000a0>{life_count:%02d}]"
+    number: "<yellow><shadow:#000000a0>{criteria}"
+    number_winner: "<gold><shadow:#000000a0>winner"
+  entry_dead:
+    name: "<strikethrough>{team_name}<gray><shadow:#000000a0>[💔00]"
+    number: "<gray><shadow:#000000a0>eliminate"
+
+# custom criterion setting dialog
+modify_custom_criteria:
+  title: "<aqua><bold>Set Custom criterion"
+  body:
+    - "<white>type the custom criterion below"
+    - "<white>click “Confirm” to save the changes"
+    - "<white>leave empty to set nothing if you don't want"
+    - ""
+  text_box_title: "<yellow>Content"
+  no_button_label: "<white>Cancel"
+  yes_button_label: "<white>Confirm"
+
+# /criteria command suggest text
+criteria_command:
+  failed:
+    game_not_start: "Game is not start yet"
+    guess_not_enabled: "Guess rule is disabled"
+    invalid_player: "Player %s is eliminate or spectator"
+    not_custom_criteria: "Team %s current is not custom criterion"
+    invalid_team_name: "Team %s do not exist or already eliminated"
+    guess_self_criteria: "Tag yourself is not allowed"
+    guess_in_cooldown: "Player %s is in cooldown (time left: %ds)"
+    change_settings_when_not_waiting: "Setting is not allow with game started"
+  success:
+    reset_game: "<yellow>Game Rested"
+    set_life: "<yellow>Set the {team_name}'s <yellow>life count to <red>{life_count}"
+    get_team_criteria: "{team_name} <yellow>has {criteria}"
+    reset_settings: "<yellow>Reset settings"
+
+# 动态配置界面文本
+dynamic_settings:
+  title: "<aqua><bold>Game Settings"
+  yes: "Yes"
+  no: "No"
+  game_area_size: "<yellow>Game area size"
+  ingame_difficulty: "<yellow>Minecraft difficulty"
+  life_count: "<yellow>Life count limit"
+  diamond_behavior:
+    title: "<yellow>Diamond behavior"
+    add_self_life: "<white>Add own team n lives when gain diamond"
+    reduce_others_life: "<white>Remove other team n lives when gain diamond"
+  diamond_behavior_enabled: "<yellow>Allow diamond behavior"
+  diamond_behavior_disabled_threshold: "<yellow>In reduce_others_life mode, diamond behavior will disabled when life count is below "
+  allow_unbalanced_teams: "<yellow>Allow team member not equal"
+  allow_guess_criteria: "<yellow>Allow guess criterion"
+  guess_success_add_life: "<yellow>Guess correct gain life count"
+  guess_failed_reduce_life: "<yellow>Guess wrong lose life count"
+  save:
+    title: "<white>Save Changes"
+    start: "<yellow>Saving..."
+    success: "<yellow>Settings saved"
+  discard: "<white>Cancel"
+
+# Y-level criteria
+y_level_criteria:
+  below: "At %s (Y < %d)"
+  above: "At %s (Y > %d)"
+  ground: "Ground"
+  on_air: "High"
+
+# Team selection item
+join_team_item:
+  red: red_wool
+  gold: orange_wool
+  yellow: yellow_wool
+  green: lime_wool
+  aqua: light_blue_wool
+  dark_aqua: cyan_wool
+  light_purple: pink_wool
+  dark_purple: purple_wool
+spectator_item: light_gray_wool
+modify_custom_criteria_item: writable_book
+start_game_item: nether_star
+
+# ==== ore gen settings ====
+# andesite
+andesite_generation:
+  # depth range, mast be integer. Front section is use when ranges overlap.
+  - depth: 1..10
+    # gen percentage
+    ratio: 0.75
+# coal ore
+coal_ore_generation:
+  - depth: 1..3
+    ratio: 0.10
+  - depth: 4..7
+    ratio: 0.07
+  - depth: 8..10
+    ratio: 0.02
+# iron ore
+iron_ore_generation:
+  - depth: 4..7
+    ratio: 0.02
+  - depth: 8..10
+    ratio: 0.05
+# diamond ore
+diamond_ore_generation:
+  - depth: 8..10
+    ratio: 0.01
+# bedrock depth
+bedrock_depth: 11
+
+# ==== ingame settings ====
+# enable Y-level criteria or not
+y_level_criteria_enabled: true
+# Y-level criteria height difference from ground, mast be integer
+y_level_offset:
+  ground: 1
+  on_air: 14
+# auto changed criteria time: seconds
+auto_change_criteria_time: 120
