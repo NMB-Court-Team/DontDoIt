@@ -87,6 +87,7 @@
 ## 支持的语言
 
 - 中文
+- 英文
 
 要添加其他语言的支持，请创建一个新的pull request。把对应语言的文件放到`languages\<你使用的语言>\`这个文件夹里。
 
@@ -184,6 +185,7 @@ Exrta Notes:
 ## Supported Languages
 
 - Chinese
+- English
 
 You can add more languages support by creating a new pull request. Please put the file into `languages\<your-language>\`.
 
