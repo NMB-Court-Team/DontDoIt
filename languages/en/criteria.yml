@@ -1,38 +1,40 @@
 criteria:
-  # triggered when item was consumed
+  # Words being included by '*' represents the corresponding field.
+
+  # Triggers when any matching *item* was eaten.
   eat_item:
-      # Criteria Name
+      # Criteria name.
     - name: Eat Rotten Flesh
-      # Criteria Trigger Difficulty
-      # trigger_definitely  no way not trigger this. e.g. Jump, In Air
-      # very_easy           Easy to trigger within other players' disruption. e.g. Take Damage, Dead
+      # Criteria trigger difficulty.
+      # trigger_definitely  e.g. Jump, In Air
+      # very_easy           e.g. Take Damage, Dead
       # easy                e.g. revive, no block above
       # normal    <Default> e.g. Step On Andesite, Eat Rotten Flesh
       # hard                e.g. Killed By Zombie
       # very_hard           e.g. Drown
       # impossible          e.g. ?
       difficulty: normal
-      # Use comma to separate multiple items, also use '#' to indicate item tag
-      # Add "!" before item or tag represent not include
-      # Use "*" or leave empty represent any item
+      # Use comma ',' to separate multiple items, also use '#' to indicate item tags
+      # Add '!' before items or tags to represent excluding items
+      # Use '*' or leave empty to represent any item
       item: rotten_flesh
     - name: Eat Bread
       difficulty: normal
       item: bread
-    - name: Eat Cooked Food
+    - name: Eat Cooked Meat
       difficulty: normal
       item: cooked_beef, cooked_porkchop, cooked_mutton, cooked_chicken, cooked_rabbit, cooked_cod, cooked_salmon
-  # triggered when player walk more than a set distance
+  # Triggers when player has walked for more than *distance*.
   walk_distance:
     - name: Walk 40m
       difficulty: normal
-      # walk distance: Float
+      # Walk distance: Float
       distance: 40
-  # triggered when mine block
+  # Triggers when player mined any matching *block*
   break_block:
     - name: Mine Andesite
       difficulty: easy
-      # block is same as item
+      # Block field format is the same as item field
       block: andesite
     - name: Mine Stone
       difficulty: normal
@@ -64,47 +66,47 @@ criteria:
     - name: Mine Furnace
       difficulty: normal
       block: furnace
-  # triggered when pick up item
+  # Triggers when player picked up any matching *item*
   pick_up_item:
-    - name: Pick Up Coal
+    - name: Pick up Coal
       difficulty: normal
       item: coal
-    - name: Pick Up Rotten Flesh
+    - name: Pick up Rotten Flesh
       difficulty: normal
       item: rotten_flesh
-    - name: Pick Up Andesite
+    - name: Pick up Andesite
       difficulty: easy
       item: andesite
-    - name: Pick Up Cobblestone
+    - name: Pick up Cobblestone
       difficulty: normal
       item: cobblestone
-    - name: Pick Up Diamond
+    - name: Pick up Diamond
       difficulty: hard
       item: diamond
-    - name: Pick Up Raw Iron
+    - name: Pick up Raw Iron
       difficulty: normal
       item: raw_iron
-    - name: Pick Up
+    - name: Pick up Uncooked Meat
       difficulty: normal
       item: beef, porkchop, mutton, chicken, rabbit, cod, salmon
-    - name: Pick Up Stick
+    - name: Pick up Stick
       difficulty: easy
       item: stick
-    - name: Pick Up Sapling
+    - name: Pick up Sapling
       difficulty: easy
       item: "#saplings"
-  # triggered when fall a set distance
+  # Triggers when player has fallen for more than *distance*
   fall_distance:
-    - name: Fall From 5 Blocks
+    - name: Fall from 5 Blocks
       difficulty: normal
-      # fall distance: Float
+      # Fall distance: Float
       distance: 5
-  # triggered when craft item
+  # Triggers when player crafted any matching *item*
   craft_item:
     - name: Craft Stone Pickaxe
       difficulty: hard
       item: stone_pickaxe
-    - name: Craft iron Pickaxe
+    - name: Craft Iron Pickaxe
       difficulty: hard
       item: iron_pickaxe
     - name: Craft Furnace Pickaxe
@@ -128,67 +130,68 @@ criteria:
     - name: Craft Diamond Tool
       difficulty: hard
       item: diamond_shovel, diamond_pickaxe, diamond_hoe, diamond_axe, diamond_sword
-  # triggered when player have effect
+  # Triggers when player is having any matching *effect*
   status_effect:
     - name: Have Hunger Effect
       difficulty: normal
-      # Use '*' indicate any effect
+      # Use '*' to indicate any effect
       effect: hunger
     - name: Have Poison Effect
       difficulty: very_hard
       effect: poison
-  # triggered when deal damage-type damage to entity
+  # Triggers when player applied any matching *damage_type* damage to any matching *entity* with any matching *mainhand* item in mainhand.
+  # Note: *offhand* field is not supported.
   hurt_entity:
     - name: Deal Damage
       difficulty: easy
-      # entity same as item
+      # Entity field format is the same as item field
       entity: "*"
-      # damage type same as item
+      # Damage type field format is the same as item field
       damage_type: "*"
-      # damage amount: Float
-      # range "[<min>]..[<max>]"
+      # Damage amount: Float
+      # Range format: [<min>]..[<max>]
       # ".." = any value
       amount: ..
       reversed: false
-    - name: Attack With Pickaxe
+    - name: Attack with Pickaxe
       difficulty: hard
       mainhand: "#pickaxes"
-    - name: Attack With Axe
+    - name: Attack with Axe
       difficulty: normal
       entity: "*"
       mainhand: "#axes"
-    - name: Attack With Bare Hand
+    - name: Attack with Bare Hand
       difficulty: normal
       entity: player
       mainhand: air
-  # triggered when take damage-type damage from entity
+  # Triggers when player received any matching *damage_type* damage from any matching *entity*
   hurt_by_entity:
     - name: Take Damage
       difficulty: very_easy
-      # entity source，set to "/" represent no source damage.
+      # Entity source，Use "/" to represent no source damage.
       entity: "*"
       damage_type: "*"
       amount: ..
       reversed: false
-    - name: Suffocated In Wall
+    - name: Suffocated in Wall
       difficulty: hard
       entity: "/"
       damage_type: in_wall
-    - name: Take More Than 5×❤ Damage
+    - name: Take more than 5×❤ Damage at Once
       difficulty: easy
       entity: "*"
       amount: 10..
-    - name: Take More Than 10×❤ Damage
+    - name: Take more mhan 10×❤ Damage at Once
       difficulty: very_hard
       entity: "*"
       amount: 20..
-    - name: Damage By Arrow
+    - name: Damaged by Arrow
       difficulty: hard
       damage_type: arrow
-    - name: Damage By Fire
+    - name: Damaged by Fire
       difficulty: normal
       damage_type: campfire, in_fire, hot_floor, lava, on_fire
-  # triggered when killed entity with damage_type damage
+  # Triggers when player killed any matching *entity* with any matching *damage_type* damage
   kill_entity:
     - name: Kill Mob
       difficulty: easy
@@ -203,11 +206,11 @@ criteria:
     - name: Kill Zombie
       difficulty: normal
       entity: zombie
-  # triggered when killed by entity with damage_type damage
+  # Triggers when player was killed by any matching *entity* with any matching *damage_type* damage
   killed_by_entity:
     - name: Death
       difficulty: very_easy
-      # damage source entity, use '/' to represent no source damage
+      # Damage source entity. Use '/' to represent no source damage
       entity: "*"
       damage_type: "*"
     - name: Fall To Death
@@ -220,14 +223,15 @@ criteria:
     - name: Burn To Death
       difficulty: hard
       damage_type: campfire, in_fire, hot_floor, lava, on_fire
-  # triggered when player jumps
+  # Triggers when player has jumped for *count* times
   jump:
     - name: Jump
       difficulty: trigger_definitely
     - name: Jump 20 Times
+      # Jump count. Defaults to 1.
       count: 20
       difficulty: normal
-  # triggered when player interact block with item in hand
+  # Triggers when player interacted any matching *block* with any matching *item* in mainhand
   interact_block_with_item:
     - name: Open Crafting Table
       difficulty: easy
@@ -250,7 +254,7 @@ criteria:
     - name: Farm Land
       difficulty: very_hard
       block: grass_block, dirt
-  # triggered when drop item
+  # Triggers when player dropped any matching *item*
   drop_item:
     - name: Drop Item
       difficulty: easy
@@ -267,7 +271,7 @@ criteria:
     - name: Drop Flower
       difficulty: normal
       item: "#flowers"
-  # triggered when place block
+  # Triggers when player placed any matching *block* for more than *count* times
   place_block:
     - name: Place Block
       difficulty: trigger_definitely
@@ -303,86 +307,86 @@ criteria:
     - name: Place Stone
       difficulty: hard
       block: stone
-  # triggered when step on smt
+  # Triggers when player stepped on some interactable blocks included in *block*
   physical_action:
-    - name: Step On Pressure Plate
+    - name: Step on Pressure Plate
       difficulty: easy
       block: "#pressure_plates"
-    - name: Step Break Farmland
+    - name: Step and Break Farmland
       difficulty: hard
       block: farmland
-  # triggered when stand on block
+  # Triggers when player is standing on any matching *block* or not, determined by *reversed*
   standing_on_block:
-    - name: Stand On Ground
+    - name: Stand on Ground
       difficulty: trigger_definitely
       block: "*"
-    - name: Stand On Andesite
+    - name: Stand on Andesite
       difficulty: easy
       block: andesite
-    - name: Stand On Grass
+    - name: Stand on Grass
       difficulty: easy
       block: grass_block
     - name: Stand on bedrock
       difficulty: normal
       block: bedrock
-    - name: Stand On Stone
+    - name: Stand on Stone
       difficulty: normal
       block: stone
-    - name: Stand On Polished Andesite
+    - name: Stand on Polished Andesite
       difficulty: normal
       block: polished_andesite
-    - name: Stand On Leaf
+    - name: Stand on Leaf
       difficulty: normal
       block: "#leaves"
-    - name: Not On Ground
+    - name: Not on Ground
       difficulty: trigger_definitely
       block: "*"
-      # false: triggered when stand on any block
-      # true: triggered when not stand on any block
+      # false: Triggers when player is standing on block
+      # true: Triggers when player is not standing on block
       reversed: true
-  # triggered when inside block
+  # Triggers when player's head, body and feet are all inside any matching *block*
   in_block:
     - name: Inside Fluid
       difficulty: normal
       block: water, lava
-    - name: Not In Air
+    - name: Not in Air
       difficulty: hard
       block: air
       reversed: true
     - name: Inside Tall Grass
       difficulty: hard
       block: tall_grass
-  # triggered when player distance with entity in range
+  # Triggers when player's distance to any or all matching *entity* is in *distance* range
   distance_to_entity:
-    - name: Stick With Player
+    - name: Stick with Player
       difficulty: normal
       entity: player
-      # distance: Float
+      # Distance to entity: Float
       distance: ..1
-      # reversed: reverse the range. e.g. a..b -> ..a || b..
+      # Reverse the range, e.g. a..b -> ..a || b..
       reversed: false
-      # detect mode: any_of / all_of, can not be empty
-      # any_of: trigger when any of the entity is in set range
-      # all_of: trigger when all the entity is in set range
+      # Detect mode: any_of / all_of. Cannot be empty
+      # any_of: Triggers when any of the entity's distance is in range
+      # all_of: triggers when all of the entities' distance is in range
       mode: any_of
-    - name: Away From Other Player 15 Blocks Or Above
+    - name: Away from Other Players for 15 Blocks
       difficulty: normal
       entity: player
       distance: 15..
       mode: all_of
-    - name: Close To Iron Golem
+    - name: Close to Iron Golem
       difficulty: normal
       entity: iron_golem
       distance: ..4
       mode: any_of
-  # triggered when the player;s yaw and pitch are within th specified ranges
+  # Triggers when player's yaw and pitch are all within the specified ranges
   rotation:
     - name: Look Up
       difficulty: normal
-      # range can be Float Range, leave empty for any value
+      # Float Range. Leave empty to represent any value
       yaw: ..
       yaw_reversed: false
-      # range can be Float Range, leave empty for any value
+      # Float Range. Leave empty to represent any value
       pitch: ..-60
       pitch_reversed: false
     - name: Look Down
@@ -405,47 +409,46 @@ criteria:
       difficulty: trigger_definitely
       yaw: 60..120
       pitch: -30..30
-  # trigger when item in hand
+  # Triggers when any matching *mainhand* item is in mainhand and any matching *offhand* item is in offhand
   holding_item:
-    - name: Hold Crafting Table In Mainhand
+    - name: Hold Crafting Table in Mainhand
       difficulty: easy
-      # mainhand same as item
+      # Mainhand field format is the same as item field
       mainhand: crafting_table
-    - name: Hold Crafting Table In Mainhand
+    - name: Hold Crafting Table in Mainhand
       difficulty: normal
       mainhand: andesite
-    - name: Hold Polished Andesite In Mainhand
+    - name: Hold Polished Andesite in Mainhand
       difficulty: normal
       mainhand: polished_andesite
-    - name: Hold Iron Pickaxe In Mainhand
+    - name: Hold Iron Pickaxe in Mainhand
       difficulty: normal
       mainhand: iron_pickaxe
-    - name: Hold Wooden Axe In Mainhand
+    - name: Hold Wooden Axe in Mainhand
       difficulty: normal
       mainhand: wooden_axe
-    - name: Hold Stone Pickaxe In Mainhand
+    - name: Hold Stone Pickaxe in Mainhand
       difficulty: normal
       mainhand: stone_pickaxe
-    - name: Hold Leaves In Mainhand
+    - name: Hold Leaves in Mainhand
       difficulty: normal
       mainhand: "#leaves"
-    - name: Hold Shield In Offhand
+    - name: Hold Shield in Offhand
       difficulty: normal
-      # offhand same as item
+      # Offhand field format is the same as item field
       offhand: shield
-  # triggered when health in a set range
+  # Triggers when player's health is within *amount* range
   health:
     - name: Health > 10
       difficulty: very_easy
-      # amount: Float
+      # Amount of health: Float
       amount: ..10
-      #reverse range ">=10" <-reverse-> "<10"
       reversed: true
     - name: Health < 10
       difficulty: very_easy
       amount: 10..
       reversed: true
-  # triggered when food level in a set range
+  # Triggers when player's food level is within *amount* range
   food_level:
     - name: Food Level > 18
       difficulty: very_easy
@@ -455,142 +458,144 @@ criteria:
       difficulty: very_easy
       amount: 18..
       reversed: true
-  # triggered when player surround by block
+  # Triggers when player is surrounded by any matching *block* or not, determined by *reversed*
   surrounded_by_block:
-    - name: Exposed In Air
+    - name: Exposed in Air
       difficulty: easy
       block: "#air"
-    - name: Block In
+    - name: Block in
       difficulty: normal
       block: "#air"
-      # tips: reversed here represent none of the block around player is <block>
+      # Note: Reversed field setting to true represents none of the block around player is *block*
       reversed: true
-  # triggered when have item in inventory
+  # Triggers when player has any matching *item* in inventory or not, determined by *reversed*
   inventory_containing_item:
-    - name: Have Iron Ingot In Inventory
+    - name: Have Iron Ingot in Inventory
       difficulty: normal
       item: iron_ingot
-    - name: Have Diamond In Inventory
+    - name: Have Diamond in Inventory
       difficulty: hard
       item: diamond
-    - name: Have Coal In Inventory
+    - name: Have Coal in Inventory
       difficulty: normal
       item: coal
-    - name: Have Dirt In Inventory
+    - name: Have Dirt in Inventory
       difficulty: easy
       item: dirt
-    - name: Do Not Have Rotten Flesh In Inventory
+    - name: No Rotten Flesh in Inventory
       difficulty: very_easy
       item: rotten_flesh
-      # false: triggered when at least one item in inventory
-      # true: triggered when no item in inventory
+      # false: Triggers when at least one item in inventory
+      # true: Triggers when no item in inventory
       reversed: true
-    - name: No Iron Armor In Inventory
+    - name: No Iron Armor in Inventory
       difficulty: very_easy
       item: iron_helmet, iron_chestplate, iron_leggings, iron_boots
       reversed: true
-    - name: No Diamond Tool In Inventory
+    - name: No Diamond Tool in Inventory
       difficulty: very_easy
       item: diamond_shovel, diamond_pickaxe, diamond_axe, diamond_hoe, diamond_sword
       reversed: true
-  # triggered when positioned over heightmap, related with reversed
+  # Triggers when player's position matches with its position in *heightmap* or not, determined by *reversed*
   heightmap_matching_pos:
-    - name: No Block Above
+    - name: None Block above
       difficulty: very_easy
-      # heightmap same as /execute positioned over <heightmap>
+      # Heightmap is the same as the command "/execute positioned over <heightmap>"
       heightmap: world_surface
-    - name: Have Block Above
+    - name: Have any Block above
       difficulty: easy
       heightmap: world_surface
-      # false: triggered when positioned over <heightmap>
-      # true: triggered when not positioned over <heightmap>
+      # false: Triggers when player's position matches with its heightmap position
+      # true: Triggers when player's position doesn't match with its heightmap position
       reversed: true
-  # triggered when revive
+  # Triggers when player respawned within *time*, depending on *mode*
   respawn_time:
-    - name: Revive In 3s After Death
+    - name: Respawn in 3s
       difficulty: easy
-      # mode: delay / stay, can not be empty
-      # delay: triggered when player respawn within the specified time range
-      # stay: triggered when player stay in death within the specified time range
+      # mode: delay / stay. Cannot be empty
+      # delay: Triggers when player respawned within time range
+      # stay: Triggers when player stays in death screen for some time within time range
       mode: delay
-      # time: ticks, integer
+      # Respawn time ticks: integer
       time: 60..
-      # reverse time range
+      # Reverse time range
       reversed: true
-    - name: Not Revive In 3s After Death
+    - name: Not Respawn for 3s
       difficulty: easy
       mode: stay
       time: 60..
     - name: Revive
       difficulty: easy
       mode: delay
-  # triggered when move-type in time range
+  # Triggers when player moved in *move_type* for more than *time* or not, determined by *reversed*
   move_time:
-    - name: Stay Still In 15s
+    - name: Stay Still for 15s
       difficulty: hard
-      # types: move, sprint, sneak, swim, glide, jump, fall, on_air, rotate. only single type is allowed
-      # move: change position
-      # glide: elytra fly
-      # jump: do not support reverse
+      # types: move, sprint, sneak, swim, glide, jump, fall, on_air, rotate. Multi-type is not allowed.
+      # move: Change position
+      # glide: Elytra fly
+      # on_air: Not standing on block
+      # rotate: Change view angle
+      # Note: Type "jump" with reversed field set to "false" is not supported
       type: move
-      # time: ticks, integer
+      # Move time ticks: integer
       time: 300
-      # false: triggered when player move in type in the specified time range
-      # true: triggered when player not move in type in the specified time range
+      # false: Triggers when player moved in type for time
+      # true: Triggers when player didn't moved in type for time
       reversed: true
-    - name: keep Move In 20s
+    - name: keep Move for 20s
       difficulty: normal
       type: move
       time: 400
-    - name: Not Sprint For 20s
+    - name: Not Sprint for 20s
       difficulty: normal
       type: sprint
       time: 400
       reversed: true
-    - name: keep Sprint In 5s
+    - name: Keep Sprint for 5s
       difficulty: normal
       type: sprint
       time: 100
-    - name: Not Sneak In 60s
+    - name: Not Sneak for 60s
       difficulty: normal
       type: sneak
       time: 1200
       reversed: true
-    - name: keep Sneaking 3s
+    - name: Keep Sneaking for 3s
       difficulty: normal
       type: sneak
       time: 60
-    - name: Not Jump In 30s
+    - name: Not Jump for 30s
       difficulty: normal
       type: jump
       time: 600
       reversed: true
-    - name: Not Change View In 5s
+    - name: Not Change View for 5s
       difficulty: hard
       type: rotate
       time: 100
       reversed: true
-    - name: Not Touch Ground In 2s
+    - name: Not Touch Ground for 2s
       difficulty: normal
       type: on_air
       time: 40
-  # triggered with criteria related time
+  # Triggers when player held the criteria for some time within *time*, depending on mode
   criteria_hold_time:
-    - name: Not Change Criteria In 100s
+    - name: Not Change Criteria for 100s
       difficulty: trigger_definitely
-      # mode: delay / stay, can not be empty
-      # delay: triggered when player change criteria within the specified time
-      # stay: triggered when player last criteria change time is over the specified time
+      # mode: delay / stay. Cannot be empty
+      # delay: Triggers when player changed criteria within time
+      # stay: Triggers when player holds criteria for sometime within time range
       mode: stay
       time: ..2000
-      # reverse the time range
+      # Reverse the time range
       reversed: true
-  # triggered when last death within the specified time
+  # Triggers when the time after last death is over *time*
   after_death_time:
-    - name: Not Dead For 60s
+    - name: Not Death for 60s
       difficulty: very_easy
       time: 1200
-  # triggered when team life count within range
+  # Triggers when team life count is within *count* range
   life_count:
     - name: Team Life > 7
       difficulty: trigger_definitely
@@ -599,51 +604,52 @@ criteria:
     - name: Team Life < 7
       difficulty: trigger_definitely
       count: ..6
-  # triggered when level up
+  # Triggers when level up
   level_up:
     - name: Level Up
       difficulty: hard
-  # triggered when have this criterion
+  # Triggers immediately when get this criterion
 #  immediately_trigger:
 #    - name: □□□□□
 #      difficulty: trigger_definitely
-  # triggered when interact fluid with bucket
+  # Triggers when player interacted *fluid* with bucket
   bucket_operation:
-    - name: Fill Bucket With Water
+    - name: Fill Bucket with Water
       difficulty: hard
-      # fluid can only be water, lava or powder_snow and only single type
+      # Fluid can only be water, lava or powder_snow. Multi-type is not allowed
       fluid: water
-      # can be fill or pour
+      # Type: fill / pour
       type: fill
     - name: Pour Water
       difficulty: hard
       fluid: water
       type: pour
-  # triggered when selected hotbar slot
+  # Triggers when player selected hotbar slot *slot*
   selected_hotbar_slot:
-    - name: Selected First Hotbar Slot
+    - name: Select First Hotbar Slot
       difficulty: very_easy
       slot: 1
-    - name: Selected Last Hotbar Slot
+    - name: Select Last Hotbar Slot
       difficulty: very_easy
       slot: 9
-  # triggered when take out or put in item from target inventory
+  # Triggers when take out or put in any matching *item* from *target_inventory*, determined by *reversed*
   transfer_item:
-    - name: Put Coal In furnace
+    - name: Put Coal into Furnace
       difficulty: normal
       item: coal
-      # inventory types:
+      # Inventory types:
       #   chest, dispenser, dropper, furnace, workbench, enchanting, brewing, merchant, ender_chest, anvil, smithing,
       #   beacon, hopper, shulker_box, barrel, blast_furnace, smoker, loom, cartography, grindstone, stonecutter, crafter
+      # Note: Workbench represents to crafting table GUI. Merchant represents to villager trading GUI.
       target_inventory: furnace
-    - name: Take Iron From Furnace
+    - name: Take out Iron from Furnace
       difficulty: normal
       item: iron_ingot
       target_inventory: furnace
-      # reversed false: triggered when put in item
-      # reversed true: triggered when take out item
+      # false: Triggers when put in item
+      # true: Triggers when take out item
       reversed: true
-    - name: Put Raw Iron In Furnace
+    - name: Put Raw Iron into Furnace
       difficulty: normal
       item: raw_iron
       target_inventory: furnace
