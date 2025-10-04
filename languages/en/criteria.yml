@@ -12,7 +12,7 @@ criteria:
       # normal    <Default> e.g. Step On Andesite, Eat Rotten Flesh
       # hard                e.g. Killed By Zombie
       # very_hard           e.g. Drown
-      # impossible          e.g. ?
+      # impossible          e.g. TBH I can't even list any example
       difficulty: normal
       # Use comma ',' to separate multiple items, also use '#' to indicate item tags
       # Add '!' before items or tags to represent excluding items
@@ -26,7 +26,7 @@ criteria:
       item: cooked_beef, cooked_porkchop, cooked_mutton, cooked_chicken, cooked_rabbit, cooked_cod, cooked_salmon
   # Triggers when player has walked for more than *distance*.
   walk_distance:
-    - name: Walk 40m
+    - name: Walk for 40m
       difficulty: normal
       # Walk distance: Float
       distance: 40
@@ -42,7 +42,7 @@ criteria:
     - name: Mine Diamond Ore
       difficulty: hard
       block: diamond_ore
-    - name: Mine Polished Andesite
+    - name: Break Polished Andesite
       difficulty: normal
       block: polished_andesite
     - name: Mine Coal Ore
@@ -51,19 +51,19 @@ criteria:
     - name: Mine Iron Ore
       difficulty: normal
       block: iron_ore
-    - name: Mine Log
+    - name: Break Log
       difficulty: easy
       block: "#logs"
-    - name: Mine Leaf
+    - name: Break Leaf
       difficulty: normal
       block: "#leaves"
-    - name: Mine Dirt
+    - name: Break Dirt
       difficulty: easy
       block: dirt
-    - name: Mine Crafting Table
+    - name: Break Crafting Table
       difficulty: normal
       block: crafting_table
-    - name: Mine Furnace
+    - name: Break Furnace
       difficulty: normal
       block: furnace
   # Triggers when player picked up any matching *item*
@@ -97,7 +97,7 @@ criteria:
       item: "#saplings"
   # Triggers when player has fallen for more than *distance*
   fall_distance:
-    - name: Fall from 5 Blocks
+    - name: Fall from 5 Blocks High
       difficulty: normal
       # Fall distance: Float
       distance: 5
@@ -173,15 +173,15 @@ criteria:
       damage_type: "*"
       amount: ..
       reversed: false
-    - name: Suffocated in Wall
+    - name: Suffocate in Wall
       difficulty: hard
       entity: "/"
       damage_type: in_wall
-    - name: Take more than 5×❤ Damage at Once
+    - name: Take at Least 5×❤ Damage at Once
       difficulty: easy
       entity: "*"
       amount: 10..
-    - name: Take more mhan 10×❤ Damage at Once
+    - name: Take at Least 10×❤ Damage at Once
       difficulty: very_hard
       entity: "*"
       amount: 20..
@@ -208,19 +208,19 @@ criteria:
       entity: zombie
   # Triggers when player was killed by any matching *entity* with any matching *damage_type* damage
   killed_by_entity:
-    - name: Death
+    - name: Die
       difficulty: very_easy
       # Damage source entity. Use '/' to represent no source damage
       entity: "*"
       damage_type: "*"
-    - name: Fall To Death
+    - name: Fall to Death
       difficulty: hard
       entity: "/"
       damage_type: fall
-    - name: Blow Up
+    - name: Blown up to Death
       difficulty: hard
       damage_type: explosion, player_explosion
-    - name: Burn To Death
+    - name: Burn to Death
       difficulty: hard
       damage_type: campfire, in_fire, hot_floor, lava, on_fire
   # Triggers when player has jumped for *count* times
@@ -228,7 +228,7 @@ criteria:
     - name: Jump
       difficulty: trigger_definitely
     - name: Jump 20 Times
-      # Jump count. Defaults to 1.
+      # Count of jumps. Defaults to 1.
       count: 20
       difficulty: normal
   # Triggers when player interacted any matching *block* with any matching *item* in mainhand
