@@ -46,26 +46,6 @@ import org.bukkit.plugin.java.JavaPlugin
 
 object Preparation : Listener {
     private val LOGGER = DontDoIt.LOGGER
-    /* 玩家进服：可能新增一支队伍 */
-    @EventHandler
-    fun prepOnPlayerJoin(event: PlayerJoinEvent) {
-        if (!GameStateManager.isWaiting()) return
-        setPrepared(event.player)
-        TeamInfoSynchronizer.syncTeamInfos(TeamManager.teams)
-        if (event.player.isOp) {
-            event.player.sendMessage(Configs.CHANGE_SETTINGS_HINT_MESSAGE.get())
-        }
-        event.player.level = 0
-        onTeamMembersUpdate()          // <-- 新增
-    }
-    /* 玩家退服：可能让某队人数归零 */
-    @EventHandler
-    fun prepOnPlayerQuit(event: PlayerQuitEvent) {
-        if (!GameStateManager.isWaiting()) return
-        // 关键：把离线玩家踢掉，这样 hasMember 就不会再算他
-        TeamManager.leaveTeam(event.player)
-        onTeamMembersUpdate()
-    }
 
     fun onEnterPreparation() {
         for (player in Bukkit.getOnlinePlayers()) {
@@ -120,6 +100,16 @@ object Preparation : Listener {
             event.player.sendMessage(Configs.CHANGE_SETTINGS_HINT_MESSAGE.get())
         }
         event.player.level = 0
+        onTeamMembersUpdate()
+    }
+
+
+    @EventHandler
+    fun onPlayerQuit(event: PlayerQuitEvent) {
+        if (!GameStateManager.isWaiting()) return       // 玩家退服：可能让某队人数归零
+        // 把离线玩家踢掉，这样 hasMember 就不会再算他
+        TeamManager.leaveTeam(event.player)
+        onTeamMembersUpdate()
     }
 
     @EventHandler
