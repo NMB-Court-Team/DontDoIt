@@ -38,6 +38,7 @@ import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerGameModeChangeEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
@@ -45,6 +46,26 @@ import org.bukkit.plugin.java.JavaPlugin
 
 object Preparation : Listener {
     private val LOGGER = DontDoIt.LOGGER
+    /* 玩家进服：可能新增一支队伍 */
+    @EventHandler
+    fun prepOnPlayerJoin(event: PlayerJoinEvent) {
+        if (!GameStateManager.isWaiting()) return
+        setPrepared(event.player)
+        TeamInfoSynchronizer.syncTeamInfos(TeamManager.teams)
+        if (event.player.isOp) {
+            event.player.sendMessage(Configs.CHANGE_SETTINGS_HINT_MESSAGE.get())
+        }
+        event.player.level = 0
+        onTeamMembersUpdate()          // <-- 新增
+    }
+    /* 玩家退服：可能让某队人数归零 */
+    @EventHandler
+    fun prepOnPlayerQuit(event: PlayerQuitEvent) {
+        if (!GameStateManager.isWaiting()) return
+        // 关键：把离线玩家踢掉，这样 hasMember 就不会再算他
+        TeamManager.leaveTeam(event.player)
+        onTeamMembersUpdate()
+    }
 
     fun onEnterPreparation() {
         for (player in Bukkit.getOnlinePlayers()) {
@@ -196,28 +217,35 @@ object Preparation : Listener {
     private var canStartGame: Boolean = false
 
     fun onTeamMembersUpdate() {
-        if (TeamManager.teams.count { it.hasMember } <= 1) {
-            canStartGame = false
-        } else if (DynamicSettings.allowUnbalancedTeams) {
-            canStartGame = true
-        } else {
-            val playerCounts: MutableMap<Int, Int> = mutableMapOf()  // Map<队伍中玩家的人数, 符合该条件的队伍数量>
-            for (team in TeamManager.teams) {
-                val memberCount = team.memberCount
-                val teamCount = playerCounts.computeIfAbsent(memberCount) { 0 }
-                playerCounts[memberCount] = teamCount + 1
-            }
-            playerCounts.remove(0)
-            canStartGame = playerCounts.size <= 1
+        // 只数在线的
+        val onlineTeams = TeamManager.teams.filter { team ->
+            team.members.any { it.isOnline }
         }
 
-        for (player in Bukkit.getOnlinePlayers()) {
-            putStartGameItem(player)
+        canStartGame = when {
+            onlineTeams.size <= 1 -> false
+            DynamicSettings.allowUnbalancedTeams -> true
+            else -> {
+                val counts = onlineTeams.map { it.members.count { p -> p.isOnline } }.toSet()
+                counts.size <= 1      // 所有在线队伍人数相同
+            }
         }
+
+        // 游戏一旦开始，就不再发 start-item
+        if (GameStateManager.isRunning()) return
+
+        Bukkit.getOnlinePlayers().forEach { putStartGameItem(it) }
     }
 
     fun putStartGameItem(player: Player) {
-        if (!GameStateManager.isWaiting() || !player.isOp) return
+        // 运行中一律不给
+        if (GameStateManager.isRunning() || !GameStateManager.isWaiting() || !player.isOp) {
+            if (player.inventory.getItem(START_GAME_ITEM_SLOT)?.isStartGameItem() == true) {
+                player.inventory.setItem(START_GAME_ITEM_SLOT, ItemStack.empty())
+            }
+            return
+        }
+
         if (canStartGame && TeamManager.getTeam(player) != null) {
             if (player.inventory.getItem(START_GAME_ITEM_SLOT)?.isStartGameItem() != true) {
                 player.inventory.setItem(START_GAME_ITEM_SLOT, createStartGameItem())
