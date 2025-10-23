@@ -6,6 +6,7 @@ import net.astrorbits.dontdoit.criteria.inspect.InventoryInspectContext
 import net.astrorbits.dontdoit.criteria.inspect.InventoryItemInspectCandidate
 import net.astrorbits.dontdoit.system.team.TeamData
 import org.bukkit.Material
+import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
@@ -53,6 +54,9 @@ class InteractBlockWithItemCriteria : Criteria(), Listener, BlockInspectCandidat
         if (event.action != Action.RIGHT_CLICK_BLOCK) return
         val block = event.clickedBlock ?: return
         val item = event.item ?: ItemStack.empty()
+
+        if (event.useInteractedBlock() == Event.Result.DENY) return // 避免潜行放方块时也触发
+
         if ((isBlockWildcard || block.type in blockTypes) &&
             (isItemWildcard || item.type in itemTypes)
         ) {
