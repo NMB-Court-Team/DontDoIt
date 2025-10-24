@@ -55,9 +55,14 @@ class InteractBlockWithItemCriteria : Criteria(), Listener, BlockInspectCandidat
         val block = event.clickedBlock ?: return
         val item = event.item ?: ItemStack.empty()
 
-        // if (event.useInteractedBlock() == Event.Result.DENY) return // 避免潜行放方块时也触发
+        // if (event.useInteractedBlock() == Event.Result.DENY) return // 666神秘上游永远返回ALLOW诗人握持
+        // 更改实现方法
         val player = event.player
-        if (player.isSneaking && item.type.isBlock) return //更改实现方法
+        val wouldPlace = player.isSneaking &&              // 潜行
+                item.type.isBlock &&              // 手上是可放置方块
+                event.blockFace != null &&        // 有明确点击面
+                block.type.isInteractable          // 方块本身能交互（箱子、工作台…）
+        if (wouldPlace) return                             // 如果是“放置”动作，跳过检测
 
         if ((isBlockWildcard || block.type in blockTypes) &&
             (isItemWildcard || item.type in itemTypes)
