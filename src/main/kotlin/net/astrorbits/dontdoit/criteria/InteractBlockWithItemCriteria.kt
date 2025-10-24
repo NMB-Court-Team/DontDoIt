@@ -55,7 +55,9 @@ class InteractBlockWithItemCriteria : Criteria(), Listener, BlockInspectCandidat
         val block = event.clickedBlock ?: return
         val item = event.item ?: ItemStack.empty()
 
-        if (event.useInteractedBlock() == Event.Result.DENY) return // 避免潜行放方块时也触发
+        // if (event.useInteractedBlock() == Event.Result.DENY) return // 避免潜行放方块时也触发
+        val player = event.player
+        if (player.isSneaking && item.type.isBlock) return //更改实现方法
 
         if ((isBlockWildcard || block.type in blockTypes) &&
             (isItemWildcard || item.type in itemTypes)
