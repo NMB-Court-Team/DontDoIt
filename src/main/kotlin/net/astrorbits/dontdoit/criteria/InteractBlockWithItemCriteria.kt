@@ -70,8 +70,6 @@ class InteractBlockWithItemCriteria : Criteria(), Listener, BlockInspectCandidat
         val block = event.clickedBlock ?: return
         val item = event.item ?: ItemStack.empty()
 
-        // if (event.useInteractedBlock() == Event.Result.DENY) return // 666神秘上游永远返回ALLOW诗人握持
-
         val player = event.player
         val handItem = event.item ?: ItemStack.empty()
         val targetBlock = event.clickedBlock ?: return
@@ -94,9 +92,6 @@ class InteractBlockWithItemCriteria : Criteria(), Listener, BlockInspectCandidat
         // 允许 Paper 的潜行空手交互被触发
         event.setUseInteractedBlock(Event.Result.ALLOW)
         event.setUseItemInHand(Event.Result.ALLOW)
-
-
-        // if (player.isSneaking && item.type.isBlock) return // 更改实现方法
 
         if ((isBlockWildcard || block.type in blockTypes) &&
             (isItemWildcard || item.type in itemTypes)
