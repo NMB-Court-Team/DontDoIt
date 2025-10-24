@@ -14,8 +14,9 @@ import org.bukkit.inventory.ItemStack
 class TransferItemCriteria : Criteria(), Listener, InventoryItemInspectCandidate {
     override val type = CriteriaType.TRANSFER_ITEM
     lateinit var itemTypes: Set<Material>
-    var isWildcard: Boolean = false
-    lateinit var targetInventory: InventoryType
+    lateinit var targetInventories: Set<InventoryType>
+    var isItemWildcard: Boolean = false
+    var isInventoryWildcard: Boolean = false
     var reversed: Boolean = false
 
     override fun getCandidateInventoryItemTypes(): Set<Material> {
@@ -23,18 +24,18 @@ class TransferItemCriteria : Criteria(), Listener, InventoryItemInspectCandidate
     }
 
     override fun canMatchAnyInventoryItem(): Boolean {
-        return isWildcard
+        return isItemWildcard
     }
 
     override fun readData(data: Map<String, String>) {
         super.readData(data)
         data.setItemTypes(ITEM_TYPES_KEY) { itemTypes, isWildcard ->
             this.itemTypes = itemTypes
-            this.isWildcard = isWildcard
+            this.isItemWildcard = isWildcard
         }
-        data.setField(TARGET_INVENTORY_KEY) { targetInventory = InventoryType.valueOf(it.uppercase()) }
-        if (targetInventory in UNSUPPORTED_INVENTORY_TYPES) {
-            throw InvalidCriteriaException(this, "Unsupported inventory type: ${targetInventory.name.lowercase()}")
+        data.setInventoryTypes(TARGET_INVENTORY_KEY) { inventoryTypes, isWildcard ->
+            this.targetInventories = inventoryTypes
+            this.isInventoryWildcard = isWildcard
         }
         data.setBoolField(REVERSED_KEY, true) { reversed = it }
     }
@@ -44,7 +45,7 @@ class TransferItemCriteria : Criteria(), Listener, InventoryItemInspectCandidate
         val player = event.whoClicked as? Player ?: return
         val clickedInv = event.clickedInventory ?: return
         val topInv = event.view.topInventory
-
+        if (topInv.type !in targetInventories) { return }
         val clickedItem = event.currentItem
         val cursorItem = event.cursor
         val hotbarItem = if (event.hotbarButton == -1) null else player.inventory.getItem(event.hotbarButton)
@@ -95,23 +96,12 @@ class TransferItemCriteria : Criteria(), Listener, InventoryItemInspectCandidate
     }
 
     fun isItemMatch(item: ItemStack?): Boolean {
-        return item != null && !item.isEmpty && (isWildcard || item.type in itemTypes)
+        return item != null && !item.isEmpty && (isItemWildcard || item.type in itemTypes)
     }
 
     companion object {
         const val ITEM_TYPES_KEY = "item"
         const val TARGET_INVENTORY_KEY = "target_inventory"
         const val REVERSED_KEY = "reversed"
-
-        private val UNSUPPORTED_INVENTORY_TYPES: Set<InventoryType> = setOf(
-            InventoryType.CRAFTING,
-            InventoryType.PLAYER,
-            InventoryType.CREATIVE,
-            InventoryType.LECTERN,
-            InventoryType.COMPOSTER,
-            InventoryType.CHISELED_BOOKSHELF,
-            InventoryType.JUKEBOX,
-            InventoryType.DECORATED_POT
-        )
     }
 }

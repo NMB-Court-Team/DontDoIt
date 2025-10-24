@@ -18,6 +18,7 @@ import org.bukkit.Material
 import org.bukkit.damage.DamageType
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
+import org.bukkit.event.inventory.InventoryType
 import org.bukkit.potion.PotionEffectType
 import java.util.UUID
 
@@ -443,6 +444,37 @@ abstract class Criteria {
         fieldSetter(result, entries.isWildcard)
     }
 
+    protected fun Map<String, String>.setInventoryTypes(
+        key: String,
+        absentBehavior: AbsentBehavior = AbsentBehavior.WILDCARD,
+        fieldSetter: (itemTypes: Set<InventoryType>, isWildcard: Boolean) -> Unit
+    ) {
+        val entries = getCsvEntries(key, absentBehavior)
+
+        val result = HashSet<InventoryType>()
+        for ((inv, isTag, isReversed) in entries) {
+            if (isReversed && result.isEmpty()) {
+                result.addAll(InventoryType.entries)
+            }
+            val inventoryTypes = HashSet<InventoryType>()
+            if (isTag) {
+                throw InvalidCriteriaException(this@Criteria, "Invalid inventoryType tag: $inv")
+            } else {
+                val inventoryType = InventoryType.valueOf(inv.uppercase())
+                if(inventoryType in UNSUPPORTED_INVENTORY_TYPES) {
+                    throw InvalidCriteriaException(this@Criteria, "Unsupported inventory type: ${inventoryType.name.lowercase()}")
+                }
+                inventoryTypes.add(inventoryType)
+            }
+            if (isReversed) {
+                result.removeAll(inventoryTypes)
+            } else {
+                result.addAll(inventoryTypes)
+            }
+        }
+        fieldSetter(result, entries.isWildcard)
+    }
+
     companion object {
         const val NAME_KEY = "name"
         const val TRIGGER_DIFFICULTY_KEY = "difficulty"
@@ -471,6 +503,17 @@ abstract class Criteria {
             PotionEffectType.SATURATION, PotionEffectType.SLOWNESS, PotionEffectType.SLOW_FALLING, PotionEffectType.SPEED,
             PotionEffectType.STRENGTH, PotionEffectType.TRIAL_OMEN, PotionEffectType.UNLUCK, PotionEffectType.WATER_BREATHING,
             PotionEffectType.WEAKNESS, PotionEffectType.WEAVING, PotionEffectType.WIND_CHARGED
+        )
+
+        val UNSUPPORTED_INVENTORY_TYPES: Set<InventoryType> = setOf(
+            InventoryType.CRAFTING,
+            InventoryType.PLAYER,
+            InventoryType.CREATIVE,
+            InventoryType.LECTERN,
+            InventoryType.COMPOSTER,
+            InventoryType.CHISELED_BOOKSHELF,
+            InventoryType.JUKEBOX,
+            InventoryType.DECORATED_POT
         )
     }
 }

@@ -13,6 +13,7 @@ enum class CriteriaType {
     // 方块相关
     BREAK_BLOCK,
     PLACE_BLOCK,
+    OPEN_INVENTORY,
     PHYSICAL_ACTION,
     INTERACT_BLOCK_WITH_ITEM,
     SURROUNDED_BY_BLOCK,

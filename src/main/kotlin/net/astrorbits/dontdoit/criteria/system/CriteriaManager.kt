@@ -102,6 +102,7 @@ object CriteriaManager {
 
         register("break_block", ::BreakBlockCriteria)
         register("place_block", ::PlaceBlockCriteria)
+        register("open_inventory", ::OpenInventoryCriteria)
         register("physical_action", ::PhysicalActionCriteria)
         register("interact_block_with_item", ::InteractBlockWithItemCriteria)
         register("surrounded_by_block", ::SurroundedByBlockCriteria)
