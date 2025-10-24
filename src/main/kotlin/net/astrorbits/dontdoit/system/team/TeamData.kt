@@ -336,7 +336,8 @@ class TeamData(val color: NamedTextColor) {
                 criteria!!.onBind(this, CriteriaChangeReason.GUESS_FAILED)
             }
         }
-
+        // 无论成功与否，都重置并启动 cooldown
+        guessCooldownTimer.reset() // 先重置
         guessCooldownTimer.start()
         mainTimer.resetAndStart()
         LOGGER.info("Team $teamId guessed criteria ${oldCriteria?.displayName}, new criteria is ${criteria!!.displayName}, guess result: {}", if (guessed) "success" else "failed")
