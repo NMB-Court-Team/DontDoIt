@@ -229,24 +229,64 @@ criteria:
     - name: 跳20下
       count: 20
       difficulty: normal
-  # 拿着item与block方块交互时触发
-  interact_block_with_item:
+  # 打开特定库存时触发
+  open_inventory:
     - name: 打开工作台
       difficulty: easy
-      block: crafting_table
-      item: "*"
+      # 容器或界面的类型，可以是：
+      # chest: 箱子
+      # dispenser: 发射器
+      # dropper: 投掷器
+      # furnace: 熔炉
+      # workbench: 工作台
+      # enchanting: 附魔台
+      # brewing: 酿造台
+      # merchant: 村民交易界面
+      # ender_chest: 末影箱
+      # anvil: 铁砧
+      # smithing: 锻造台
+      # beacon: 信标
+      # hopper: 漏斗
+      # shulker_box: 潜影盒
+      # barrel: 木桶
+      # blast_furnace: 高炉
+      # smoker: 烟熏炉
+      # loom: 织布机
+      # cartography: 制图台
+      # grindstone: 砂轮
+      # stonecutter: 切石机
+      # crafter: 合成器
+      type: workbench
     - name: 打开熔炉
       difficulty: easy
-      block: furnace
-      item: "*"
+      type: furnace
     - name: 打开箱子
       difficulty: normal
-      block: chest, trapped_chest
-      item: "*"
+      type: chest
     - name: 手持石镐打开工作台
       difficulty: hard
-      block: crafting_table
+      type: workbench
       item: stone_pickaxe
+  # 把item物品放入target_inventory容器或界面，或从target_inventory容器或界面拿出时触发，具体取决于reversed
+  transfer_item:
+    - name: 把煤炭放入熔炉
+      difficulty: normal
+      item: coal
+      # 容器或界面的类型，同上文type
+      target_inventory: furnace
+    - name: 从熔炉拿出铁锭
+      difficulty: normal
+      item: iron_ingot
+      target_inventory: furnace
+      # 如果为false，则放入target_inventory容器或界面时触发
+      # 如果为true，则从target_inventory容器或界面拿出时触发
+      reversed: true
+    - name: 把粗铁放入熔炉
+      difficulty: normal
+      item: raw_iron
+      target_inventory: furnace
+  # 拿着item与block方块交互时触发
+  interact_block_with_item:
     - name: 用打火石在黑曜石上点火
       difficulty: very_hard
       block: obsidian
@@ -640,43 +680,3 @@ criteria:
     - name: 选中快捷栏最后一格
       difficulty: very_easy
       slot: 9
-  # 把item物品放入target_inventory容器或界面，或从target_inventory容器或界面拿出时触发，具体取决于reversed
-  transfer_item:
-    - name: 把煤炭放入熔炉
-      difficulty: normal
-      item: coal
-      # 容器或界面的类型，可以是：
-      # chest: 箱子
-      # dispenser: 发射器
-      # dropper: 投掷器
-      # furnace: 熔炉
-      # workbench: 工作台
-      # enchanting: 附魔台
-      # brewing: 酿造台
-      # merchant: 村民交易界面
-      # ender_chest: 末影箱
-      # anvil: 铁砧
-      # smithing: 锻造台
-      # beacon: 信标
-      # hopper: 漏斗
-      # shulker_box: 潜影盒
-      # barrel: 木桶
-      # blast_furnace: 高炉
-      # smoker: 烟熏炉
-      # loom: 织布机
-      # cartography: 制图台
-      # grindstone: 砂轮
-      # stonecutter: 切石机
-      # crafter: 合成器
-      target_inventory: furnace
-    - name: 从熔炉拿出铁锭
-      difficulty: normal
-      item: iron_ingot
-      target_inventory: furnace
-      # 如果为false，则放入target_inventory容器或界面时触发
-      # 如果为true，则从target_inventory容器或界面拿出时触发
-      reversed: true
-    - name: 把粗铁放入熔炉
-      difficulty: normal
-      item: raw_iron
-      target_inventory: furnace

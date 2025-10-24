@@ -231,24 +231,45 @@ criteria:
       # Count of jumps. Defaults to 1.
       count: 20
       difficulty: normal
-  # Triggers when player interacted any matching *block* with any matching *item* in mainhand
-  interact_block_with_item:
+  # Triggers when player open *target_inventory* (with *item* in hand)
+  open_inventory:
     - name: Open Crafting Table
       difficulty: easy
-      block: crafting_table
-      item: "*"
+      # Inventory types:
+      #   chest, dispenser, dropper, furnace, workbench, enchanting, brewing, merchant, ender_chest, anvil, smithing,
+      #   beacon, hopper, shulker_box, barrel, blast_furnace, smoker, loom, cartography, grindstone, stonecutter, crafter
+      # Note: Workbench represents to crafting table GUI. Merchant represents to villager trading GUI.
+      target_inventory: workbench
     - name: Open Furnace
       difficulty: easy
-      block: furnace
-      item: "*"
+      target_inventory: furnace
     - name: Open Chest
       difficulty: normal
-      block: chest, trapped_chest
-      item: "*"
+      target_inventory: chest
     - name: Open Crafting Table With Stone Pickaxe In Hand
       difficulty: hard
-      block: crafting_table
+      target_inventory: workbench
       item: stone_pickaxe
+  # Triggers when take out or put in any matching *item* from *target_inventory*, determined by *reversed*
+  transfer_item:
+    - name: Put Coal into Furnace
+      difficulty: normal
+      item: coal
+      # Inventory types: same as `target_inventory` above
+      target_inventory: furnace
+    - name: Take out Iron from Furnace
+      difficulty: normal
+      item: iron_ingot
+      target_inventory: furnace
+      # false: Triggers when put in item
+      # true: Triggers when take out item
+      reversed: true
+    - name: Put Raw Iron into Furnace
+      difficulty: normal
+      item: raw_iron
+      target_inventory: furnace
+  # Triggers when player interacted any matching *block* with any matching *item* in mainhand
+  interact_block_with_item:
     - name: Set Fire On Obsidian With Flint And Steel
       difficulty: very_hard
       block: obsidian
@@ -635,24 +656,3 @@ criteria:
     - name: Select Last Hotbar Slot
       difficulty: very_easy
       slot: 9
-  # Triggers when take out or put in any matching *item* from *target_inventory*, determined by *reversed*
-  transfer_item:
-    - name: Put Coal into Furnace
-      difficulty: normal
-      item: coal
-      # Inventory types:
-      #   chest, dispenser, dropper, furnace, workbench, enchanting, brewing, merchant, ender_chest, anvil, smithing,
-      #   beacon, hopper, shulker_box, barrel, blast_furnace, smoker, loom, cartography, grindstone, stonecutter, crafter
-      # Note: Workbench represents to crafting table GUI. Merchant represents to villager trading GUI.
-      target_inventory: furnace
-    - name: Take out Iron from Furnace
-      difficulty: normal
-      item: iron_ingot
-      target_inventory: furnace
-      # false: Triggers when put in item
-      # true: Triggers when take out item
-      reversed: true
-    - name: Put Raw Iron into Furnace
-      difficulty: normal
-      item: raw_iron
-      target_inventory: furnace
