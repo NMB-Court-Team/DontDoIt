@@ -238,9 +238,11 @@ criteria:
     - name: 打开熔炉
       difficulty: easy
       block: furnace
+      item: "*"
     - name: 打开箱子
       difficulty: normal
       block: chest, trapped_chest
+      item: "*"
     - name: 手持石镐打开工作台
       difficulty: hard
       block: crafting_table
@@ -252,6 +254,7 @@ criteria:
     - name: 用锄头耕地
       difficulty: very_hard
       block: grass_block, dirt
+      item: wooden_hoe, stone_hoe, iron_hoe, golden_hoe, diamond_hoe, netherite_hoe
   # 丢出item时触发
   drop_item:
     - name: 丢弃物品

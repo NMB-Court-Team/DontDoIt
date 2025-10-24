@@ -240,9 +240,11 @@ criteria:
     - name: Open Furnace
       difficulty: easy
       block: furnace
+      item: "*"
     - name: Open Chest
       difficulty: normal
       block: chest, trapped_chest
+      item: "*"
     - name: Open Crafting Table With Stone Pickaxe In Hand
       difficulty: hard
       block: crafting_table
@@ -254,6 +256,7 @@ criteria:
     - name: Farm Land
       difficulty: very_hard
       block: grass_block, dirt
+      item: wooden_hoe, stone_hoe, iron_hoe, golden_hoe, diamond_hoe, netherite_hoe
   # Triggers when player dropped any matching *item*
   drop_item:
     - name: Drop Item
