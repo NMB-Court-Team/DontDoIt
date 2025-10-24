@@ -73,6 +73,21 @@ class InteractBlockWithItemCriteria : Criteria(), Listener, BlockInspectCandidat
         // if (event.useInteractedBlock() == Event.Result.DENY) return // 666神秘上游永远返回ALLOW诗人握持
 
         val player = event.player
+        val handItem = event.item ?: ItemStack.empty()
+        val targetBlock = event.clickedBlock ?: return
+        val face = event.blockFace
+
+        if (player.isSneaking &&
+            !handItem.type.isAir &&
+            handItem.type.isBlock
+        ) {
+            val against = targetBlock.getRelative(face)
+            // 空气 || 非固体（即可替换）
+            if (against.type.isAir || !against.type.isSolid) {
+                return   // 这会变成放置，不是交互，跳过
+            }
+        }
+
         // 排除“刚放置方块”的情况
         if (player.uniqueId in recentBlockPlacers) return
 
