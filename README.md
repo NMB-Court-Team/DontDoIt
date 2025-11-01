@@ -120,16 +120,23 @@ A paper plugin that provides a minigame called **Don't Do It**.
 
 ## Quick Start
 
-Download the latest release `DontDoIt-1.21.8-1.0.3.jar`.
-The server version is Paper 1.21.8. Place the plugin in `./plugins/`.
-The configuration file will be generated automatically on startup, so you may not need to download it.
-Or download it and unpack to `./plugins/DontDoIt/` if you need translations or want to modify it in advance.
-Start the server, join and play. After players choose their teams (2 or more teams), OP will got the Game Start Item, use it to start.
-You can grant OP by entering `op <player_id>` in the server console.
+- Download the latest release `DontDoIt-1.21.8-1.0.3.jar`.
 
-Players can use the wool in their hand to select teams, and use the writable book to customize custom criteria.
-OP can use `/criteria settings set` to modify game settings, and `/criteria reset` to reset the game (excluding the map).
-More explainations about commands and config are below.
+  The server version is Paper 1.21.8. Place the plugin in `./plugins/`.
+
+  The configuration file will be generated automatically on startup, so you may not need to download it.
+
+  Or download it and unpack to `./plugins/DontDoIt/` if you need translations or want to modify it in advance.
+
+  Start the server, join and play. After players choose their teams (2 or more teams), OP will got the Game Start Item, use it to start.
+
+  You can grant OP by entering `op <player_id>` in the server console.
+
+- Players can use the wool in their hand to select teams, and use the writable book to customize custom criteria.
+
+  OP can use `/criteria settings set` to modify game settings, and `/criteria reset` to reset the game (excluding the map).
+
+- More explainations about commands and config are below.
 
 ## Commands
 
