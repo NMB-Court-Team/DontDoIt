@@ -2,6 +2,19 @@
 
 这是一个Paper插件，它提供了一个名为《不要做挑战》的游戏的功能。
 
+## 快速开始
+
+下载最新的release中的 `DontDoIt-1.21.8-1.0.3.jar`
+服务器端版本为 paper 1.21.8, 将插件放到`./plugins/`目录下。
+配置文件会在启动时自动生成，可以不下载。
+如果你需要翻译或者提前更改可以下载并解压到`./plugins/DontDoIt/`。
+启动服务器即可游玩，在玩家选好队伍(至少两队)之后，OP 将获得启动游戏的物品，使用物品启动游戏。
+op权限可以在服务器控制后台里输入`op <player_id>`进行给予。
+
+玩家可以使用手上的羊毛进行选队，使用书与笔定制自定义词条
+op可以使用`/criteria settings set`调整游戏设置，`/criteria reset`重置游戏（不包括地图）
+其他有关命令和配置的介绍见下方
+
 ## 命令
 
 **插件所有命令的入口都在`/criteria`命令中。**
@@ -54,12 +67,6 @@
 - 如果队伍仍存活，将队伍血量设置为0，则会导致队伍淘汰
 - 如果队伍已淘汰，将队伍血量设置为大于0的值，则会导致队伍复活
 
-## 游戏玩法
-
-嘻嘻，readme还没写
-
-你可以直接搜视频，这样了解玩法更简单。
-
 ## 配置
 
 ### config/game_settings.yml
@@ -101,6 +108,19 @@
 # Don't Do It
 
 A paper plugin that provides a minigame called **Don't Do It**.
+
+## Quick Start
+
+Download the latest release `DontDoIt-1.21.8-1.0.3.jar`.
+The server version is Paper 1.21.8. Place the plugin in `./plugins/`.
+The configuration file will be generated automatically on startup, so you may not need to download it.
+Or download it and unpack to `./plugins/DontDoIt/` if you need translations or want to modify it in advance.
+Start the server, join and play. After players choose their teams (2 or more teams), OP will got the Game Start Item, use it to start.
+You can grant OP by entering `op <player_id>` in the server console.
+
+Players can use the wool in their hand to select teams, and use the writable book to customize custom criteria.
+OP can use `/criteria settings set` to modify game settings, and `/criteria reset` to reset the game (excluding the map).
+More explainations about commands and config are below.
 
 ## Commands
 
@@ -153,12 +173,6 @@ Forcibly set the life count of the specified team to the specified value.
 
 - If the team is still alive, setting the life count of the team to 0 leads to eliminate the team.
 - If the team is already eliminated, setting the life count of the team to the value above 0 leads to revive the team.
-
-## How to Play
-
-readme WIP
-
-You can just search for videos so that you can easily know how to play.
 
 ## Config
 
