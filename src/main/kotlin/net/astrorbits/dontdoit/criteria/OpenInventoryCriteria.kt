@@ -58,7 +58,7 @@ class OpenInventoryCriteria : Criteria(), Listener, InventoryItemInspectCandidat
 
     companion object {
         const val ITEM_TYPES_KEY = "item"
-        const val INVENTORY_TYPE = "target_inventory"
+        const val INVENTORY_TYPE = "type"
 
         const val SELF_INVENTORY_MULTIPLIER = 1.15
     }

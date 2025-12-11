@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "net.astrorbits"
-version = "1.21.8-1.0.3"
+version = "1.21.8-1.0.4"
 
 repositories {
     mavenCentral()
