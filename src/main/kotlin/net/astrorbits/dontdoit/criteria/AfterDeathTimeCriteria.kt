@@ -24,7 +24,9 @@ class AfterDeathTimeCriteria : Criteria(), Listener {
     override fun onBind(teamData: TeamData, reason: CriteriaChangeReason) {
         super.onBind(teamData, reason)
         for (player in teamData.members) {
-            deathTick.remove(player.uniqueId)
+            if (deathTick.containsKey(player.uniqueId)) {
+                deathTick[player.uniqueId] = Bukkit.getCurrentTick()
+            }
         }
     }
 
