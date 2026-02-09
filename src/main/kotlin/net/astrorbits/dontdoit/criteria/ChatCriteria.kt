@@ -22,7 +22,6 @@ class ChatCriteria() : Criteria(), Listener {
         val player = event.player
         val message = PlainTextComponentSerializer.plainText().serialize(event.message())
         TaskHelper.runForceSync(DontDoIt.instance) {
-            player.sendMessage(message)
             if (messageContains.any { message.contains(it, ignoreCase = true) }) {
                 trigger(player)
             }
