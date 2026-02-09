@@ -244,11 +244,11 @@ object TeamManager : Listener {
         if (!team.isInUse || team.isEliminated) return
         when (DynamicSettings.diamondBehavior) {
             DiamondBehavior.REDUCE_OTHERS_LIFE -> {
-                val otherTeams = getInUseTeams().values.filter { it !== team }
-                if (otherTeams.any { it.lifeCount <= DynamicSettings.diamondBehaviorDisabledThreshold }) {
+                val teams = getInUseTeams().values
+                if (teams.any { it.lifeCount <= DynamicSettings.diamondBehaviorDisabledThreshold }) {
                     return
                 }
-                otherTeams.forEach { it.reduceLife(1) }
+                teams.forEach { it.reduceLife(1) }
             }
             DiamondBehavior.ADD_SELF_LIFE -> {
                 team.addLife(1)
