@@ -59,7 +59,7 @@ auto_change_criteria_message:
 get_diamond_message: "{player} <yellow>获得了 <aqua>钻石"
 holding_custom_criteria_message: "{team_name} <yellow>拥有自定义规则 【{criteria}<yellow>】"
 holding_custom_criteria_click_message: "<dark_aqua><hover:show_text:'<aqua>点击触发'>【触发规则点这里】"
-guess_hint_message: "<yellow>输入<light_purple><hover:show_text:'<aqua>点击填入聊天框'><click:suggest_command:/criteria guess>/criteria guess \\<玩家名> \\<是否猜中></click></hover> <yellow>来标记玩家是否猜中词条"
+guess_hint_message: "<yellow>输入<light_purple><hover:show_text:'<aqua>点击填入聊天框'><click:suggest_command:/criteria guess>/criteria guess \\<词条名称></click></hover> <yellow>来猜词条"
 guess_cooldown_finished_message: "{team_name} <yellow>现在可以猜词条了"
 guessed_message:
   success:
