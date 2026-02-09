@@ -478,6 +478,18 @@ criteria:
       difficulty: normal
       # 副手物品，格式同item字段
       offhand: shield
+  # 玩家说出message消息时触发，message可以是一个字符串或字符串列表，玩家说出任意一个字符串时都能触发
+  chat:
+    - name: 扣字
+      difficulty: normal
+      # 留空表示玩家发任何消息都能触发
+      messages: ""
+    - name: 打招呼
+      difficulty: normal
+      messages: "hi, hello, 你好, 嗨, 哈喽, 您好"
+    - name: 扣问号
+      difficulty: normal
+      messages: "?, ？,❓,¿"
   # 血量在health给定的范围内时触发
   health:
     - name: 血量高于10点

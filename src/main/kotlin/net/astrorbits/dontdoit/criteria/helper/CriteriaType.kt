@@ -36,6 +36,7 @@ enum class CriteriaType {
     AFTER_DEATH_TIME,
 
     // 杂项
+    CHAT,
     HEALTH,
     ROTATION,
     FOOD_LEVEL,

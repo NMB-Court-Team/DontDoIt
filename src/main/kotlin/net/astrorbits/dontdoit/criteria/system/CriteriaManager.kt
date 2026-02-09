@@ -122,6 +122,7 @@ object CriteriaManager {
         register("criteria_hold_time", ::CriteriaHoldTimeCriteria)
         register("after_death_time", ::AfterDeathTimeCriteria)
 
+        register("chat", ::ChatCriteria)
         register("health", ::HealthCriteria)
         register("rotation", ::RotationCriteria)
         register("food_level", ::FoodLevelCriteria)
