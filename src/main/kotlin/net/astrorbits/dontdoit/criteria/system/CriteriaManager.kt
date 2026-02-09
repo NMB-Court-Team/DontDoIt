@@ -243,7 +243,7 @@ object CriteriaManager {
     private val random = Random()
     val CONTEXT_CALC_INTERVAL = Duration.seconds(15.0)
     var criteriaContextCalcTask: BukkitTask? = null
-    const val INITIAL_WEIGHT = 1.0
+    //const val INITIAL_WEIGHT = 1.0
 
     const val PREV_SELECTED_CRITERIA_MEMORY_CAPACITY = 20
 
@@ -262,7 +262,7 @@ object CriteriaManager {
 
         val context = criteriaContexts[teamData.color] ?: InventoryInspectContext.EMPTY
         val adjustedWeightMap = allCriteria.associateWith { criteria ->
-            var adjustedWeight = initiallyModifyWeight(INITIAL_WEIGHT, teamData, criteria, historyCriteria.toList().reversed())
+            var adjustedWeight = initiallyModifyWeight(criteria.weight, teamData, criteria, historyCriteria.toList().reversed())
             if (criteria is InventoryInspectable) {
                 adjustedWeight = criteria.modifyWeight(adjustedWeight, teamData, context)
             }

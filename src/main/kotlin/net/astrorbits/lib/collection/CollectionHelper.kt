@@ -18,10 +18,21 @@ object CollectionHelper {
             throw NoSuchElementException("Weight map is empty")
         }
 
-        val totalWeight = weightMap.values.sum()
+        // 仅保留有限且大于0的权重
+        val positiveWeights = weightMap.filterValues { it.isFinite() && it > 0.0 }
+        if (positiveWeights.isEmpty()) {
+            throw NoSuchElementException("No positive finite weights available for selection: $weightMap")
+        }
+
+        val totalWeight = positiveWeights.values.sum()
+        // 保险检查，确保传入 nextDouble 的 bound 合法
+        if (!totalWeight.isFinite() || totalWeight <= 0.0) {
+            throw IllegalStateException("Total weight must be finite and positive, got: $totalWeight")
+        }
+
         var randomValue = random.nextDouble(totalWeight)
 
-        for ((key, weight) in weightMap) {
+        for ((key, weight) in positiveWeights) {
             if (randomValue < weight) {
                 return key
             }

@@ -12,6 +12,8 @@ criteria:
       # very_hard           非常难触发的词条，比如：淹死
       # impossible          几乎不可能触发的词条，比如：哈哈我想不出来，能写出不可能触发的词条的也是神人了
       difficulty: normal
+      #权重，以1.0为基准增加或减少该词条被选中的概率，留空时默认为1.0
+      weight: 1.0
       # 可以用逗号分隔多种物品，支持物品标签，物品标签需要用"#"开头
       # 在物品或物品标签前加上"!"代表排除该物品
       # 填入"*"或没有item字段，则代表任意物品
@@ -340,7 +342,7 @@ criteria:
       difficulty: easy
       block: polished_andesite
     - name: 放置树叶
-      difficulty: normal
+      difficulty: hard
       block: "#leaves"
     - name: 放置泥土
       difficulty: easy
@@ -424,6 +426,7 @@ criteria:
   rotation:
     - name: 抬头
       difficulty: easy
+      weight: 0.5
       # 偏航角范围，使用角度制，可以是浮点数，留空时使用".."，即任意值
       yaw: ..
       yaw_reversed: false
@@ -432,22 +435,27 @@ criteria:
       pitch_reversed: false
     - name: 低头
       difficulty: easy
+      weight: 0.5
       pitch: 60..
     - name: 面朝北方
       difficulty: trigger_definitely
+      weight: 0.25
       yaw: -150..150
       yaw_reversed: true
       pitch: -30..30
     - name: 面朝东方
       difficulty: trigger_definitely
+      weight: 0.25
       yaw: -120..-60
       pitch: -30..30
     - name: 面朝南方
       difficulty: trigger_definitely
+      weight: 0.25
       yaw: -30..30
       pitch: -30..30
     - name: 面朝西方
       difficulty: trigger_definitely
+      weight: 0.25
       yaw: 60..120
       pitch: -30..30
   # 主手拿着mainhand物品，且副手拿着offhand物品时触发
@@ -472,10 +480,10 @@ criteria:
       difficulty: normal
       mainhand: stone_pickaxe
     - name: 主手拿着树叶
-      difficulty: normal
+      difficulty: hard
       mainhand: "#leaves"
     - name: 副手持盾
-      difficulty: normal
+      difficulty: hard
       # 副手物品，格式同item字段
       offhand: shield
   # 玩家说出message消息时触发，message可以是一个字符串或字符串列表，玩家说出任意一个字符串时都能触发
@@ -634,7 +642,7 @@ criteria:
       time: 100
       reversed: true
     - name: 滞空2秒
-      difficulty: normal
+      difficulty: easy
       type: on_air
       time: 40
   # 具体触发规则见mode字段的注释

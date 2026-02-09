@@ -25,6 +25,7 @@ import java.util.UUID
 abstract class Criteria {
     abstract val type: CriteriaType
     var triggerDifficulty: TriggerDifficulty = TriggerDifficulty.NORMAL
+    var weight: Double = 1.0
     lateinit var displayName: String
     val displayText: Component
         get() = Component.text(displayName)
@@ -91,6 +92,9 @@ abstract class Criteria {
     open fun readData(data: Map<String, String>) {
         data.setField(TRIGGER_DIFFICULTY_KEY, true) { triggerDifficulty = TriggerDifficulty.valueOf(it.uppercase()) }
         data.setField(NAME_KEY) { displayName = it }
+        data.setDoubleField(WEIGHT_KEY, true) {
+            weight = it
+        }
     }
 
     protected fun Map<String, String>.setField(key: String, ignoreIfAbsent: Boolean = false, fieldSetter: (String) -> Unit) {
@@ -478,6 +482,7 @@ abstract class Criteria {
     companion object {
         const val NAME_KEY = "name"
         const val TRIGGER_DIFFICULTY_KEY = "difficulty"
+        const val WEIGHT_KEY = "weight"
 
         val ALL_DAMAGE_TYPES: Set<DamageType> = setOf(
             DamageType.ARROW, DamageType.BAD_RESPAWN_POINT, DamageType.CACTUS, DamageType.CAMPFIRE, DamageType.CRAMMING,
