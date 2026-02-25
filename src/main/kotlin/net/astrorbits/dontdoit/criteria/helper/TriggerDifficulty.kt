@@ -12,7 +12,9 @@ enum class TriggerDifficulty(val weightMultiplier: Double, val difficulty: Int) 
     /** 比较难触发的词条，比如：被僵尸杀死 */
     HARD(0.8, 5),
     /** 非常难触发的词条，比如：淹死 */
-    VERY_HARD(0.4, 6),
+    VERY_HARD(0.3, 6),
     /** 几乎不可能触发的词条，比如：在逃离河豚时被海豚杀死 (directEntity = dolphin, causeEntity = pufferfish) */
     IMPOSSIBLE(0.1, 7)
 }
+
+//TODO 把weightMultiplier放到配置文件里，方便定制

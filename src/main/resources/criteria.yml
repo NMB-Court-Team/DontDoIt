@@ -202,7 +202,7 @@ criteria:
       difficulty: easy
       entity: player
     - name: 杀死铁傀儡
-      difficulty: hard
+      difficulty: very_hard
       entity: iron_golem
     - name: 杀死僵尸
       difficulty: normal
@@ -418,7 +418,7 @@ criteria:
       distance: 15..
       mode: all_of
     - name: 靠近铁傀儡
-      difficulty: normal
+      difficulty: very_hard
       entity: iron_golem
       distance: ..4
       mode: any_of
@@ -492,9 +492,9 @@ criteria:
       difficulty: normal
       # 留空表示玩家发任何消息都能触发
       messages: ""
-    - name: 打招呼
-      difficulty: normal
-      messages: "hi, hello, 你好, 嗨, 哈喽, 您好"
+#    - name: 打招呼
+#      difficulty: normal
+#      messages: "hi, hello, 你好, 嗨, 哈喽, 您好"
     - name: 扣问号
       difficulty: normal
       messages: "?, ？,❓,¿"
@@ -675,7 +675,7 @@ criteria:
     - name: 升级
       difficulty: hard
   # 自爆词条，立即触发
-#  immediately_trigger:
+  immediately_trigger:
 #    - name: □□□□□
 #      difficulty: trigger_definitely
   # 当用桶装起流体或倒出fluid流体时触发，具体取决于type
@@ -700,3 +700,10 @@ criteria:
     - name: 选中快捷栏最后一格
       difficulty: very_easy
       slot: 9
+  # 手动触发词条，玩家得通过/criteria trigger 命令标记为触发   TODO 添加Criteria实现这类词条
+  manual_triggered:
+
+
+#TODO 添加词条链接机制，可以把两组词条链接起来，当一个人随到其中一边的词条，则其他人随到链接的另一边的词条的概率就会提高，这样可以让一些需要配合的词条更容易触发
+#TODO 例如：“受到伤害”和“造成伤害”，“受到火焰伤害”和“使用打火石”
+
