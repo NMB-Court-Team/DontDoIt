@@ -3,6 +3,7 @@ package net.astrorbits.dontdoit.criteria.helper
 enum class CriteriaType {
     // 物品相关
     EAT_ITEM,
+    USE_TOOL,
     DROP_ITEM,
     CRAFT_ITEM,
     PICK_UP_ITEM,
