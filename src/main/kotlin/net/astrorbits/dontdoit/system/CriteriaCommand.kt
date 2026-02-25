@@ -58,29 +58,27 @@ object CriteriaCommand {
                 }
             )
         ).then(Commands.literal("guess")
-            .then(Commands.argument("criteria", StringArgumentType.greedyString())
-                .suggests { _, builder ->
-                    // 自动补全所有 Criteria 的 displayName
-                    CriteriaManager.allCriteria
-                        .map { it.displayName }
-                        .forEach { builder.suggest(it) }
-                    builder.buildFuture()
-                }
-                .requires { it.sender.isOp }
-                .executes { ctx ->
-                    if (!DynamicSettings.allowGuessCriteria) throw GUESS_NOT_ENABLED.create()
-                    if (!GameStateManager.isRunning()) throw GAME_NOT_START.create()
-                    val player = ctx.source.sender as Player
-                    val team = TeamManager.getTeam(player)
-                    if (team == null || team.isEliminated) throw INVALID_PLAYER.create(player.name)
-                    val guessed = StringArgumentType.getString(ctx, "criteria")
-                    val success = team.criteria?.displayName == guessed
-                    val cooldown = TeamManager.guess(player, team, success)
-                    if (cooldown != null) {
-                        throw GUESS_IN_COOLDOWN.create(player.name, cooldown)
+            .then(Commands.argument("player", ArgumentTypes.player())
+                .then(Commands.argument("guessed", BoolArgumentType.bool())
+                    .requires { it.sender is Player }
+                    .executes { ctx ->
+                        if (!DynamicSettings.allowGuessCriteria) throw GUESS_NOT_ENABLED.create()
+                        if (!GameStateManager.isRunning()) throw GAME_NOT_START.create()
+                        val player = ctx.getArgument("player", PlayerSelectorArgumentResolver::class.java).resolve(ctx.source)[0]
+                        val senderTeam = TeamManager.getTeam(ctx.source.sender as Player)
+                        val team = TeamManager.getTeam(player)
+                        if (team == null || team.isEliminated) throw INVALID_PLAYER.create(player.name)
+                        if (senderTeam == null || player in senderTeam) throw GUESS_SELF_CRITERIA.create()
+                        val guessed = BoolArgumentType.getBool(ctx, "guessed")
+                        val cooldown = TeamManager.guess(player, team, guessed)
+                        if (cooldown != null) {
+                            throw GUESS_IN_COOLDOWN.create(player.name, cooldown)
+                        }
+
+                        return@executes 1
                     }
-                    return@executes 1
-                })
+                )
+            )
         ).then(Commands.literal("change")
             .then(Commands.argument("team", TeamIdArgumentType())
                 .requires { it.sender.isOp }
