@@ -2,6 +2,7 @@ package net.astrorbits.dontdoit.system
 
 import com.mojang.brigadier.StringReader
 import com.mojang.brigadier.arguments.ArgumentType
+import com.mojang.brigadier.arguments.BoolArgumentType
 import com.mojang.brigadier.arguments.IntegerArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
@@ -11,7 +12,9 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
 import io.papermc.paper.command.brigadier.Commands
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes
 import io.papermc.paper.command.brigadier.argument.CustomArgumentType
+import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver
 import net.astrorbits.dontdoit.Configs
 import net.astrorbits.dontdoit.DynamicSettings
 import net.astrorbits.dontdoit.criteria.helper.CriteriaType
@@ -58,29 +61,27 @@ object CriteriaCommand {
                 }
             )
         ).then(Commands.literal("guess")
-            .then(Commands.argument("criteria", StringArgumentType.greedyString())
-                .suggests { _, builder ->
-                    // 自动补全所有 Criteria 的 displayName
-                    CriteriaManager.allCriteria
-                        .map { it.displayName }
-                        .forEach { builder.suggest(it) }
-                    builder.buildFuture()
-                }
-                .requires { it.sender.isOp }
-                .executes { ctx ->
-                    if (!DynamicSettings.allowGuessCriteria) throw GUESS_NOT_ENABLED.create()
-                    if (!GameStateManager.isRunning()) throw GAME_NOT_START.create()
-                    val player = ctx.source.sender as Player
-                    val team = TeamManager.getTeam(player)
-                    if (team == null || team.isEliminated) throw INVALID_PLAYER.create(player.name)
-                    val guessed = StringArgumentType.getString(ctx, "criteria")
-                    val success = team.criteria?.displayName == guessed
-                    val cooldown = TeamManager.guess(player, team, success)
-                    if (cooldown != null) {
-                        throw GUESS_IN_COOLDOWN.create(player.name, cooldown)
+            .then(Commands.argument("player", ArgumentTypes.player())
+                .then(Commands.argument("guessed", BoolArgumentType.bool())
+                    .requires { it.sender is Player }
+                    .executes { ctx ->
+                        if (!DynamicSettings.allowGuessCriteria) throw GUESS_NOT_ENABLED.create()
+                        if (!GameStateManager.isRunning()) throw GAME_NOT_START.create()
+                        val player = ctx.getArgument("player", PlayerSelectorArgumentResolver::class.java).resolve(ctx.source)[0]
+                        val senderTeam = TeamManager.getTeam(ctx.source.sender as Player)
+                        val team = TeamManager.getTeam(player)
+                        if (team == null || team.isEliminated) throw INVALID_PLAYER.create(player.name)
+                        if (senderTeam == null || player in senderTeam) throw GUESS_SELF_CRITERIA.create()
+                        val guessed = BoolArgumentType.getBool(ctx, "guessed")
+                        val cooldown = TeamManager.guess(player, team, guessed)
+                        if (cooldown != null) {
+                            throw GUESS_IN_COOLDOWN.create(player.name, cooldown)
+                        }
+
+                        return@executes 1
                     }
-                    return@executes 1
-                })
+                )
+            )
         ).then(Commands.literal("change")
             .then(Commands.argument("team", TeamIdArgumentType())
                 .requires { it.sender.isOp }
@@ -243,7 +244,7 @@ object CriteriaCommand {
     private val INVALID_PLAYER = DynamicCommandExceptionType { player -> Component.text(Configs.COMMAND_INVALID_PLAYER.get().format(player)).toMessage() }
     private val NOT_CUSTOM_CRITERIA = DynamicCommandExceptionType { teamId -> Component.text(Configs.COMMAND_NOT_CUSTOM_CRITERIA.get().format(teamId)).toMessage() }
     private val INVALID_TEAM_NAME = DynamicCommandExceptionType { teamId -> Component.text(Configs.COMMAND_INVALID_TEAM_NAME.get().format(teamId)).toMessage() }
-    //private val GUESS_SELF_CRITERIA = SimpleCommandExceptionType(Component.text(Configs.COMMAND_GUESS_SELF_CRITERIA.get()).toMessage())
+    private val GUESS_SELF_CRITERIA = SimpleCommandExceptionType(Component.text(Configs.COMMAND_GUESS_SELF_CRITERIA.get()).toMessage())
     private val GUESS_IN_COOLDOWN = Dynamic2CommandExceptionType { player, time -> Component.text(Configs.COMMAND_GUESS_IN_COOLDOWN.get().format(player, time)).toMessage() }
     private val INVALID_CRITERIA_NAME = DynamicCommandExceptionType { criteriaName -> Component.text(Configs.COMMAND_INVALID_CRITERIA_NAME.get().format(criteriaName)).toMessage() }
     private val CHANGE_SETTINGS_WHEN_NOT_WAITING = SimpleCommandExceptionType(Component.text(Configs.COMMAND_CHANGE_SETTINGS_WHEN_NOT_WAITING.get()).toMessage())

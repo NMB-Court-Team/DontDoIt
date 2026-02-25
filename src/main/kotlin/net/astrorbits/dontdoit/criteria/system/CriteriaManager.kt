@@ -93,6 +93,7 @@ object CriteriaManager {
 
     fun registerAll() {
         register("eat_item", ::EatItemCriteria)
+        register("use_tool", ::UseToolCriteria)
         register("drop_item", ::DropItemCriteria)
         register("craft_item", ::CraftItemCriteria)
         register("pick_up_item", ::PickUpItemCriteria)

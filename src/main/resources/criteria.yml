@@ -24,6 +24,10 @@ criteria:
     - name: 吃熟肉
       difficulty: normal
       item: cooked_beef, cooked_porkchop, cooked_mutton, cooked_chicken, cooked_rabbit, cooked_cod, cooked_salmon
+  # 玩家损耗工具时触发
+  use_tool:
+    - name: 打火石点火
+      item: flint_and_steel
   # 玩家行走距离超过distance格时触发
   walk_distance:
     - name: 行走40米
