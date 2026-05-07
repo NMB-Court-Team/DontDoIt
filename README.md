@@ -1,4 +1,11 @@
-# 不要做挑战 (English version follows)
+## Language
+
+- [中文](#中文)
+- [English](#english)
+
+### 中文
+
+# 不要做挑战
 
 这是一个Paper插件，它提供了一个名为《不要做挑战》的游戏的功能。
 
@@ -114,6 +121,8 @@
 如果要把游戏语言换成你使用的语言，你需要把你使用的语言对应的文件`criteria.yml`和`game_settings.yml`放到`<你的服务器>/plugins/DontDoIt/`这个文件夹下，然后重启服务器。
 
 -------
+
+### english
 
 # Don't Do It
 
