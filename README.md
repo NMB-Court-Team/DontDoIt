@@ -4,7 +4,7 @@
 
 ## 快速开始
 
-- 下载最新的release中的 `DontDoIt-1.21.8-1.0.3.jar`
+- 下载最新的release中的 `DontDoIt-1.21.8-1.0.5.jar`
 
   服务器端版本为 paper 1.21.8, 将插件放到`./plugins/`目录下。
 
@@ -121,7 +121,7 @@ A paper plugin that provides a minigame called **Don't Do It**.
 
 ## Quick Start
 
-- Download the latest release `DontDoIt-1.21.8-1.0.3.jar`.
+- Download the latest release `DontDoIt-1.21.8-1.0.5.jar`.
 
   The server version is Paper 1.21.8. Place the plugin in `./plugins/`.
 
