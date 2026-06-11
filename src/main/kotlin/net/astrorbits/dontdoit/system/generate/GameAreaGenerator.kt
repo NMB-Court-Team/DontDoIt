@@ -3,14 +3,9 @@ package net.astrorbits.dontdoit.system.generate
 import net.astrorbits.dontdoit.Configs
 import net.astrorbits.dontdoit.DontDoIt
 import net.astrorbits.dontdoit.DynamicSettings
-import net.astrorbits.lib.NMSWarning
 import net.astrorbits.lib.math.vector.BlockBox
 import net.astrorbits.lib.math.vector.Vec3i
-import net.minecraft.core.BlockPos
-import net.minecraft.world.level.block.Block
 import org.bukkit.*
-import org.bukkit.craftbukkit.CraftWorld
-import org.bukkit.craftbukkit.block.data.CraftBlockData
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
@@ -39,9 +34,7 @@ object GameAreaGenerator : Listener {
     /**
      * @return 是否生成成功
      */
-    @NMSWarning
     fun generate(generateCenter: Vec3i, world: World): Boolean {
-        val level = (world as? CraftWorld)?.handle ?: throw IllegalArgumentException("Cannot convert org.bukkit.World to net.minecraft.server.level.ServerLevel")
         if (world.environment != World.Environment.NORMAL) throw IllegalStateException("Generating game area not in overworld is not supported")
 
         val centerLoc = generateCenter.center().toLocation(world)
@@ -110,7 +103,7 @@ object GameAreaGenerator : Listener {
         val bedrockY = stoneY - bedrockDepth + 1
 
         for (pos in Vec3i(minX, bedrockY, minZ)..Vec3i(maxX, bedrockY, maxZ)) {
-            level.setBlock(BlockPos(pos.x, pos.y, pos.z), (Material.BEDROCK.createBlockData() as CraftBlockData).state, Block.UPDATE_CLIENTS)
+            world.getBlockAt(pos.x, pos.y, pos.z).setType(Material.BEDROCK, false)
         }
 
         val andesiteGeneration = Configs.ANDESITE_GENERATION.get()
@@ -127,12 +120,12 @@ object GameAreaGenerator : Listener {
                 }
             }
             val count = stones.size
-            andesiteGeneration.generate(depth, count, stones, level)
-            coalOreGeneration.generate(depth, count, stones, level)
-            ironOreGeneration.generate(depth, count, stones, level)
-            diamondOreGeneration.generate(depth, count, stones, level)
+            andesiteGeneration.generate(depth, count, stones, world)
+            coalOreGeneration.generate(depth, count, stones, world)
+            ironOreGeneration.generate(depth, count, stones, world)
+            diamondOreGeneration.generate(depth, count, stones, world)
             for (pos in stones) {
-                level.setBlock(BlockPos(pos.x, pos.y, pos.z), (Material.STONE.createBlockData() as CraftBlockData).state, Block.UPDATE_CLIENTS)
+                world.getBlockAt(pos.x, pos.y, pos.z).setType(Material.STONE, false)
             }
         }
         LOGGER.info("Andesites and ores generated")

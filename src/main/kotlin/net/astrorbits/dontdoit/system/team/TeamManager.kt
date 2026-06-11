@@ -100,9 +100,13 @@ object TeamManager : Listener {
         spectatorSidebarDisplay.content = getInUseTeams().values.map(::formatTeamSidebarInfo)
         for (player in Bukkit.getOnlinePlayers()) {
             if (getTeam(player) == null) {
+                spectatorTeam.addPlayer(player)
                 spectatorSidebarDisplay.addPlayer(player)
+            } else {
+                spectatorTeam.removePlayer(player)
             }
         }
+        TeamInfoSynchronizer.syncTeamInfos(this.teams)
     }
 
     fun formatTeamSidebarInfo(teamData: TeamData): SidebarDisplay.ScoreEntry {
@@ -155,8 +159,11 @@ object TeamManager : Listener {
         if (team == null) {
             player.gameMode = GameMode.SPECTATOR
             setSpectatorDisplayName(player)
+            spectatorTeam.addPlayer(player)
+            spectatorSidebarDisplay.addPlayer(player)
         } else {
             team.setPlayerDisplayName(player)
+            team.sidebarDisplay.addPlayer(player)
         }
         TaskBuilder(DontDoIt.instance, TaskType.Delayed(Duration.ticks(2.0)))
             .setTask { TeamInfoSynchronizer.syncTeamInfos(teams) }

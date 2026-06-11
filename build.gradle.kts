@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "net.astrorbits"
-version = "1.21.8-1.0.4"
+version = "1.1.0"
 
 repositories {
     mavenCentral()
@@ -16,7 +16,6 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
-    compileOnly(files("libs/paper-1.21.8.jar"))
 }
 
 tasks {
