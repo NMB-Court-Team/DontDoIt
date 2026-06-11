@@ -79,9 +79,18 @@ object TeamManager : Listener {
         getTeam(player)?.leave(player)
         spectatorTeam.removePlayer(player)
         if (joinSpectator) {
-            spectatorTeam.addPlayer(player)
+            joinSpectatorTeam(player)
+        } else {
+            TeamInfoSynchronizer.syncTeamInfos(teams)
         }
-        TeamInfoSynchronizer.syncTeamInfos(teams)
+    }
+
+    fun joinSpectatorTeam(player: Player, sync: Boolean = true) {
+        spectatorSidebarDisplay.addPlayer(player)
+        spectatorTeam.addPlayer(player)
+        if (sync) {
+            TeamInfoSynchronizer.syncTeamInfos(teams)
+        }
     }
 
     fun setSpectatorDisplayName(player: Player) {
@@ -100,8 +109,7 @@ object TeamManager : Listener {
         spectatorSidebarDisplay.content = getInUseTeams().values.map(::formatTeamSidebarInfo)
         for (player in Bukkit.getOnlinePlayers()) {
             if (getTeam(player) == null) {
-                spectatorTeam.addPlayer(player)
-                spectatorSidebarDisplay.addPlayer(player)
+                joinSpectatorTeam(player, false)
             } else {
                 spectatorTeam.removePlayer(player)
             }
@@ -159,8 +167,7 @@ object TeamManager : Listener {
         if (team == null) {
             player.gameMode = GameMode.SPECTATOR
             setSpectatorDisplayName(player)
-            spectatorTeam.addPlayer(player)
-            spectatorSidebarDisplay.addPlayer(player)
+            joinSpectatorTeam(player, false)
         } else {
             team.setPlayerDisplayName(player)
             team.sidebarDisplay.addPlayer(player)
@@ -194,8 +201,7 @@ object TeamManager : Listener {
             val team = getTeam(player)
             if (team == null) {
                 player.gameMode = GameMode.SPECTATOR
-                spectatorSidebarDisplay.addPlayer(player)
-                spectatorTeam.addPlayer(player)
+                joinSpectatorTeam(player, false)
             } else {
                 player.gameMode = GameMode.SURVIVAL
                 spectatorSidebarDisplay.removePlayer(player)

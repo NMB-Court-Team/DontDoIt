@@ -64,7 +64,7 @@ object Preparation : Listener {
         player.isInvulnerable = true
         player.allowFlight = true
         if (TeamManager.getTeam(player) == null) {
-            TeamManager.spectatorTeam.addPlayer(player)
+            TeamManager.joinSpectatorTeam(player)
         }
     }
 
