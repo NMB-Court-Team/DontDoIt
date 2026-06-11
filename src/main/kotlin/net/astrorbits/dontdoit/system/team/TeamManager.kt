@@ -12,7 +12,6 @@ import net.astrorbits.dontdoit.system.team.TeamData.Companion.LIFE_COUNT_PLACEHO
 import net.astrorbits.dontdoit.system.team.TeamData.Companion.PLAYER_NAME_PLACEHOLDER
 import net.astrorbits.dontdoit.system.team.TeamData.Companion.TEAM_NAME_PLACEHOLDER
 import net.astrorbits.lib.collection.CollectionHelper.toBiMap
-import net.astrorbits.lib.item.ItemHelper.getBoolPdc
 import net.astrorbits.lib.math.Duration
 import net.astrorbits.lib.scoreboard.SidebarDisplay
 import net.astrorbits.lib.task.TaskBuilder
@@ -26,7 +25,6 @@ import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.entity.EntityPickupItemEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
@@ -243,23 +241,49 @@ object TeamManager : Listener {
         return teamData.guess(player, guessed)
     }
 
-    val TRIGGERED_DIAMOND_PDC_KEY = DontDoIt.id("triggered_diamond")
+    private val TRIGGERED_DIAMOND_COUNT_PDC_KEY = DontDoIt.id("triggered_diamond")
 
-    @EventHandler
-    fun onPickUpItem(event: EntityPickupItemEvent) {
+    fun processDiamonds(player: Player) {
         if (!GameStateManager.isRunning() || !DynamicSettings.diamondBehaviorEnabled) return
-        val player = event.entity as? Player ?: return
-        val item = event.item.itemStack
-        if (item.type != Material.DIAMOND || item.isTriggeredDiamond()) return
-        item.editMeta { it.persistentDataContainer.set(TRIGGERED_DIAMOND_PDC_KEY, PersistentDataType.BOOLEAN, true) }
-
         val team = getTeam(player) ?: return
         if (!team.isInUse || team.isEliminated) return
+
+        val inventory = player.inventory
+        for ((slot, item) in inventory.contents.withIndex()) {
+            if (item == null || item.type != Material.DIAMOND) continue
+            if (processDiamondStack(player, team, item)) {
+                inventory.setItem(slot, item)
+            }
+        }
+
+        val cursor = player.itemOnCursor
+        if (cursor.type == Material.DIAMOND && processDiamondStack(player, team, cursor)) {
+            player.setItemOnCursor(cursor)
+        }
+    }
+
+    private fun processDiamondStack(player: Player, team: TeamData, item: ItemStack): Boolean {
+        var triggeredCount = item.triggeredDiamondCount()
+        val previousCount = triggeredCount
+        while (triggeredCount < item.amount) {
+            triggerDiamondBehavior(player, team)
+            triggeredCount++
+        }
+        if (triggeredCount == previousCount) return false
+
+        item.setTriggeredDiamondCount(triggeredCount)
+        return true
+    }
+
+    private fun triggerDiamondBehavior(player: Player, team: TeamData): Boolean {
+        if (!GameStateManager.isRunning() || !DynamicSettings.diamondBehaviorEnabled) return false
+        if (getTeam(player) !== team || !team.isInUse || team.isEliminated) return false
+
         when (DynamicSettings.diamondBehavior) {
             DiamondBehavior.REDUCE_OTHERS_LIFE -> {
                 val teams = getInUseTeams().values
                 if (teams.any { it.lifeCount <= DynamicSettings.diamondBehaviorDisabledThreshold }) {
-                    return
+                    return false
                 }
                 teams.forEach { it.reduceLife(1) }
             }
@@ -290,9 +314,25 @@ object TeamManager : Listener {
             0.5, 0.5, 0.5,
             1.0, null, true
         )
+        return true
     }
 
-    private fun ItemStack.isTriggeredDiamond(): Boolean {
-        return this.getBoolPdc(TRIGGERED_DIAMOND_PDC_KEY) ?: false
+    private fun ItemStack.triggeredDiamondCount(): Int {
+        val container = persistentDataContainer
+        val count = container.get(TRIGGERED_DIAMOND_COUNT_PDC_KEY, PersistentDataType.INTEGER)
+        if (count != null) return count.coerceIn(0, amount)
+
+        // Compatibility with diamonds marked by the previous boolean implementation.
+        return if (container.get(TRIGGERED_DIAMOND_COUNT_PDC_KEY, PersistentDataType.BOOLEAN) == true) amount else 0
+    }
+
+    private fun ItemStack.setTriggeredDiamondCount(count: Int) {
+        editMeta {
+            it.persistentDataContainer.set(
+                TRIGGERED_DIAMOND_COUNT_PDC_KEY,
+                PersistentDataType.INTEGER,
+                count.coerceIn(0, amount)
+            )
+        }
     }
 }
