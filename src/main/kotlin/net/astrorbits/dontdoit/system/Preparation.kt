@@ -53,8 +53,8 @@ object Preparation : Listener {
         }
         Bukkit.getWorlds().forEach { world ->
             world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false)
-            world.time = 1000
         }
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "time set day")
     }
 
     private fun setPrepared(player: Player) {
