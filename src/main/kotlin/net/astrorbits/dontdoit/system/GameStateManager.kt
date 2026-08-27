@@ -18,7 +18,7 @@ import net.astrorbits.lib.text.TitleHelper
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.title.Title
 import org.bukkit.Bukkit
-import org.bukkit.GameRule
+import org.bukkit.GameRules
 import org.bukkit.SoundCategory
 import org.bukkit.entity.Player
 import org.bukkit.potion.PotionEffect
@@ -70,7 +70,7 @@ object GameStateManager {
             player.closeDialog()
         }
         Bukkit.getWorlds().forEach { world ->
-            world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, true)
+            world.setGameRule(GameRules.ADVANCE_TIME, true)
         }
 
         TeamInfoSynchronizer.syncTeamInfos(TeamManager.teams)

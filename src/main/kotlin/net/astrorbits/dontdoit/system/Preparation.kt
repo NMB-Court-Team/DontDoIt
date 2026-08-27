@@ -27,7 +27,7 @@ import net.kyori.adventure.text.event.ClickCallback
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
-import org.bukkit.GameRule
+import org.bukkit.GameRules
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -52,7 +52,7 @@ object Preparation : Listener {
             player.level = 0
         }
         Bukkit.getWorlds().forEach { world ->
-            world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false)
+            world.setGameRule(GameRules.ADVANCE_TIME, false)
         }
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "time set day")
     }
@@ -386,7 +386,7 @@ object Preparation : Listener {
         val dialog = Dialog.create { factory ->
             factory.empty().base(DialogBase.builder(Configs.MODIFY_CUSTOM_CRITERIA_TITLE.get())
                 .body(Configs.MODIFY_CUSTOM_CRITERIA_BODY.get().map {
-                    DialogBody.plainMessage(it, 1024)
+                    DialogBody.plainMessage(it, 300)
                 })
                 .inputs(listOf(DialogInput.text(CUSTOM_CRITERIA_NAME_DIALOG_KEY, Configs.MODIFY_CUSTOM_CRITERIA_TEXT_BOX_TITLE.get())
                     .initial(name)
