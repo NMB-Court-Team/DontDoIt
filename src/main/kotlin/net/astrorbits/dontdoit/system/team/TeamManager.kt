@@ -285,7 +285,7 @@ object TeamManager : Listener {
                 if (teams.any { it.lifeCount <= DynamicSettings.diamondBehaviorDisabledThreshold }) {
                     return false
                 }
-                teams.forEach { it.reduceLife(1) }
+                teams.filter { it !== team }.forEach { it.reduceLife(1) }
             }
             DiamondBehavior.ADD_SELF_LIFE -> {
                 team.addLife(1)
