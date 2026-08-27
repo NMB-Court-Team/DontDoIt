@@ -25,6 +25,12 @@ import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.block.BlockDropItemEvent
+import org.bukkit.event.entity.EntityPickupItemEvent
+import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryCloseEvent
+import org.bukkit.event.inventory.InventoryDragEvent
+import org.bukkit.event.player.PlayerAttemptPickupItemEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
@@ -241,38 +247,163 @@ object TeamManager : Listener {
         return teamData.guess(player, guessed)
     }
 
-    private val TRIGGERED_DIAMOND_COUNT_PDC_KEY = DontDoIt.id("triggered_diamond")
+    private val UNPICKED_DIAMOND_PDC_KEY = DontDoIt.id("unpicked_diamond")
 
-    fun processDiamonds(player: Player) {
-        if (!GameStateManager.isRunning() || !DynamicSettings.diamondBehaviorEnabled) return
-        val team = getTeam(player) ?: return
-        if (!team.isInUse || team.isEliminated) return
-
-        val inventory = player.inventory
-        for ((slot, item) in inventory.contents.withIndex()) {
-            if (item == null || item.type != Material.DIAMOND) continue
-            if (processDiamondStack(player, team, item)) {
-                inventory.setItem(slot, item)
+    /**
+     * 挖矿掉落的钻石打上「未拾取」标签。
+     */
+    @EventHandler
+    fun onBlockDropItem(event: BlockDropItemEvent) {
+        if (event.isCancelled) return
+        for (item in event.items) {
+            val stack = item.itemStack
+            if (stack.type == Material.DIAMOND && !stack.isUnpickedDiamond()) {
+                item.itemStack = stack.apply { setUnpickedDiamond(true) }
             }
-        }
-
-        val cursor = player.itemOnCursor
-        if (cursor.type == Material.DIAMOND && processDiamondStack(player, team, cursor)) {
-            player.setItemOnCursor(cursor)
         }
     }
 
-    private fun processDiamondStack(player: Player, team: TeamData, item: ItemStack): Boolean {
-        var triggeredCount = item.triggeredDiamondCount()
-        val previousCount = triggeredCount
-        while (triggeredCount < item.amount) {
-            triggerDiamondBehavior(player, team)
-            triggeredCount++
-        }
-        if (triggeredCount == previousCount) return false
+    /**
+     * 各种 interact 事件触发后,检查 cursor 和背包里带「未拾取」标签的钻石并全部转换:
+     * cursor 上的原地清除标签(物品不消失,无缝);背包里的先清掉、再给予同数量普通钻石
+     * (被动合并进已有普通堆)。每颗钻石触发一次行为(禁用/阈值时仅转换不触发)。
+     */
+    @EventHandler
+    fun onInventoryClick(event: InventoryClickEvent) {
+        (event.whoClicked as? Player)?.let { convertAllTaggedDiamonds(it) }
+    }
 
-        item.setTriggeredDiamondCount(triggeredCount)
-        return true
+    @EventHandler
+    fun onInventoryDrag(event: InventoryDragEvent) {
+        (event.whoClicked as? Player)?.let { convertAllTaggedDiamonds(it) }
+    }
+
+    @EventHandler
+    fun onInventoryClose(event: InventoryCloseEvent) {
+        (event.player as? Player)?.let { convertAllTaggedDiamonds(it) }
+    }
+
+    /**
+     * 捡起钻石:捡起的是带标签钻石时,原地清除这组的标签(原版随后会把普通钻石放进背包),
+     * 并转换身上其他所有带标签钻石。(捡起普通钻石时没有带标签的钻石,自然无事发生。)
+     */
+    @EventHandler
+    fun onPickUpItem(event: EntityPickupItemEvent) {
+        val player = event.entity as? Player ?: return
+        val stack = event.item.itemStack
+        if (stack.type != Material.DIAMOND || !stack.isUnpickedDiamond()) return
+        // 原地清除这组的标签 → 原版随后把普通钻石放进背包;计入触发数量
+        val pickedUp = stack.amount
+        stack.setUnpickedDiamond(false)
+        event.item.itemStack = stack
+        convertAllTaggedDiamonds(player, pickedUp)
+    }
+
+    /**
+     * 背包满时:地上带标签的钻石原版完全装不下(remaining == amount),这里接管:
+     * 按容量(空格×64 + 普通钻石堆空位)清掉地上的对应数量,触发行为并给予普通钻石;
+     * 容量小于地上数量时只处理对应数量,其余留在地上。
+     */
+    @EventHandler
+    fun onAttemptPickupDiamond(event: PlayerAttemptPickupItemEvent) {
+        if (!GameStateManager.isRunning()) return
+        val stack = event.item.itemStack
+        if (stack.type != Material.DIAMOND || !stack.isUnpickedDiamond()) return
+        // 原版能装下(至少一部分)→ 交给正常捡起流程(EntityPickupItemEvent 会转换)
+        if (event.remaining < stack.amount) return
+
+        val player = event.player
+        val team = getTeam(player) ?: return
+        if (!team.isInUse || team.isEliminated) return
+
+        var capacity = 0
+        val inventory = player.inventory
+        for (slot in 0 until inventory.size) {
+            val item = inventory.getItem(slot)
+            if (item == null || item.type == Material.AIR) {
+                capacity += 64
+            } else if (item.type == Material.DIAMOND && !item.isUnpickedDiamond()) {
+                capacity += item.maxStackSize - item.amount
+            }
+        }
+        if (capacity <= 0) return
+
+        val processCount = minOf(capacity, stack.amount)
+        repeat(processCount) { triggerDiamondBehavior(player, team) }
+        givePlainDiamonds(player, processCount)
+
+        val remaining = stack.amount - processCount
+        if (remaining <= 0) {
+            event.item.remove()
+        } else {
+            stack.amount = remaining
+            event.item.itemStack = stack
+        }
+    }
+
+    /**
+     * 转换玩家身上所有带「未拾取」标签的钻石。
+     * cursor 上的原地清除标签(物品保留,只计触发);背包(主36 + offhand)里的先清掉,
+     * 再给予同数量普通钻石(被动合并);extraCount 是调用方已原地清标签的钻石数(只计触发)。
+     */
+    private fun convertAllTaggedDiamonds(player: Player, extraCount: Int = 0) {
+        var triggerCount = extraCount
+        var giveCount = 0
+        val inventory = player.inventory
+
+        // cursor:原地清除标签,物品不消失 → 计入触发,不计入给予
+        val cursor = player.itemOnCursor
+        if (cursor.type == Material.DIAMOND && cursor.isUnpickedDiamond()) {
+            triggerCount += cursor.amount
+            cursor.setUnpickedDiamond(false)
+            player.setItemOnCursor(cursor)
+        }
+
+        // 背包(主36 + offhand):先清掉所有带标签钻石 → 计入触发 + 给予
+        for (slot in 0 until inventory.size) {
+            val item = inventory.getItem(slot) ?: continue
+            if (item.type == Material.DIAMOND && item.isUnpickedDiamond()) {
+                triggerCount += item.amount
+                giveCount += item.amount
+                inventory.setItem(slot, null)
+            }
+        }
+
+        if (triggerCount == 0) return
+
+        // 按数量触发行为(禁用/阈值时内部直接返回,转换照做)
+        val team = getTeam(player)
+        if (team != null && team.isInUse && !team.isEliminated) {
+            repeat(triggerCount) { triggerDiamondBehavior(player, team) }
+        }
+
+        // 给予被清掉数量的普通钻石(被动合并进已有普通堆/空格)
+        if (giveCount > 0) {
+            givePlainDiamonds(player, giveCount)
+        }
+    }
+
+    private fun givePlainDiamonds(player: Player, count: Int) {
+        var remaining = count
+        while (remaining > 0) {
+            val amount = minOf(64, remaining)
+            player.inventory.addItem(ItemStack(Material.DIAMOND, amount))
+            remaining -= amount
+        }
+    }
+
+    private fun ItemStack.isUnpickedDiamond(): Boolean {
+        return persistentDataContainer.get(UNPICKED_DIAMOND_PDC_KEY, PersistentDataType.BOOLEAN) == true
+    }
+
+    private fun ItemStack.setUnpickedDiamond(value: Boolean) {
+        editMeta {
+            if (value) {
+                it.persistentDataContainer.set(UNPICKED_DIAMOND_PDC_KEY, PersistentDataType.BOOLEAN, true)
+            } else {
+                it.persistentDataContainer.remove(UNPICKED_DIAMOND_PDC_KEY)
+            }
+        }
     }
 
     private fun triggerDiamondBehavior(player: Player, team: TeamData): Boolean {
@@ -315,24 +446,5 @@ object TeamManager : Listener {
             1.0, null, true
         )
         return true
-    }
-
-    private fun ItemStack.triggeredDiamondCount(): Int {
-        val container = persistentDataContainer
-        val count = container.get(TRIGGERED_DIAMOND_COUNT_PDC_KEY, PersistentDataType.INTEGER)
-        if (count != null) return count.coerceIn(0, amount)
-
-        // Compatibility with diamonds marked by the previous boolean implementation.
-        return if (container.get(TRIGGERED_DIAMOND_COUNT_PDC_KEY, PersistentDataType.BOOLEAN) == true) amount else 0
-    }
-
-    private fun ItemStack.setTriggeredDiamondCount(count: Int) {
-        editMeta {
-            it.persistentDataContainer.set(
-                TRIGGERED_DIAMOND_COUNT_PDC_KEY,
-                PersistentDataType.INTEGER,
-                count.coerceIn(0, amount)
-            )
-        }
     }
 }

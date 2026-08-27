@@ -142,7 +142,6 @@ object GameStateManager {
         }
         for (player in Bukkit.getOnlinePlayers()) {
             player.isGlowing = TeamManager.getTeam(player) != null
-            TeamManager.processDiamonds(player)
         }
         if (DynamicSettings.infinityNightVisionEnabled) {
             for (player in Bukkit.getOnlinePlayers()) {
